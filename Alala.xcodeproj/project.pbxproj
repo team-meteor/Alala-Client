@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6F5C2D411EE51B3000E324E9 /* IGListKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5C2D3A1EE51B3000E324E9 /* IGListKit.framework */; };
+		6F5C2D421EE51B3000E324E9 /* Kingfisher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5C2D3B1EE51B3000E324E9 /* Kingfisher.framework */; };
+		6F5C2D431EE51B3000E324E9 /* ObjectMapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5C2D3C1EE51B3000E324E9 /* ObjectMapper.framework */; };
+		6F5C2D441EE51B3000E324E9 /* SnapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5C2D3D1EE51B3000E324E9 /* SnapKit.framework */; };
+		6F5C2D451EE51B3000E324E9 /* SWXMLHash.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5C2D3E1EE51B3000E324E9 /* SWXMLHash.framework */; };
+		6F5C2D461EE51B3000E324E9 /* Then.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5C2D3F1EE51B3000E324E9 /* Then.framework */; };
+		6F5C2D471EE51B3000E324E9 /* Yams.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5C2D401EE51B3000E324E9 /* Yams.framework */; };
 		6FFC06AD1EE3D49000E542BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06AC1EE3D49000E542BC /* AppDelegate.swift */; };
 		6FFC06AF1EE3D49000E542BC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06AE1EE3D49000E542BC /* ViewController.swift */; };
 		6FFC06B21EE3D49000E542BC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FFC06B01EE3D49000E542BC /* Main.storyboard */; };
@@ -35,6 +42,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6F5C2D3A1EE51B3000E324E9 /* IGListKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IGListKit.framework; path = Carthage/Build/iOS/IGListKit.framework; sourceTree = "<group>"; };
+		6F5C2D3B1EE51B3000E324E9 /* Kingfisher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kingfisher.framework; path = Carthage/Build/iOS/Kingfisher.framework; sourceTree = "<group>"; };
+		6F5C2D3C1EE51B3000E324E9 /* ObjectMapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ObjectMapper.framework; path = Carthage/Build/iOS/ObjectMapper.framework; sourceTree = "<group>"; };
+		6F5C2D3D1EE51B3000E324E9 /* SnapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SnapKit.framework; path = Carthage/Build/iOS/SnapKit.framework; sourceTree = "<group>"; };
+		6F5C2D3E1EE51B3000E324E9 /* SWXMLHash.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SWXMLHash.framework; path = Carthage/Build/iOS/SWXMLHash.framework; sourceTree = "<group>"; };
+		6F5C2D3F1EE51B3000E324E9 /* Then.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Then.framework; path = Carthage/Build/iOS/Then.framework; sourceTree = "<group>"; };
+		6F5C2D401EE51B3000E324E9 /* Yams.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Yams.framework; path = Carthage/Build/iOS/Yams.framework; sourceTree = "<group>"; };
 		6FFC06A91EE3D49000E542BC /* Alala.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Alala.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6FFC06AC1EE3D49000E542BC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6FFC06AE1EE3D49000E542BC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -57,6 +71,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				6FFC06DC1EE3D78A00E542BC /* Alamofire.framework in Frameworks */,
+				6F5C2D411EE51B3000E324E9 /* IGListKit.framework in Frameworks */,
+				6F5C2D421EE51B3000E324E9 /* Kingfisher.framework in Frameworks */,
+				6F5C2D431EE51B3000E324E9 /* ObjectMapper.framework in Frameworks */,
+				6F5C2D441EE51B3000E324E9 /* SnapKit.framework in Frameworks */,
+				6F5C2D451EE51B3000E324E9 /* SWXMLHash.framework in Frameworks */,
+				6F5C2D461EE51B3000E324E9 /* Then.framework in Frameworks */,
+				6F5C2D471EE51B3000E324E9 /* Yams.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -132,6 +153,13 @@
 		6FFC06DA1EE3D78A00E542BC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6F5C2D3A1EE51B3000E324E9 /* IGListKit.framework */,
+				6F5C2D3B1EE51B3000E324E9 /* Kingfisher.framework */,
+				6F5C2D3C1EE51B3000E324E9 /* ObjectMapper.framework */,
+				6F5C2D3D1EE51B3000E324E9 /* SnapKit.framework */,
+				6F5C2D3E1EE51B3000E324E9 /* SWXMLHash.framework */,
+				6F5C2D3F1EE51B3000E324E9 /* Then.framework */,
+				6F5C2D401EE51B3000E324E9 /* Yams.framework */,
 				6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */,
 			);
 			name = Frameworks;
@@ -147,7 +175,9 @@
 				6FFC06A51EE3D49000E542BC /* Sources */,
 				6FFC06A61EE3D49000E542BC /* Frameworks */,
 				6FFC06A71EE3D49000E542BC /* Resources */,
-				6FFC06DD1EE3D7AC00E542BC /* ShellScript */,
+				6F6D38741EE4EE8500681C56 /* Integrate Reveal Server */,
+				6F5B85401EE51C7C009285DD /* Carthage */,
+				6F5B85411EE51DD3009285DD /* swiftlint */,
 			);
 			buildRules = (
 			);
@@ -268,19 +298,55 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		6FFC06DD1EE3D7AC00E542BC /* ShellScript */ = {
+		6F5B85401EE51C7C009285DD /* Carthage */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/IGListKit.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/ObjectMapper.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SnapKit.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SWXMLHash.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Then.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Yams.framework",
 			);
+			name = Carthage;
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+		6F5B85411EE51DD3009285DD /* swiftlint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = swiftlint;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\nswiftlint\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+		6F6D38741EE4EE8500681C56 /* Integrate Reveal Server */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Integrate Reveal Server";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export REVEAL_SERVER_FILENAME=\"RevealServer.framework\"\n\n# Update this path to point to the location of RevealServer.framework in your project.\nexport REVEAL_SERVER_PATH=\"${SRCROOT}/${REVEAL_SERVER_FILENAME}\"\n\n# If configuration is not Debug, skip this script.\n[ \"${CONFIGURATION}\" != \"Debug\" ] && exit 0\n\n# If RevealServer.framework exists at the specified path, run code signing script.\nif [ -d \"${REVEAL_SERVER_PATH}\" ]; then\n\"${REVEAL_SERVER_PATH}/Scripts/copy_and_codesign_revealserver.sh\"\nelse\necho \"Cannot find RevealServer.framework, so Reveal Server will not be started for your app.\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -445,9 +511,20 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(inherited)",
+					"$(SRCROOT)",
 				);
 				INFOPLIST_FILE = Alala/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks $(inherited) @executable_path/Frameworks\n$(inherited) @executable_path/Frameworks\n$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-weak_framework",
+					"RevealServer\n-ObjC",
+					"-weak_framework",
+					"RevealServer\n-ObjC",
+					"-weak_framework",
+					RevealServer,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.team-meteor.Alala";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
@@ -461,9 +538,20 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(inherited)",
+					"$(SRCROOT)",
 				);
 				INFOPLIST_FILE = Alala/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks $(inherited) @executable_path/Frameworks\n$(inherited) @executable_path/Frameworks\n$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-weak_framework",
+					"RevealServer\n-ObjC",
+					"-weak_framework",
+					"RevealServer\n-ObjC",
+					"-weak_framework",
+					RevealServer,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.team-meteor.Alala";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
@@ -543,6 +631,7 @@
 				6FFC06D31EE3D49000E542BC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		6FFC06D41EE3D49000E542BC /* Build configuration list for PBXNativeTarget "AlalaTests" */ = {
 			isa = XCConfigurationList;
@@ -551,6 +640,7 @@
 				6FFC06D61EE3D49000E542BC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		6FFC06D71EE3D49000E542BC /* Build configuration list for PBXNativeTarget "AlalaUITests" */ = {
 			isa = XCConfigurationList;
@@ -559,6 +649,7 @@
 				6FFC06D91EE3D49000E542BC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
