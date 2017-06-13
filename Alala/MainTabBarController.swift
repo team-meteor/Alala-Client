@@ -33,9 +33,10 @@ class MainTabBarController: UITabBarController {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
     fileprivate func presentCreateViewController() {
         let createViewController = CreateViewController()
-        self.present(createViewController, animated: true, completion: nil)
+        self.present(UINavigationController.init(rootViewController: createViewController), animated: true, completion: nil)
     }
 }
 

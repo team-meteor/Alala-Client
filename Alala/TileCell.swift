@@ -8,23 +8,15 @@
 
 import UIKit
 
-class CameraCell: UICollectionViewCell {
+class TileCell: UICollectionViewCell {
     
-    var didTap: (() -> Void)?
+    var representedAssetIdentifier: String!
     
-    fileprivate let photoView = UIImageView().then {
-        $0.backgroundColor = .lightGray
-        $0.isUserInteractionEnabled = true
-    }
-    
-    fileprivate let photoViewTapRecognizer = UITapGestureRecognizer()
+    fileprivate let photoView = UIImageView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.contentView.addSubview(self.photoView)
-        
-        self.photoViewTapRecognizer.addTarget(self, action: #selector(photoViewDidTap))
-        self.photoView.addGestureRecognizer(self.photoViewTapRecognizer)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -52,11 +44,5 @@ class CameraCell: UICollectionViewCell {
         self.photoView.frame = self.contentView.bounds
     }
     
-    
-    // MARK: Actions
-    
-    func photoViewDidTap() {
-        self.didTap?()
-    }
     
 }

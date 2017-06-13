@@ -24,7 +24,7 @@ class PhotoDataSource {
                     if let dict = item as? NSDictionary {
                         let photoID = dict["photo"] as? String
                         let message = dict["description"] as? String
-                        var post = Post(photoID: photoID, description: message)
+                        let post = Post(photoID: photoID, description: message)
                         photos.append(post)
                     }
                 }
