@@ -32,7 +32,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
-    
     func configureAppearance() {
         UINavigationBar.appearance().tintColor = .black
         UIBarButtonItem.appearance().tintColor = .black

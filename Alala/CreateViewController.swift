@@ -11,11 +11,14 @@ import Photos
 
 class CreateViewController: UIViewController {
     
-    var allPhotos: PHFetchResult<PHAsset>!
+    fileprivate let imageView = UIImageView().then {
+        $0.backgroundColor = UIColor.yellow
+    }
+    
+    var fetchResult: PHFetchResult<PHAsset>!
     let tileCellSpacing = CGFloat(3)
     let imageManager = PHCachingImageManager()
     
-    //collectionview 인스턴스 생성
     fileprivate let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.backgroundColor = .white
         $0.alwaysBounceVertical = true
@@ -28,22 +31,44 @@ class CreateViewController: UIViewController {
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
         
-        //뷰에 올리고 크기설정
+        self.view.addSubview(self.imageView)
         self.view.addSubview(self.collectionView)
-        self.collectionView.snp.makeConstraints { (make) in
-            make.edges.equalTo(self.view)
+        
+        //상대적 위치 선정
+        self.imageView.snp.makeConstraints { make in
+            make.top.left.right.equalToSuperview()
+            make.bottom.equalTo(self.collectionView.snp.top)
+        }
+        
+        self.collectionView.snp.makeConstraints { make in
+            make.top.equalTo(self.imageView.snp.bottom)
+            make.left.bottom.right.equalToSuperview()
         }
         
         fetchAllPhotos()
         
+        //가장 최근 사진 프리뷰
+        let firstAsset = fetchResult.object(at: 0)
+        imageManager.requestImage(for: firstAsset, targetSize: CGSize(width: 640, height: 640), contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+            self.imageView.image = image
+        })
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        self.initializeContentSizeIfNeeded()
+    }
+    
+    func initializeContentSizeIfNeeded() {
+        imageView.frame = CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height/2)
+        collectionView.frame = CGRect(x: 0, y: self.view.bounds.midY, width: self.view.bounds.width, height: self.view.bounds.height/2)
     }
     
     func fetchAllPhotos() {
         let allPhotosOptions = PHFetchOptions()
         allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        allPhotos = PHAsset.fetchAssets(with: allPhotosOptions)
-        
-        //collectionView.reloadData()
+        fetchResult = PHAsset.fetchAssets(with: allPhotosOptions)
     }
     
     init() {
@@ -62,6 +87,9 @@ class CreateViewController: UIViewController {
             target: self,
             action: #selector(doneButtonDidTap)
         )
+        
+        self.automaticallyAdjustsScrollViewInsets = false
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -81,20 +109,23 @@ extension CreateViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "tileCell", for: indexPath) as! TileCell
-        let asset = allPhotos.object(at: indexPath.item)
+        let asset = fetchResult.object(at: indexPath.item)
         
         cell.representedAssetIdentifier = asset.localIdentifier
-        imageManager.requestImage(for: asset, targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+        
+        //메타데이터를 이미지로 변환
+        imageManager.requestImage(for: asset, targetSize: CGSize(width: 640, height: 640), contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
             if cell.representedAssetIdentifier == asset.localIdentifier {
                 cell.configure(photo: image!)
             }
         })
         
         return cell
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return allPhotos.count
+        return fetchResult.count
     }
 }
 
@@ -115,6 +146,9 @@ extension CreateViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("hahaha")
+        let asset = fetchResult.object(at: indexPath.item)
+        imageManager.requestImage(for: asset, targetSize: CGSize(width: 640, height: 640), contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+            self.imageView.image = image
+        })
     }
 }

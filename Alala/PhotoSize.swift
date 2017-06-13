@@ -6,8 +6,6 @@
 //  Copyright © 2017년 team-meteor. All rights reserved.
 //
 
-
-
 import UIKit
 
 enum PhotoSize {
@@ -28,7 +26,6 @@ enum PhotoSize {
     
     /// 40px
     case tiny
-    
     
     /// 개발에 사용되는 포인트 크기
     var point: Int {
