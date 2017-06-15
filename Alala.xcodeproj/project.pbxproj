@@ -8,10 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		6F09C8AF1EEA866100BCFFEF /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8AE1EEA866100BCFFEF /* UIImageExtension.swift */; };
-		6F09C8CD1EEE6A4100BCFFEF /* PhotoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8CC1EEE6A4100BCFFEF /* PhotoService.swift */; };
-		6F09C8CF1EEE717400BCFFEF /* AWSCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F09C8CE1EEE717400BCFFEF /* AWSCore.framework */; };
-		6F09C8D11EEE717D00BCFFEF /* AWSS3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F09C8D01EEE717D00BCFFEF /* AWSS3.framework */; };
-		6F09C8D41EEE72CF00BCFFEF /* credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8D31EEE72CF00BCFFEF /* credentials.swift */; };
+		6F09C8D81EF0113600BCFFEF /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8D71EF0113600BCFFEF /* LoginViewController.swift */; };
+		6F09C8DA1EF013B900BCFFEF /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8D91EF013B900BCFFEF /* AuthService.swift */; };
+		6F09C8DE1EF101E800BCFFEF /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8DD1EF101E800BCFFEF /* Constants.swift */; };
+		6F09C8E01EF1058200BCFFEF /* DataResponse+MapResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8DF1EF1058200BCFFEF /* DataResponse+MapResults.swift */; };
+		6F09C8E21EF127C900BCFFEF /* AfterRegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8E11EF127C900BCFFEF /* AfterRegisterViewController.swift */; };
+		6F09C9021EF241F100BCFFEF /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C9011EF241F100BCFFEF /* SplashViewController.swift */; };
 		6F5B85491EE52101009285DD /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F5B85481EE52101009285DD /* FeedViewController.swift */; };
 		6F5B854B1EE52520009285DD /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F5B854A1EE52520009285DD /* MainTabBarController.swift */; };
 		6F5B854F1EE52B3B009285DD /* DiscoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F5B854E1EE52B3B009285DD /* DiscoverViewController.swift */; };
@@ -55,10 +57,14 @@
 
 /* Begin PBXFileReference section */
 		6F09C8AE1EEA866100BCFFEF /* UIImageExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
-		6F09C8CC1EEE6A4100BCFFEF /* PhotoService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoService.swift; sourceTree = "<group>"; };
 		6F09C8CE1EEE717400BCFFEF /* AWSCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AWSCore.framework; path = Carthage/Build/iOS/AWSCore.framework; sourceTree = "<group>"; };
 		6F09C8D01EEE717D00BCFFEF /* AWSS3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AWSS3.framework; path = Carthage/Build/iOS/AWSS3.framework; sourceTree = "<group>"; };
-		6F09C8D31EEE72CF00BCFFEF /* credentials.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = credentials.swift; sourceTree = "<group>"; };
+		6F09C8D71EF0113600BCFFEF /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		6F09C8D91EF013B900BCFFEF /* AuthService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		6F09C8DD1EF101E800BCFFEF /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		6F09C8DF1EF1058200BCFFEF /* DataResponse+MapResults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DataResponse+MapResults.swift"; sourceTree = "<group>"; };
+		6F09C8E11EF127C900BCFFEF /* AfterRegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AfterRegisterViewController.swift; sourceTree = "<group>"; };
+		6F09C9011EF241F100BCFFEF /* SplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		6F5B85481EE52101009285DD /* FeedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
 		6F5B854A1EE52520009285DD /* MainTabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		6F5B854E1EE52B3B009285DD /* DiscoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscoverViewController.swift; sourceTree = "<group>"; };
@@ -96,8 +102,6 @@
 			files = (
 				6FFC06DC1EE3D78A00E542BC /* Alamofire.framework in Frameworks */,
 				6F5C2D411EE51B3000E324E9 /* IGListKit.framework in Frameworks */,
-				6F09C8CF1EEE717400BCFFEF /* AWSCore.framework in Frameworks */,
-				6F09C8D11EEE717D00BCFFEF /* AWSS3.framework in Frameworks */,
 				6F5C2D421EE51B3000E324E9 /* Kingfisher.framework in Frameworks */,
 				6F5C2D431EE51B3000E324E9 /* ObjectMapper.framework in Frameworks */,
 				6F5C2D441EE51B3000E324E9 /* SnapKit.framework in Frameworks */,
@@ -135,7 +139,7 @@
 		6F09C8CB1EEE6A1E00BCFFEF /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				6F09C8CC1EEE6A4100BCFFEF /* PhotoService.swift */,
+				6F09C8D91EF013B900BCFFEF /* AuthService.swift */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -145,7 +149,6 @@
 			children = (
 				6FFC06B31EE3D49000E542BC /* Assets.xcassets */,
 				6FFC06B51EE3D49000E542BC /* LaunchScreen.storyboard */,
-				6F09C8D31EEE72CF00BCFFEF /* credentials.swift */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -159,6 +162,9 @@
 				6F5B85521EE52B95009285DD /* PersonalViewController.swift */,
 				6F5B85541EE52BB9009285DD /* CreateViewController.swift */,
 				6F5B854A1EE52520009285DD /* MainTabBarController.swift */,
+				6F09C8D71EF0113600BCFFEF /* LoginViewController.swift */,
+				6F09C8E11EF127C900BCFFEF /* AfterRegisterViewController.swift */,
+				6F09C9011EF241F100BCFFEF /* SplashViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -183,6 +189,7 @@
 		6F5B85461EE52058009285DD /* Networking */ = {
 			isa = PBXGroup;
 			children = (
+				6F09C8DF1EF1058200BCFFEF /* DataResponse+MapResults.swift */,
 			);
 			name = Networking;
 			sourceTree = "<group>";
@@ -196,6 +203,7 @@
 				6F5B85441EE52041009285DD /* Views */,
 				6F5B85431EE52037009285DD /* ViewControllers */,
 				6F09C8AD1EEA862E00BCFFEF /* Utils */,
+				6F09C8DD1EF101E800BCFFEF /* Constants.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -224,10 +232,10 @@
 		6FFC06AB1EE3D49000E542BC /* Alala */ = {
 			isa = PBXGroup;
 			children = (
+				6FFC06AC1EE3D49000E542BC /* AppDelegate.swift */,
 				6F5B85471EE52064009285DD /* Sources */,
 				6F5B85421EE52026009285DD /* Resources */,
 				6FFC06B81EE3D49000E542BC /* Info.plist */,
-				6FFC06AC1EE3D49000E542BC /* AppDelegate.swift */,
 			);
 			path = Alala;
 			sourceTree = "<group>";
@@ -280,7 +288,6 @@
 				6F6D38741EE4EE8500681C56 /* Integrate Reveal Server */,
 				6F5B85401EE51C7C009285DD /* Carthage */,
 				6F5B85411EE51DD3009285DD /* swiftlint */,
-				6F09C8D21EEE719800BCFFEF /* aws */,
 			);
 			buildRules = (
 			);
@@ -400,20 +407,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		6F09C8D21EEE719800BCFFEF /* aws */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = aws;
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "bash \"${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSCore.framework/strip-frameworks.sh\"";
-		};
 		6F5B85401EE51C7C009285DD /* Carthage */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -428,8 +421,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/SWXMLHash.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Then.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Yams.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/AWSS3.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/AWSCore.framework",
 			);
 			name = Carthage;
 			outputPaths = (
@@ -473,18 +464,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F09C8D81EF0113600BCFFEF /* LoginViewController.swift in Sources */,
 				6F5B85491EE52101009285DD /* FeedViewController.swift in Sources */,
-				6F09C8CD1EEE6A4100BCFFEF /* PhotoService.swift in Sources */,
 				6F5B85591EE540F9009285DD /* Feed.swift in Sources */,
+				6F09C9021EF241F100BCFFEF /* SplashViewController.swift in Sources */,
+				6F09C8E01EF1058200BCFFEF /* DataResponse+MapResults.swift in Sources */,
 				6F5B854F1EE52B3B009285DD /* DiscoverViewController.swift in Sources */,
 				6F5B85551EE52BB9009285DD /* CreateViewController.swift in Sources */,
+				6F09C8E21EF127C900BCFFEF /* AfterRegisterViewController.swift in Sources */,
 				6F09C8AF1EEA866100BCFFEF /* UIImageExtension.swift in Sources */,
+				6F09C8DA1EF013B900BCFFEF /* AuthService.swift in Sources */,
 				6FFC06AD1EE3D49000E542BC /* AppDelegate.swift in Sources */,
 				6F5B85571EE540EF009285DD /* User.swift in Sources */,
 				6F5B85511EE52B78009285DD /* ActivityViewController.swift in Sources */,
 				6F5B85531EE52B95009285DD /* PersonalViewController.swift in Sources */,
+				6F09C8DE1EF101E800BCFFEF /* Constants.swift in Sources */,
 				6F5B854B1EE52520009285DD /* MainTabBarController.swift in Sources */,
-				6F09C8D41EEE72CF00BCFFEF /* credentials.swift in Sources */,
 				6F5B855B1EE54101009285DD /* Post.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
