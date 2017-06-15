@@ -12,15 +12,16 @@ import Photos
 class CreateViewController: UIViewController {
     
     fileprivate let scrollView = UIScrollView().then {
-        $0.alwaysBounceHorizontal = true
-        $0.alwaysBounceVertical = true
-        $0.showsHorizontalScrollIndicator = false
-        $0.showsVerticalScrollIndicator = false
-        $0.maximumZoomScale = 3
+        $0.maximumZoomScale = 3.0
+        $0.minimumZoomScale = 0.1
+        $0.zoomScale = 1.0
     }
     
     fileprivate let imageView = UIImageView()
-    
+    fileprivate let panView = UIView().then {
+        $0.backgroundColor = UIColor.yellow.withAlphaComponent(0.5)
+    }
+    var panViewYPosition: CGFloat!
     var fetchResult: PHFetchResult<PHAsset>!
     let tileCellSpacing = CGFloat(3)
     let imageManager = PHCachingImageManager()
@@ -33,7 +34,6 @@ class CreateViewController: UIViewController {
     
     init() {
         super.init(nibName: nil, bundle: nil)
-        
         //cancle 버튼 생성
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .cancel,
@@ -49,8 +49,6 @@ class CreateViewController: UIViewController {
         )
         
         self.automaticallyAdjustsScrollViewInsets = false
-        
-        print("init")
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -62,10 +60,12 @@ class CreateViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         scrollView.delegate = self
-        
         self.scrollView.addSubview(self.imageView)
         self.view.addSubview(self.scrollView)
+        self.view.addSubview(self.panView)
         self.view.addSubview(self.collectionView)
+        let pan:UIPanGestureRecognizer = UIPanGestureRecognizer.init(target: self, action: #selector(handlePanGestureRecognizer(_:)))
+        self.panView.addGestureRecognizer(pan)
         
         self.scrollView.snp.makeConstraints { make in
             make.left.right.equalTo(self.view)
@@ -77,11 +77,17 @@ class CreateViewController: UIViewController {
             make.top.equalTo(self.scrollView.snp.bottom)
         }
         
+        self.panView.snp.makeConstraints { make in
+            make.left.right.equalTo(self.view)
+            make.bottom.equalTo(self.collectionView.snp.top)
+            make.height.equalTo(50)
+        }
+        
         fetchAllPhotos()
         let firstAsset = fetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-        imageManager.requestImage(for: firstAsset, targetSize: targetSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
+        imageManager.requestImage(for: firstAsset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
             let imageWidth = image!.size.width
             let imageHeight = image!.size.height
             if imageWidth > imageHeight {
@@ -98,8 +104,31 @@ class CreateViewController: UIViewController {
             self.imageView.center.x = UIScreen.main.bounds.size.width / 2
             self.imageView.center.y = self.scrollView.center.y
             self.imageView.image = image
+            self.centerScrollView(animated: false)
         })
-        print("viewdid")
+    }
+    
+    func handlePanGestureRecognizer(_ panRecognizer: UIPanGestureRecognizer) {
+
+        let translation: CGPoint = panRecognizer.translation(in: self.view)
+        
+        if panRecognizer.state == .began || panRecognizer.state == .changed {
+            
+            if self.panView.frame.origin.y <= panViewYPosition {
+                
+                panRecognizer.view!.center = CGPoint(x: panRecognizer.view!.center.x, y: panRecognizer.view!.center.y + translation.y)
+                self.scrollView.center = CGPoint(x: self.scrollView.center.x, y: self.scrollView.center.y + translation.y)
+                panRecognizer.setTranslation(CGPoint.zero, in: self.view)
+                self.navigationController?.navigationBar.transform = CGAffineTransform(translationX: 0, y: -(panViewYPosition - (panRecognizer.view?.frame.origin.y)!))
+                self.collectionView.frame.origin.y = (panRecognizer.view?.frame.origin.y)! + 50
+                self.collectionView.frame.size.height = 228 + (panViewYPosition - (panRecognizer.view?.frame.origin.y)!)
+                if self.panView.frame.origin.y > panViewYPosition {
+                    self.panView.frame.origin.y = panViewYPosition
+                    self.scrollView.frame.origin.y = 64
+                    self.collectionView.frame.origin.y = 439
+                }
+            }
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -107,7 +136,15 @@ class CreateViewController: UIViewController {
         self.scrollView.snp.makeConstraints { make in
             make.top.equalTo(self.navigationController!.navigationBar.snp.bottom)
         }
-        print("layout")
+        self.panViewYPosition = 389
+    }
+    
+    func centerScrollView(animated: Bool) {
+        let targetContentOffset = CGPoint(
+            x: (self.scrollView.contentSize.width - self.scrollView.bounds.width) / 2,
+            y: (self.scrollView.contentSize.height - self.scrollView.bounds.height) / 2
+        )
+        self.scrollView.setContentOffset(targetContentOffset, animated: animated)
     }
 
     func fetchAllPhotos() {
@@ -115,8 +152,6 @@ class CreateViewController: UIViewController {
         allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         fetchResult = PHAsset.fetchAssets(with: allPhotosOptions)
     }
-    
-    
     
     func cancelButtonDidTap() {
         self.dismiss(animated: true, completion: nil)
@@ -138,7 +173,7 @@ extension CreateViewController: UICollectionViewDataSource {
         //메타데이터를 이미지로 변환
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
             if cell.representedAssetIdentifier == asset.localIdentifier {
                 cell.configure(photo: image!)
             }
@@ -174,7 +209,7 @@ extension CreateViewController: UICollectionViewDelegateFlowLayout {
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
         
-        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
             self.imageView.image = image
         })
     }
