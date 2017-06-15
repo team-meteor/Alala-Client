@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		485647BF1EEE6B4D00834BBB /* TileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485647BE1EEE6B4D00834BBB /* TileCell.swift */; };
+		485647C11EEE70D700834BBB /* PhotoSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485647C01EEE70D700834BBB /* PhotoSize.swift */; };
+		48BD49B81EEA9D32008FDFB3 /* CardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BD49B71EEA9D32008FDFB3 /* CardCell.swift */; };
 		6F09C8AF1EEA866100BCFFEF /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8AE1EEA866100BCFFEF /* UIImageExtension.swift */; };
 		6F5B85491EE52101009285DD /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F5B85481EE52101009285DD /* FeedViewController.swift */; };
 		6F5B854B1EE52520009285DD /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F5B854A1EE52520009285DD /* MainTabBarController.swift */; };
@@ -50,6 +53,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		485647BE1EEE6B4D00834BBB /* TileCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileCell.swift; sourceTree = "<group>"; };
+		485647C01EEE70D700834BBB /* PhotoSize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoSize.swift; sourceTree = "<group>"; };
+		48BD49B71EEA9D32008FDFB3 /* CardCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardCell.swift; sourceTree = "<group>"; };
 		6F09C8AE1EEA866100BCFFEF /* UIImageExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
 		6F5B85481EE52101009285DD /* FeedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
 		6F5B854A1EE52520009285DD /* MainTabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
@@ -118,6 +124,7 @@
 			isa = PBXGroup;
 			children = (
 				6F09C8AE1EEA866100BCFFEF /* UIImageExtension.swift */,
+				485647C01EEE70D700834BBB /* PhotoSize.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -147,6 +154,8 @@
 		6F5B85441EE52041009285DD /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				48BD49B71EEA9D32008FDFB3 /* CardCell.swift */,
+				485647BE1EEE6B4D00834BBB /* TileCell.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -316,6 +325,7 @@
 				TargetAttributes = {
 					6FFC06A81EE3D49000E542BC = {
 						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = TM6U8P8E5J;
 						ProvisioningStyle = Automatic;
 					};
 					6FFC06BC1EE3D49000E542BC = {
@@ -442,9 +452,12 @@
 				6FFC06AD1EE3D49000E542BC /* AppDelegate.swift in Sources */,
 				6F5B85571EE540EF009285DD /* User.swift in Sources */,
 				6F5B85511EE52B78009285DD /* ActivityViewController.swift in Sources */,
+				485647BF1EEE6B4D00834BBB /* TileCell.swift in Sources */,
 				6F5B85531EE52B95009285DD /* PersonalViewController.swift in Sources */,
 				6F5B854B1EE52520009285DD /* MainTabBarController.swift in Sources */,
+				48BD49B81EEA9D32008FDFB3 /* CardCell.swift in Sources */,
 				6F5B855B1EE54101009285DD /* Post.swift in Sources */,
+				485647C11EEE70D700834BBB /* PhotoSize.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -588,6 +601,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = TM6U8P8E5J;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -605,7 +619,7 @@
 					"-weak_framework",
 					RevealServer,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.team-meteor.Alala";
+				PRODUCT_BUNDLE_IDENTIFIER = codesquad.kr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -615,6 +629,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = TM6U8P8E5J;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -632,7 +647,7 @@
 					"-weak_framework",
 					RevealServer,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.team-meteor.Alala";
+				PRODUCT_BUNDLE_IDENTIFIER = codesquad.kr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};

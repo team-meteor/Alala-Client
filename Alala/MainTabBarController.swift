@@ -9,6 +9,7 @@
 import UIKit
 
 class MainTabBarController: UITabBarController {
+    
     let feedViewController = FeedViewController()
     let discoverViewController = DiscoverViewController()
     let activityViewController = ActivityViewController()
@@ -32,7 +33,10 @@ class MainTabBarController: UITabBarController {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
     fileprivate func presentCreateViewController() {
+        let createViewController = CreateViewController()
+        self.present(UINavigationController.init(rootViewController: createViewController), animated: true, completion: nil)
     }
 }
 
