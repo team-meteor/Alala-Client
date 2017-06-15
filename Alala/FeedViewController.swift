@@ -6,6 +6,7 @@
 //  Copyright © 2017 team-meteor. All rights reserved.
 //
 import UIKit
+import Alamofire
 
 class FeedViewController: UIViewController {
 	
