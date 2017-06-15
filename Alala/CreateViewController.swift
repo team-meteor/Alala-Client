@@ -64,7 +64,7 @@ class CreateViewController: UIViewController {
         self.view.addSubview(self.scrollView)
         self.view.addSubview(self.panView)
         self.view.addSubview(self.collectionView)
-        let pan:UIPanGestureRecognizer = UIPanGestureRecognizer.init(target: self, action: #selector(handlePanGestureRecognizer(_:)))
+        let pan: UIPanGestureRecognizer = UIPanGestureRecognizer.init(target: self, action: #selector(handlePanGestureRecognizer(_:)))
         self.panView.addGestureRecognizer(pan)
         
         self.scrollView.snp.makeConstraints { make in
