@@ -1,13 +1,15 @@
-//
-//  FeedViewController.swift
-//  Alala
-//
-//  Created by hoemoon on 05/06/2017.
-//  Copyright © 2017 team-meteor. All rights reserved.
-//
+
 import UIKit
 
 class FeedViewController: UIViewController {
+    
+    let dummyDataSource = DummyDataSource()
+    
+    fileprivate let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
+        $0.backgroundColor = .clear
+        $0.alwaysBounceVertical = true
+        $0.register(PostCardCell.self, forCellWithReuseIdentifier: "cardCell")
+    }
     
     fileprivate let cameraButton = UIBarButtonItem(
         image: UIImage(named: "camera")?.resizeImage(scaledTolength: 25),
@@ -44,5 +46,49 @@ class FeedViewController: UIViewController {
             $0.text = "Alala"
             $0.sizeToFit()
         }
+        
+        self.collectionView.dataSource = self
+        self.collectionView.delegate = self
+        
+        self.view.addSubview(self.collectionView)
+        
+        self.collectionView.snp.makeConstraints { make in
+            make.size.equalToSuperview()
+        }
+    }
+    
+    func setImageSize(width: CGFloat,height: CGFloat) -> CGSize {
+        let screenWidth: CGFloat = UIScreen.main.bounds.width
+        let x = width / screenWidth
+        let screenHeight: CGFloat = height / x
+        return CGSize(width: screenWidth, height: screenHeight)
+    }
+}
+
+extension FeedViewController: UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 5
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cardCell", for: indexPath) as! PostCardCell
+        let dummyData = dummyDataSource.dummyData
+        
+        cell.configure(dummyData[indexPath.item])
+        
+        return cell
+    }
+}
+
+extension FeedViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let dummyData = dummyDataSource.dummyData
+        let iamge = UIImage(named: dummyData[indexPath.item])
+        let width = iamge?.size.width
+        let height = iamge?.size.height
+        let layout = collectionViewLayout as! UICollectionViewFlowLayout
+        layout.itemSize = setImageSize(width: width!, height: height!)
+        return layout.itemSize
     }
 }

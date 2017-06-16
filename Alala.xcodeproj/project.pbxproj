@@ -30,6 +30,8 @@
 		6FFC06C21EE3D49000E542BC /* AlalaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06C11EE3D49000E542BC /* AlalaTests.swift */; };
 		6FFC06CD1EE3D49000E542BC /* AlalaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06CC1EE3D49000E542BC /* AlalaUITests.swift */; };
 		6FFC06DC1EE3D78A00E542BC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */; };
+		9BDD94621EF126B300A9C0F3 /* PostCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BDD94611EF126B300A9C0F3 /* PostCardCell.swift */; };
+		9BDD94651EF126E400A9C0F3 /* DuumyDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BDD94641EF126E400A9C0F3 /* DuumyDataSource.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +81,8 @@
 		6FFC06CC1EE3D49000E542BC /* AlalaUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlalaUITests.swift; sourceTree = "<group>"; };
 		6FFC06CE1EE3D49000E542BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
+		9BDD94611EF126B300A9C0F3 /* PostCardCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostCardCell.swift; sourceTree = "<group>"; };
+		9BDD94641EF126E400A9C0F3 /* DuumyDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DuumyDataSource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +151,7 @@
 		6F5B85441EE52041009285DD /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				9BDD94611EF126B300A9C0F3 /* PostCardCell.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -172,6 +177,7 @@
 			isa = PBXGroup;
 			children = (
 				6FFC06AC1EE3D49000E542BC /* AppDelegate.swift */,
+				9BDD94631EF126C000A9C0F3 /* DummyDataSource */,
 				6F5B85461EE52058009285DD /* Networking */,
 				6F5B85451EE5204B009285DD /* Models */,
 				6F5B85441EE52041009285DD /* Views */,
@@ -243,6 +249,14 @@
 				6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9BDD94631EF126C000A9C0F3 /* DummyDataSource */ = {
+			isa = PBXGroup;
+			children = (
+				9BDD94641EF126E400A9C0F3 /* DuumyDataSource.swift */,
+			);
+			name = DummyDataSource;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -440,10 +454,12 @@
 				6F5B854F1EE52B3B009285DD /* DiscoverViewController.swift in Sources */,
 				6F5B85551EE52BB9009285DD /* CreateViewController.swift in Sources */,
 				6F09C8AF1EEA866100BCFFEF /* UIImageExtension.swift in Sources */,
+				9BDD94621EF126B300A9C0F3 /* PostCardCell.swift in Sources */,
 				6FFC06AD1EE3D49000E542BC /* AppDelegate.swift in Sources */,
 				6F5B85571EE540EF009285DD /* User.swift in Sources */,
 				6F5B85511EE52B78009285DD /* ActivityViewController.swift in Sources */,
 				6F5B85531EE52B95009285DD /* PersonalViewController.swift in Sources */,
+				9BDD94651EF126E400A9C0F3 /* DuumyDataSource.swift in Sources */,
 				6F5B854B1EE52520009285DD /* MainTabBarController.swift in Sources */,
 				6F5B855B1EE54101009285DD /* Post.swift in Sources */,
 			);
