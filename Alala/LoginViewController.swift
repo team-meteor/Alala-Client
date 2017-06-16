@@ -139,7 +139,6 @@ class LoginViewController: UIViewController {
 		if self.requestType == .Login {
 			AuthService.instance.login(email: email, password: password, completion: { (success) in
 				if success {
-//					AppDelegate.instance?.presentMainTabBarController()
 					NotificationCenter.default.post(name: .presentMainTabBar, object: nil, userInfo: nil)
 				} else {
 					print("Login failed")
