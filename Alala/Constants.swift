@@ -8,7 +8,8 @@
 
 import Foundation
 
-let BASE_URL = "http://localhost:3005/api/v1/"
+//let BASE_URL = "http://localhost:3005/api/v1/"
+let BASE_URL = "http://ec2-52-78-153-12.ap-northeast-2.compute.amazonaws.com/api/v1/"
 let DEFAULTS_REGISTERED = "isRegistered"
 let DEFAULTS_AUTHENTICATED = "isAuthenticated"
 
