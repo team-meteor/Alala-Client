@@ -29,9 +29,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		let window = UIWindow(frame: UIScreen.main.bounds)
 		window.backgroundColor = .white
 		window.makeKeyAndVisible()
-		window.rootViewController = SplashViewController()
+//		window.rootViewController = SplashViewController()
 		self.window = window
-        
+		//window.rootViewController = MainTabBarController()
+		presentMainTabBarController()
 		return true
 	}
 	
