@@ -178,9 +178,7 @@ extension CreateViewController: UICollectionViewDataSource {
 				cell.configure(photo: image!)
 			}
 		})
-		
 		return cell
-		
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
