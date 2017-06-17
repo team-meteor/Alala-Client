@@ -45,6 +45,7 @@ class CreateViewController: UIViewController {
 	
 	init() {
 		super.init(nibName: nil, bundle: nil)
+		
 		//cancle 버튼 생성
 		self.navigationItem.leftBarButtonItem = UIBarButtonItem(
 			barButtonSystemItem: .cancel,
@@ -68,6 +69,7 @@ class CreateViewController: UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
+
 		collectionView.dataSource = self
 		collectionView.delegate = self
 		scrollView.delegate = self
@@ -116,21 +118,6 @@ class CreateViewController: UIViewController {
 			} else {
 				self.imageView.frame.size = self.cropAreaView.frame.size
 			}
-			
-//			if imageWidth > imageHeight {
-//				self.scrollView.contentSize.height = self.scrollView.frame.height
-//				self.scrollView.contentSize.width = imageWidth * self.scrollView.frame.height / imageHeight
-//			} else if imageWidth < imageHeight {
-//				self.scrollView.contentSize.width = self.scrollView.frame.width
-//				self.scrollView.contentSize.height = imageHeight * self.scrollView.frame.width / imageWidth
-//			} else {
-//				self.scrollView.contentSize.width = self.scrollView.frame.width
-//				self.scrollView.contentSize.height = self.scrollView.frame.height
-//			}
-			
-//			self.imageView.frame.size = self.scrollView.contentSize
-//			self.imageView.center.x = UIScreen.main.bounds.size.width / 2
-//			self.imageView.center.y = self.scrollView.center.y
 			
 			let contentInsetTop = self.navigationController?.navigationBar.frame.height
 			self.scrollView.contentInset.top = contentInsetTop!

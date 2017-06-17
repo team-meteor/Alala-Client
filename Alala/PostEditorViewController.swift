@@ -12,13 +12,15 @@ class PostEditorViewController: UIViewController {
 	
 	fileprivate let image: UIImage
 	fileprivate var message: String?
-	fileprivate let tableView = UITableView()
+	fileprivate let tableView = UITableView().then {
+		$0.isScrollEnabled = false
+		$0.register(PostEditorImageCell.self, forCellReuseIdentifier: "imageCell")
+	}
 	
 	init(image: UIImage) {
 		self.image = image
 		super.init(nibName: nil, bundle: nil)
 		self.view.backgroundColor = UIColor.yellow
-		
 		self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Share", style: .plain, target: self, action: #selector(shareButtonDidTap))
 	}
 	
@@ -32,19 +34,24 @@ class PostEditorViewController: UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		self.tableView.register(PostEditorImageCell.self, forCellReuseIdentifier: "imageCell")
+		
 		self.tableView.dataSource = self
 		self.tableView.delegate = self
-		self.view.addSubview(self.tableView)
 		
+		self.view.addSubview(self.tableView)
+	}
+	
+	override func viewDidLayoutSubviews() {
+		super.viewDidLayoutSubviews()
 		self.tableView.snp.makeConstraints { make in
 			make.edges.equalTo(self.view)
 		}
+		
 	}
 	
 }
 
-extension PostEditorViewController: UITableViewDataSource {
+extension PostEditorViewController: UITableViewDataSource, UITextViewDelegate {
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		return 1
@@ -56,13 +63,13 @@ extension PostEditorViewController: UITableViewDataSource {
 		
 		return cell
 	}
-	
 }
 
 extension PostEditorViewController: UITableViewDelegate {
 	
 	func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-		return PostEditorImageCell.height(width: self.view.frame.width)
+		if indexPath.row == 0 { return 100 }
+		return 0
 	}
 	
 }

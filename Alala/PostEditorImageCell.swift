@@ -10,12 +10,18 @@ import UIKit
 
 class PostEditorImageCell: UITableViewCell {
 	
-	fileprivate let photoView = UIImageView()
+	let photoView = UIImageView()
+	let textView = UITextView().then {
+		$0.text = "내용 입력..."
+		$0.textColor = UIColor.lightGray
+	}
 
 	override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
 		self.selectionStyle = .none
 		self.contentView.addSubview(self.photoView)
+		self.contentView.addSubview(self.textView)
+		self.textView.delegate = self
 	}
 	
 	required init?(coder aDecoder: NSCoder) {
@@ -28,17 +34,32 @@ class PostEditorImageCell: UITableViewCell {
 		self.photoView.image = image
 	}
 	
-	// MARK: Size
-	
-	class func height(width: CGFloat) -> CGFloat {
-		return width // 정사각형
-	}
-	
-	// MARK: Layout
-	
 	override func layoutSubviews() {
 		super.layoutSubviews()
-		self.photoView.frame = self.contentView.bounds
+		self.photoView.snp.makeConstraints { make in
+			make.left.top.bottom.equalTo(self.contentView)
+			make.width.equalTo(self.contentView.snp.height)
+			make.height.equalTo(self.photoView.snp.width)
+		}
+		self.textView.snp.makeConstraints { make in
+			make.top.right.bottom.equalTo(self.contentView)
+			make.left.equalTo(self.photoView.snp.right)
+		}
 	}
+}
 
+extension PostEditorImageCell: UITextViewDelegate {
+	func textViewDidBeginEditing(_ textView: UITextView) {
+		if textView.textColor == UIColor.lightGray {
+			textView.text = nil
+			textView.textColor = UIColor.black
+		}
+	}
+	
+	func textViewDidEndEditing(_ textView: UITextView) {
+		if textView.text.isEmpty {
+			textView.text = "내용 입력..."
+			textView.textColor = UIColor.lightGray
+		}
+	}
 }
