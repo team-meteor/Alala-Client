@@ -6,15 +6,28 @@
 //  Copyright © 2017 team-meteor. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
-//let BASE_URL = "http://localhost:3005/api/v1/"
-let BASE_URL = "http://ec2-52-78-153-12.ap-northeast-2.compute.amazonaws.com/api/v1/"
-let DEFAULTS_REGISTERED = "isRegistered"
-let DEFAULTS_AUTHENTICATED = "isAuthenticated"
+extension UIDevice {
+	static var isSimulator: Bool {
+		return ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil
+	}
+}
 
-// Auth Email
-let DEFAULTS_EMAIL = "email"
-
-// Auth Token
-let DEFAULTS_TOKEN = "authToken"
+struct Constants {
+	static var BASE_URL: String {
+		if UIDevice.isSimulator {
+			return "http://localhost:3005/api/v1/"
+		} else {
+			return "http://52.78.76.63/api/v1/"
+		}
+	}
+	static let DEFAULTS_REGISTERED = "isRegistered"
+	static let DEFAULTS_AUTHENTICATED = "isAuthenticated"
+	
+	// Auth Email
+	static let DEFAULTS_EMAIL = "email"
+	
+	// Auth Token
+	static let DEFAULTS_TOKEN = "authToken"
+}

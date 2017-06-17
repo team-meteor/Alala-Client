@@ -45,8 +45,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	}
 	
 	func presentMainTabBarController() {
-		let tabBarController = MainTabBarController()
-		self.window?.rootViewController = tabBarController
+		DispatchQueue.main.async {
+			let tabBarController = MainTabBarController()
+			self.window?.rootViewController = tabBarController
+		}
 	}
 }
 
