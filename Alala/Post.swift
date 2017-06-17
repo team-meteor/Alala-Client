@@ -8,26 +8,13 @@
 
 import ObjectMapper
 
-struct Post: Mappable {
+struct Post {
     
-    var id: Int!
-    var user: User!
     var photoID: String!
-    var message: String?
-    var createdAt: Date!
-    var isLiked: Bool!
-    var likeCount: Int!
+    var description: String!
     
-    init?(map: Map) {
-    }
-    
-    mutating func mapping(map: Map) {
-        self.id <- map["id"]
-        self.user <- map["user"]
-        self.photoID <- map["photo.id"]
-        self.message <- map["message"]
-        self.createdAt <- (map["created_at"], ISO8601DateTransform())
-        self.isLiked <- map["is_liked"]
-        self.likeCount <- map["like_count"]
+    mutating func setPost(id: String, message: String) {
+        self.photoID = id
+        self.description = message
     }
 }

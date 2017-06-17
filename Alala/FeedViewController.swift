@@ -1,5 +1,6 @@
 
 import UIKit
+import Alamofire
 
 class FeedViewController: UIViewController {
     
@@ -57,13 +58,7 @@ class FeedViewController: UIViewController {
         }
     }
     
-    func setImageSize(width: CGFloat,height: CGFloat) -> CGSize {
-        let screenWidth: CGFloat = UIScreen.main.bounds.width
-        let x = width / screenWidth
-        let screenHeight: CGFloat = height / x
-        return CGSize(width: screenWidth, height: screenHeight)
     }
-}
 
 extension FeedViewController: UICollectionViewDataSource {
     
@@ -84,11 +79,10 @@ extension FeedViewController: UICollectionViewDataSource {
 extension FeedViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let dummyData = dummyDataSource.dummyData
-        let iamge = UIImage(named: dummyData[indexPath.item])
-        let width = iamge?.size.width
-        let height = iamge?.size.height
+        let image = UIImage(named: dummyData[indexPath.item])
         let layout = collectionViewLayout as! UICollectionViewFlowLayout
-        layout.itemSize = setImageSize(width: width!, height: height!)
+        
+        layout.itemSize = (image?.setImage())!
         return layout.itemSize
     }
 }
