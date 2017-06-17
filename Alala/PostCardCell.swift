@@ -3,8 +3,7 @@
 import UIKit
 
 class PostCardCell: UICollectionViewCell {
-    
-    
+
     fileprivate let photoView = UIImageView().then {
         $0.backgroundColor = .lightGray
         $0.isUserInteractionEnabled = true

@@ -34,9 +34,8 @@ extension UIImage {
         let screenWidth: CGFloat = UIScreen.main.bounds.width
         let width = self.size.width
         let height = self.size.height
-        
-        let ratioValue = screenWidth / width
-        let screenHeight: CGFloat = height * ratioValue
+        let ratio = screenWidth / width
+        let screenHeight: CGFloat = height * ratio
         
         return CGSize(width: screenWidth, height: screenHeight)
     }
