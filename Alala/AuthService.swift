@@ -13,41 +13,41 @@ class AuthService {
 	let defaults = UserDefaults.standard
 	var isRegistered: Bool? {
 		get {
-			return defaults.bool(forKey: DEFAULTS_REGISTERED) == true
+			return defaults.bool(forKey: Constants.DEFAULTS_REGISTERED) == true
 		}
 		set {
-			defaults.set(newValue, forKey: DEFAULTS_REGISTERED)
+			defaults.set(newValue, forKey: Constants.DEFAULTS_REGISTERED)
 		}
 	}
 	var isAuthenticated: Bool? {
 		get {
-			return defaults.bool(forKey: DEFAULTS_AUTHENTICATED) == true
+			return defaults.bool(forKey: Constants.DEFAULTS_AUTHENTICATED) == true
 		}
 		set {
-			defaults.set(newValue, forKey: DEFAULTS_AUTHENTICATED)
+			defaults.set(newValue, forKey: Constants.DEFAULTS_AUTHENTICATED)
 		}
 	}
 	var email: String? {
 		get {
-			return defaults.value(forKey: DEFAULTS_EMAIL) as? String
+			return defaults.value(forKey: Constants.DEFAULTS_EMAIL) as? String
 		}
 		set {
-			defaults.set(newValue, forKey: DEFAULTS_EMAIL)
+			defaults.set(newValue, forKey: Constants.DEFAULTS_EMAIL)
 		}
 	}
 	var authToken: String? {
 		get {
-			return defaults.value(forKey: DEFAULTS_TOKEN) as? String
+			return defaults.value(forKey: Constants.DEFAULTS_TOKEN) as? String
 		}
 		set {
-			defaults.set(newValue, forKey: DEFAULTS_TOKEN)
+			defaults.set(newValue, forKey: Constants.DEFAULTS_TOKEN)
 		}
 	}
 	func register(email: String, password: String, completion: @escaping (_ success: Bool) -> Void) {
 		let json = ["email": email, "password": password]
 		let sessionConfig = URLSessionConfiguration.default
 		let session = URLSession(configuration: sessionConfig)
-		guard let URL = URL(string: BASE_URL + "user/register") else {
+		guard let URL = URL(string: Constants.BASE_URL + "user/register") else {
 			isRegistered = false
 			completion(false)
 			return
@@ -87,7 +87,7 @@ class AuthService {
 		let sessionConfig = URLSessionConfiguration.default
 		let session = URLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
 		
-		guard let URL = URL(string: BASE_URL + "user/login") else {
+		guard let URL = URL(string: Constants.BASE_URL + "user/login") else {
 			isAuthenticated = false
 			completion(false)
 			return
@@ -113,7 +113,6 @@ class AuthService {
 							if result != nil {
 								if let email = result?["user"] as? String {
 									if let token = result?["token"] as? String {
-										print("ttt")
 										self.email = email
 										self.authToken = token
 										self.isRegistered = true
@@ -149,7 +148,7 @@ class AuthService {
 	}
 	
 	func me(completion: @escaping (_ success: Bool) -> Void) {
-		let urlString = BASE_URL + "user/me"
+		let urlString = Constants.BASE_URL + "user/me"
 		guard let token = self.authToken else {
 			completion(false)
 			return
@@ -177,7 +176,7 @@ class AuthService {
 		let headers = [
 			"Authorization": "Bearer " + token
 		]
-		Alamofire.request(BASE_URL + "user/logout", method: .get, headers: headers)
+		Alamofire.request(Constants.BASE_URL + "user/logout", method: .get, headers: headers)
 			.validate(statusCode: 200..<300)
 			.response { (dataResponse) in
 				if dataResponse.response?.statusCode == 200 {

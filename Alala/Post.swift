@@ -9,12 +9,12 @@
 import ObjectMapper
 
 struct Post {
-    
-    var photoID: String!
-    var description: String!
-    
-    mutating func setPost(id: String, message: String) {
-        self.photoID = id
-        self.description = message
-    }
+	
+	var photoID: String!
+	var description: String!
+	
+	mutating func setPost(id: String, message: String) {
+		self.photoID = id
+		self.description = message
+	}
 }

@@ -39,7 +39,6 @@ class PersonalViewController: UIViewController {
 	func logoutButtonDidTap() {
 		AuthService.instance.logout { (success) in
 			if success {
-				print("haha")
 				NotificationCenter.default.post(name: .presentLogin, object: nil, userInfo: nil)
 			} else {
 				

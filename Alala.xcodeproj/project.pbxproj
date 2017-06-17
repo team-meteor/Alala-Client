@@ -366,7 +366,9 @@
 				TargetAttributes = {
 					6FFC06A81EE3D49000E542BC = {
 						CreatedOnToolsVersion = 8.3.2;
+
 						DevelopmentTeam = QLAGA64KZQ;
+
 						ProvisioningStyle = Automatic;
 					};
 					6FFC06BC1EE3D49000E542BC = {
@@ -649,7 +651,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+
 				DEVELOPMENT_TEAM = QLAGA64KZQ;
+
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -667,7 +671,9 @@
 					"-weak_framework",
 					RevealServer,
 				);
+
 				PRODUCT_BUNDLE_IDENTIFIER = "com.team-meteor.Alala.smith";
+
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -677,7 +683,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+
 				DEVELOPMENT_TEAM = QLAGA64KZQ;
+
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -695,7 +703,9 @@
 					"-weak_framework",
 					RevealServer,
 				);
+
 				PRODUCT_BUNDLE_IDENTIFIER = "com.team-meteor.Alala.smith";
+
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
