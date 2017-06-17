@@ -12,12 +12,14 @@ import Photos
 class CreateViewController: UIViewController {
 	
 	fileprivate let scrollView = UIScrollView().then {
+
 		$0.showsHorizontalScrollIndicator = false
 		$0.showsVerticalScrollIndicator = false
 		$0.maximumZoomScale = 3.0
 		$0.minimumZoomScale = 0.1
 		$0.zoomScale = 1.0
 		$0.bounces = false
+
 	}
 	
 	fileprivate let imageView = UIImageView()
@@ -30,13 +32,16 @@ class CreateViewController: UIViewController {
 	let imageManager = PHCachingImageManager()
 	
 	fileprivate let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
+
 		$0.showsHorizontalScrollIndicator = false
 		$0.showsVerticalScrollIndicator = false
+
 		$0.backgroundColor = .white
 		$0.alwaysBounceVertical = true
 		$0.register(TileCell.self, forCellWithReuseIdentifier: "tileCell")
 	}
 	
+
 	fileprivate let cropAreaView = UIView().then {
 		$0.isUserInteractionEnabled = false
 		$0.layer.borderColor = UIColor.lightGray.cgColor
@@ -46,6 +51,7 @@ class CreateViewController: UIViewController {
 	init() {
 		super.init(nibName: nil, bundle: nil)
 		
+
 		//cancle 버튼 생성
 		self.navigationItem.leftBarButtonItem = UIBarButtonItem(
 			barButtonSystemItem: .cancel,
@@ -70,12 +76,16 @@ class CreateViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
+
+
 		collectionView.dataSource = self
 		collectionView.delegate = self
 		scrollView.delegate = self
 		self.scrollView.addSubview(self.imageView)
 		self.view.addSubview(self.scrollView)
+
 		self.view.addSubview(self.cropAreaView)
+
 		self.view.addSubview(self.panView)
 		self.view.addSubview(self.collectionView)
 		let pan: UIPanGestureRecognizer = UIPanGestureRecognizer.init(target: self, action: #selector(handlePanGestureRecognizer(_:)))
@@ -91,10 +101,12 @@ class CreateViewController: UIViewController {
 			make.top.equalTo(self.scrollView.snp.bottom)
 		}
 		
+
 		self.cropAreaView.snp.makeConstraints { make in
 			make.edges.equalTo(self.scrollView)
 		}
 		
+
 		self.panView.snp.makeConstraints { make in
 			make.left.right.equalTo(self.view)
 			make.bottom.equalTo(self.collectionView.snp.top)
@@ -108,6 +120,7 @@ class CreateViewController: UIViewController {
 		imageManager.requestImage(for: firstAsset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
 			let imageWidth = image!.size.width
 			let imageHeight = image!.size.height
+
 			
 			if imageWidth > imageHeight {
 				self.imageView.frame.size.height = self.cropAreaView.frame.height
@@ -122,6 +135,7 @@ class CreateViewController: UIViewController {
 			let contentInsetTop = self.navigationController?.navigationBar.frame.height
 			self.scrollView.contentInset.top = contentInsetTop!
 			self.scrollView.contentSize = self.imageView.frame.size
+
 			self.imageView.image = image
 			self.centerScrollView(animated: false)
 		})
@@ -177,6 +191,7 @@ class CreateViewController: UIViewController {
 	}
 	
 	func doneButtonDidTap() {
+
 		guard let image = self.imageView.image else { return }
 		var rect = self.scrollView.convert(self.cropAreaView.frame, from: self.cropAreaView.superview)
 		
@@ -190,6 +205,7 @@ class CreateViewController: UIViewController {
 			let postEditorViewController = PostEditorViewController(image: croppedImage)
 			self.navigationController?.pushViewController(postEditorViewController, animated: true)
 		}
+
 		
 	}
 }
@@ -210,9 +226,11 @@ extension CreateViewController: UICollectionViewDataSource {
 				cell.configure(photo: image!)
 			}
 		})
+
 		
 		return cell
 		
+
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -244,8 +262,10 @@ extension CreateViewController: UICollectionViewDelegateFlowLayout {
 		imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
 			self.imageView.image = image
 		})
+
 		self.centerScrollView(animated: false)
 		self.scrollView.zoomScale = 1.0
+
 	}
 }
 
@@ -254,5 +274,5 @@ extension CreateViewController: UIScrollViewDelegate {
 	func viewForZooming(in scrollView: UIScrollView) -> UIView? {
 		return imageView
 	}
-	
+
 }

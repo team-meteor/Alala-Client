@@ -9,6 +9,10 @@
 import UIKit
 
 class SplashViewController: UIViewController {
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		self.view.backgroundColor = .blue
+	}
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		AuthService.instance.me { (success) in

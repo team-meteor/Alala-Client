@@ -37,7 +37,7 @@ class MainTabBarController: UITabBarController {
 	fileprivate func presentCreateViewController() {
 		let createViewController = CreateViewController()
 		self.present(UINavigationController.init(rootViewController: createViewController), animated: true, completion: nil)
-		print("present")
+
 	}
 }
 

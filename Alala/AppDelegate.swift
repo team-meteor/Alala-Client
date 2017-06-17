@@ -13,7 +13,6 @@ import SnapKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    
 	var window: UIWindow?
 	static var instance: AppDelegate? {
 		return UIApplication.shared.delegate as? AppDelegate
@@ -25,14 +24,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		NotificationCenter.default.addObserver(self, selector: #selector(presentLoginViewController), name: .presentLogin, object: nil)
 		self.configureAppearance()
 
-        //window의 rootview 설정
+		//window의 rootview 설정
 		let window = UIWindow(frame: UIScreen.main.bounds)
 		window.backgroundColor = .white
 		window.makeKeyAndVisible()
 //		window.rootViewController = SplashViewController()
 		self.window = window
+
 		//window.rootViewController = MainTabBarController()
 		presentMainTabBarController()
+
 		return true
 	}
 	
