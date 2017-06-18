@@ -9,18 +9,18 @@
 import UIKit
 
 class SplashViewController: UIViewController {
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		self.view.backgroundColor = .blue
-	}
-	override func viewDidAppear(_ animated: Bool) {
-		super.viewDidAppear(animated)
-		AuthService.instance.me { (success) in
-			if success {
-				NotificationCenter.default.post(name: .presentMainTabBar, object: nil, userInfo: nil)
-			} else {
-				NotificationCenter.default.post(name: .presentLogin, object: nil, userInfo: nil)
-			}
-		}
-	}
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    self.view.backgroundColor = .blue
+  }
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    AuthService.instance.me { (success) in
+      if success {
+        NotificationCenter.default.post(name: .presentMainTabBar, object: nil, userInfo: nil)
+      } else {
+        NotificationCenter.default.post(name: .presentLogin, object: nil, userInfo: nil)
+      }
+    }
+  }
 }
