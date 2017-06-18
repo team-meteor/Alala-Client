@@ -71,7 +71,7 @@ class SelectionViewController: UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-
+		self.title = "Library"
 		collectionView.dataSource = self
 		collectionView.delegate = self
 		scrollView.delegate = self
@@ -105,7 +105,6 @@ class SelectionViewController: UIViewController {
 		
 		fetchAllPhotos()
 	}
-	
 	
 	func handlePanGestureRecognizer(_ panRecognizer: UIPanGestureRecognizer) {
 		

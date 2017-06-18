@@ -25,17 +25,21 @@ class CameraViewController: UIViewController {
 		$0.backgroundColor = UIColor.green
 	}
 	
-	private let photoButton = UIButton().then {
+	private let takePhotoButton = UIButton().then {
 		$0.backgroundColor = UIColor.red
+		$0.layer.cornerRadius = 30
+		$0.addTarget(self, action: #selector(takePhotoButtonDidTap), for: .touchUpInside)
 	}
 	
-	private let videoButton = UIButton().then {
+	private let takeVideoButton = UIButton().then {
 		$0.backgroundColor = UIColor.red
+		$0.layer.cornerRadius = 30
+		$0.addTarget(self, action: #selector(takeVideoButtonDidTap), for: .touchUpInside)
 	}
 	
 	init() {
 		super.init(nibName: nil, bundle: nil)
-		
+	
 		//cancle 버튼 생성
 		self.navigationItem.leftBarButtonItem = UIBarButtonItem(
 			barButtonSystemItem: .cancel,
@@ -49,7 +53,6 @@ class CameraViewController: UIViewController {
 			target: self,
 			action: #selector(doneButtonDidTap)
 		)
-		
 	}
 	
 	required init?(coder aDecoder: NSCoder) {
@@ -66,9 +69,12 @@ class CameraViewController: UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		
-		self.bottomView.addSubview(photoButton)
-		self.bottomView.addSubview(videoButton)
+		self.scrollView.delegate = self
+		self.title = "Photo"
+		NotificationCenter.default.addObserver(self, selector: #selector(photoModeSetting), name: Notification.Name("photoMode"), object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(videoModeSetting), name: Notification.Name("videoMode"), object: nil)
+		self.bottomView.addSubview(takePhotoButton)
+		self.bottomView.addSubview(takeVideoButton)
 		self.scrollView.addSubview(bottomView)
 		self.view.addSubview(camView)
 		self.view.addSubview(scrollView)
@@ -94,15 +100,15 @@ class CameraViewController: UIViewController {
 			make.centerX.equalTo(self.view.bounds.width)
 		}
 		
-		self.photoButton.snp.makeConstraints { make in
+		self.takePhotoButton.snp.makeConstraints { make in
 			make.center.equalTo(self.scrollView.snp.center)
-			make.height.width.equalTo(50)
+			make.height.width.equalTo(60)
 		}
 		
-		self.videoButton.snp.makeConstraints { make in
+		self.takeVideoButton.snp.makeConstraints { make in
 			make.centerX.equalTo(self.view.frame.width * 3/2)
 			make.centerY.equalTo(self.scrollView.snp.centerY)
-			make.width.height.equalTo(50)
+			make.width.height.equalTo(60)
 		}
 	}
 	
@@ -115,6 +121,48 @@ class CameraViewController: UIViewController {
 		
 		DispatchQueue.main.async {
 			self.scrollView.contentSize = self.bottomView.bounds.size
+		}
+	}
+	
+	func takePhotoButtonDidTap() {
+		
+	}
+	
+	func takeVideoButtonDidTap() {
+		
+	}
+	
+	func photoModeSetting() {
+		
+		self.title = "Photo"
+		let page = Int(scrollView.contentOffset.x / scrollView.bounds.size.width)
+		if page != 0 {
+			UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
+				self.scrollView.contentOffset.x = 0}, completion: nil)
+		}
+		
+	}
+	
+	func videoModeSetting() {
+		self.title = "Video"
+		let page = Int(scrollView.contentOffset.x / scrollView.bounds.size.width)
+		if page != 1 {
+			UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
+				self.scrollView.contentOffset.x = self.scrollView.bounds.size.width}, completion: nil)
+		}
+		
+	}
+}
+
+extension CameraViewController: UIScrollViewDelegate {
+	func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+		let page = Int(scrollView.contentOffset.x / scrollView.bounds.size.width)
+		if page == 0 {
+			photoModeSetting()
+			NotificationCenter.default.post(name: Notification.Name("photoModeOnTabBar"), object: nil)
+		} else if page == 1 {
+			videoModeSetting()
+			NotificationCenter.default.post(name: Notification.Name("videoModeOnTabBar"), object: nil)
 		}
 	}
 }

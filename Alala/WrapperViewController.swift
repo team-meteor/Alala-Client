@@ -13,24 +13,29 @@ class WrapperViewController: UIViewController {
 	let libraryButton = UIButton().then {
 		$0.setTitle("Library", for: .normal)
 		$0.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
+		$0.setTitleColor(UIColor.blue, for: .normal)
 	}
 	let photoButton = UIButton().then {
 		$0.setTitle("Photo", for: .normal)
 		$0.addTarget(self, action: #selector(photoButtonDidTap), for: .touchUpInside)
+		$0.setTitleColor(UIColor.lightGray, for: .normal)
 	}
 	
 	let videoButton = UIButton().then {
 		$0.setTitle("Video", for: .normal)
 		$0.addTarget(self, action: #selector(videoButtonDidTap), for: .touchUpInside)
+		$0.setTitleColor(UIColor.lightGray, for: .normal)
 	}
 	
 	fileprivate let scrollView = UIScrollView().then {
+		$0.showsHorizontalScrollIndicator = false
+		$0.showsVerticalScrollIndicator = false
 		$0.isPagingEnabled = true
 		$0.bounces = false
 	}
 	
 	fileprivate let customTabBar = UIView().then {
-		$0.backgroundColor = UIColor.lightGray
+		$0.backgroundColor = UIColor.cyan
 	}
 	
 	fileprivate let libraryViewController = LibraryViewController()
@@ -38,7 +43,9 @@ class WrapperViewController: UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		
+		NotificationCenter.default.addObserver(self, selector: #selector(photoModeOnTabBar), name: Notification.Name("photoModeOnTabBar"), object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(videoButtonDidTap), name: Notification.Name("videoModeOnTabBar"), object: nil)
+		self.scrollView.delegate = self
 		self.addChildViewController(libraryViewController)
 		self.addChildViewController(cameraViewController)
 		self.scrollView.addSubview(libraryViewController.view)
@@ -100,15 +107,53 @@ class WrapperViewController: UIViewController {
 		}
 	}
 	
-	func photoButtonDidTap() {
-		
-	}
-	
 	func libraryButtonDidTap() {
 		
+		UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
+			self.scrollView.contentOffset.x = 0}, completion: nil)
+		self.libraryButton.setTitleColor(UIColor.blue, for: .normal)
+		self.photoButton.setTitleColor(UIColor.lightGray, for: .normal)
+		self.videoButton.setTitleColor(UIColor.lightGray, for: .normal)
+	}
+	
+	func photoButtonDidTap() {
+		UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
+			self.scrollView.contentOffset.x = self.scrollView.bounds.size.width}, completion: nil)
+		NotificationCenter.default.post(name: Notification.Name("photoMode"), object: nil)
+		photoModeOnTabBar()
 	}
 	
 	func videoButtonDidTap() {
-		
+		let page = Int(scrollView.contentOffset.x / scrollView.bounds.size.width)
+		UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
+			self.scrollView.contentOffset.x = self.scrollView.bounds.size.width}, completion: nil)
+		NotificationCenter.default.post(name: Notification.Name("videoMode"), object: nil)
+		videoModeOnTabBar()
+	}
+	
+	func photoModeOnTabBar() {
+		self.photoButton.setTitleColor(UIColor.blue, for: .normal)
+		self.libraryButton.setTitleColor(UIColor.lightGray, for: .normal)
+		self.videoButton.setTitleColor(UIColor.lightGray, for: .normal)
+	}
+	
+	func videoModeOnTabBar() {
+		self.videoButton.setTitleColor(UIColor.blue, for: .normal)
+		self.libraryButton.setTitleColor(UIColor.lightGray, for: .normal)
+		self.photoButton.setTitleColor(UIColor.lightGray, for: .normal)
+	}
+}
+
+extension WrapperViewController: UIScrollViewDelegate {
+	func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+		let page = Int(scrollView.contentOffset.x / scrollView.bounds.size.width)
+		if page == 0 {
+			self.libraryButton.setTitleColor(UIColor.blue, for: .normal)
+			self.photoButton.setTitleColor(UIColor.lightGray, for: .normal)
+			self.videoButton.setTitleColor(UIColor.lightGray, for: .normal)
+		} else if page == 1 {
+			photoModeOnTabBar()
+			NotificationCenter.default.post(name: Notification.Name("photoMode"), object: nil)
+		}
 	}
 }
