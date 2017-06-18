@@ -10,21 +10,23 @@ import UIKit
 
 class WrapperViewController: UIViewController {
 	
-	let libraryLabel = UILabel().then {
-		$0.text = "Library"
-		$0.textAlignment = .center
+	let libraryButton = UIButton().then {
+		$0.setTitle("Library", for: .normal)
+		$0.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
 	}
-	let photoLabel = UILabel().then {
-		$0.text = "Photo"
-		$0.textAlignment = .center
+	let photoButton = UIButton().then {
+		$0.setTitle("Photo", for: .normal)
+		$0.addTarget(self, action: #selector(photoButtonDidTap), for: .touchUpInside)
 	}
-	let videoLabel = UILabel().then {
-		$0.text = "Video"
-		$0.textAlignment = .center
+	
+	let videoButton = UIButton().then {
+		$0.setTitle("Video", for: .normal)
+		$0.addTarget(self, action: #selector(videoButtonDidTap), for: .touchUpInside)
 	}
 	
 	fileprivate let scrollView = UIScrollView().then {
 		$0.isPagingEnabled = true
+		$0.bounces = false
 	}
 	
 	fileprivate let customTabBar = UIView().then {
@@ -32,38 +34,7 @@ class WrapperViewController: UIViewController {
 	}
 	
 	fileprivate let libraryViewController = LibraryViewController()
-	fileprivate let cameraViewController = CameraViewController()
-	
-	init() {
-		super.init(nibName: nil, bundle: nil)
-		//cancle 버튼 생성
-		self.navigationItem.leftBarButtonItem = UIBarButtonItem(
-			barButtonSystemItem: .cancel,
-			target: self,
-			action: #selector(cancelButtonDidTap)
-		)
-		
-		//done 버튼 생성
-		self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-			barButtonSystemItem: .done,
-			target: self,
-			action: #selector(doneButtonDidTap)
-		)
-		
-		self.automaticallyAdjustsScrollViewInsets = false
-	}
-	
-	func cancelButtonDidTap() {
-		self.dismiss(animated: true, completion: nil)
-	}
-	
-	func doneButtonDidTap(){
-		
-	}
-	
-	required init?(coder aDecoder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
+	fileprivate let cameraViewController = UINavigationController(rootViewController: CameraViewController())
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -73,9 +44,9 @@ class WrapperViewController: UIViewController {
 		self.scrollView.addSubview(libraryViewController.view)
 		self.scrollView.addSubview(cameraViewController.view)
 		self.view.addSubview(scrollView)
-		self.customTabBar.addSubview(libraryLabel)
-		self.customTabBar.addSubview(photoLabel)
-		self.customTabBar.addSubview(videoLabel)
+		self.customTabBar.addSubview(libraryButton)
+		self.customTabBar.addSubview(photoButton)
+		self.customTabBar.addSubview(videoButton)
 		self.view.addSubview(customTabBar)
 		
 		self.customTabBar.snp.makeConstraints { make in
@@ -84,8 +55,7 @@ class WrapperViewController: UIViewController {
 		}
 		
 		self.scrollView.snp.makeConstraints { make in
-			//make.top.equalTo((self.navigationController?.navigationBar.snp.bottom)!)
-			make.left.right.equalTo(self.view)
+			make.top.left.right.equalTo(self.view)
 			make.bottom.equalTo(self.customTabBar.snp.top)
 		}
 		
@@ -102,20 +72,20 @@ class WrapperViewController: UIViewController {
 			make.centerY.equalTo(self.libraryViewController.view.snp.centerY)
 		}
 		
-		self.libraryLabel.snp.makeConstraints { make in
+		self.libraryButton.snp.makeConstraints { make in
 			make.width.equalTo(self.view.frame.width/3)
 			make.height.equalTo(50)
 			make.top.left.bottom.equalTo(self.customTabBar)
 		}
 		
-		self.photoLabel.snp.makeConstraints { make in
+		self.photoButton.snp.makeConstraints { make in
 			make.width.equalTo(self.view.frame.width/3)
 			make.height.equalTo(50)
 			make.top.bottom.equalTo(self.customTabBar)
-			make.left.equalTo(self.libraryLabel.snp.right)
-			make.right.equalTo(self.videoLabel.snp.left)
+			make.left.equalTo(self.libraryButton.snp.right)
+			make.right.equalTo(self.videoButton.snp.left)
 		}
-		self.videoLabel.snp.makeConstraints { make in
+		self.videoButton.snp.makeConstraints { make in
 			make.width.equalTo(self.view.frame.width/3)
 			make.height.equalTo(50)
 			make.top.right.bottom.equalTo(self.customTabBar)
@@ -124,12 +94,21 @@ class WrapperViewController: UIViewController {
 	
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
-		self.scrollView.snp.makeConstraints { make in
-			make.top.equalTo(self.navigationController!.navigationBar.snp.bottom)
-		}
+		
 		DispatchQueue.main.async {
 			self.scrollView.contentSize = CGSize(width: self.libraryViewController.view.frame.size.width * 2, height: self.libraryViewController.view.frame.size.height)
 		}
 	}
 	
+	func photoButtonDidTap() {
+		
+	}
+	
+	func libraryButtonDidTap() {
+		
+	}
+	
+	func videoButtonDidTap() {
+		
+	}
 }

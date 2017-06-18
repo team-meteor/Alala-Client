@@ -11,9 +11,9 @@ import Photos
 
 class LibraryViewController: UIViewController {
 	
-	private lazy var selectionViewController: SelectionViewController = {
+	private lazy var selectionViewController: UINavigationController = {
 		
-		var viewController = SelectionViewController()
+		var viewController = UINavigationController(rootViewController: SelectionViewController())
 		
 		// Add View Controller as Child View Controller
 		self.add(asChildViewController: viewController)
@@ -21,9 +21,9 @@ class LibraryViewController: UIViewController {
 		return viewController
 	}()
 	
-	private lazy var rejectViewController: RejectViewController = {
+	private lazy var rejectViewController: UINavigationController = {
 		
-		var viewController = RejectViewController()
+		var viewController = UINavigationController(rootViewController: RejectViewController())
 		
 		// Add View Controller as Child View Controller
 		self.add(asChildViewController: viewController)

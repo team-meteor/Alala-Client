@@ -18,6 +18,7 @@ class CameraViewController: UIViewController {
 	private let scrollView = UIScrollView().then {
 		$0.backgroundColor = UIColor.yellow
 		$0.isPagingEnabled = true
+		$0.bounces = false
 	}
 	
 	private let bottomView = UIView().then {
@@ -30,6 +31,37 @@ class CameraViewController: UIViewController {
 	
 	private let videoButton = UIButton().then {
 		$0.backgroundColor = UIColor.red
+	}
+	
+	init() {
+		super.init(nibName: nil, bundle: nil)
+		
+		//cancle 버튼 생성
+		self.navigationItem.leftBarButtonItem = UIBarButtonItem(
+			barButtonSystemItem: .cancel,
+			target: self,
+			action: #selector(cancelButtonDidTap)
+		)
+		
+		//done 버튼 생성
+		self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+			barButtonSystemItem: .done,
+			target: self,
+			action: #selector(doneButtonDidTap)
+		)
+		
+	}
+	
+	required init?(coder aDecoder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+	
+	func cancelButtonDidTap() {
+		self.dismiss(animated: true, completion: nil)
+	}
+	
+	func doneButtonDidTap() {
+		
 	}
 	
 	override func viewDidLoad() {
@@ -76,7 +108,6 @@ class CameraViewController: UIViewController {
 	
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
-		
 		
 		self.camView.snp.makeConstraints { make in
 			make.top.equalTo((self.navigationController?.navigationBar.snp.bottom)!)
