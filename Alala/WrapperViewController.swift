@@ -19,9 +19,7 @@ class WrapperViewController: UIViewController {
 	}
 	
 	fileprivate let containerViewController = ContainerViewController()
-	fileprivate let cameraView = UIView().then {
-		$0.backgroundColor = UIColor.blue
-	}
+	fileprivate let cameraViewController = CameraViewController()
 	
 	init() {
 		super.init(nibName: nil, bundle: nil)
@@ -59,8 +57,9 @@ class WrapperViewController: UIViewController {
 		super.viewDidLoad()
 		
 		self.addChildViewController(containerViewController)
+		self.addChildViewController(cameraViewController)
 		self.scrollView.addSubview(containerViewController.view)
-		self.scrollView.addSubview(cameraView)
+		self.scrollView.addSubview(cameraViewController.view)
 		self.view.addSubview(scrollView)
 		self.view.addSubview(customTabBar)
 		
@@ -81,7 +80,7 @@ class WrapperViewController: UIViewController {
 			make.height.equalTo(self.scrollView.snp.height)
 		}
 		
-		self.cameraView.snp.makeConstraints { make in
+		self.cameraViewController.view.snp.makeConstraints { make in
 			make.left.equalTo(self.containerViewController.view.snp.right)
 			make.width.equalTo(self.containerViewController.view.snp.width)
 			make.height.equalTo(self.containerViewController.view.snp.height)
