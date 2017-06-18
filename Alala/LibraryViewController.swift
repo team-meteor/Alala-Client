@@ -9,7 +9,7 @@
 import UIKit
 import Photos
 
-class ContainerViewController: UIViewController {
+class LibraryViewController: UIViewController {
 	
 	private lazy var selectionViewController: SelectionViewController = {
 		
