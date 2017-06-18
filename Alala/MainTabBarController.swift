@@ -30,14 +30,14 @@ class MainTabBarController: UITabBarController {
 			personalViewController
 		]
 	}
+	
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
-	fileprivate func presentCreateViewController() {
-		let createViewController = CreateViewController()
-		self.present(UINavigationController.init(rootViewController: createViewController), animated: true, completion: nil)
-
+	fileprivate func presentNavigationController() {
+		let wrapperViewController = WrapperViewController()
+		self.present(UINavigationController.init(rootViewController: wrapperViewController), animated: true, completion: nil)
 	}
 }
 
@@ -45,7 +45,7 @@ extension MainTabBarController: UITabBarControllerDelegate {
 	
 	func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
 		if viewController === self.fakeViewController {
-			self.presentCreateViewController()
+			self.presentNavigationController()
 			return false
 		}
 		return true

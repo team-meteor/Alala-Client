@@ -23,17 +23,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		NotificationCenter.default.addObserver(self, selector: #selector(presentMainTabBarController), name: .presentMainTabBar, object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(presentLoginViewController), name: .presentLogin, object: nil)
 		self.configureAppearance()
-
+		
 		//window의 rootview 설정
 		let window = UIWindow(frame: UIScreen.main.bounds)
 		window.backgroundColor = .white
 		window.makeKeyAndVisible()
-//		window.rootViewController = SplashViewController()
+		//window.rootViewController = SplashViewController()
+		window.rootViewController = MainTabBarController()
 		self.window = window
-
-		//window.rootViewController = MainTabBarController()
-		presentMainTabBarController()
-
 		return true
 	}
 	

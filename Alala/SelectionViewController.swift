@@ -9,17 +9,19 @@
 import UIKit
 import Photos
 
-class CreateViewController: UIViewController {
+class SelectionViewController: UIViewController {
 	
+	var fetchResult: PHFetchResult<PHAsset>!
+	let imageManager = PHCachingImageManager()
+	
+	let tileCellSpacing = CGFloat(3)
 	fileprivate let scrollView = UIScrollView().then {
-
 		$0.showsHorizontalScrollIndicator = false
 		$0.showsVerticalScrollIndicator = false
 		$0.maximumZoomScale = 3.0
 		$0.minimumZoomScale = 0.1
 		$0.zoomScale = 1.0
 		$0.bounces = false
-
 	}
 	
 	fileprivate let imageView = UIImageView()
@@ -27,21 +29,16 @@ class CreateViewController: UIViewController {
 		$0.backgroundColor = UIColor.yellow.withAlphaComponent(0.5)
 	}
 	var panViewYPosition: CGFloat!
-	var fetchResult: PHFetchResult<PHAsset>!
-	let tileCellSpacing = CGFloat(3)
-	let imageManager = PHCachingImageManager()
 	
 	fileprivate let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
 
 		$0.showsHorizontalScrollIndicator = false
 		$0.showsVerticalScrollIndicator = false
-
 		$0.backgroundColor = .white
 		$0.alwaysBounceVertical = true
 		$0.register(TileCell.self, forCellWithReuseIdentifier: "tileCell")
 	}
 	
-
 	fileprivate let cropAreaView = UIView().then {
 		$0.isUserInteractionEnabled = false
 		$0.layer.borderColor = UIColor.lightGray.cgColor
@@ -51,7 +48,6 @@ class CreateViewController: UIViewController {
 	init() {
 		super.init(nibName: nil, bundle: nil)
 		
-
 		//cancle 버튼 생성
 		self.navigationItem.leftBarButtonItem = UIBarButtonItem(
 			barButtonSystemItem: .cancel,
@@ -76,16 +72,12 @@ class CreateViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
-
-
 		collectionView.dataSource = self
 		collectionView.delegate = self
 		scrollView.delegate = self
 		self.scrollView.addSubview(self.imageView)
 		self.view.addSubview(self.scrollView)
-
 		self.view.addSubview(self.cropAreaView)
-
 		self.view.addSubview(self.panView)
 		self.view.addSubview(self.collectionView)
 		let pan: UIPanGestureRecognizer = UIPanGestureRecognizer.init(target: self, action: #selector(handlePanGestureRecognizer(_:)))
@@ -101,12 +93,10 @@ class CreateViewController: UIViewController {
 			make.top.equalTo(self.scrollView.snp.bottom)
 		}
 		
-
 		self.cropAreaView.snp.makeConstraints { make in
 			make.edges.equalTo(self.scrollView)
 		}
 		
-
 		self.panView.snp.makeConstraints { make in
 			make.left.right.equalTo(self.view)
 			make.bottom.equalTo(self.collectionView.snp.top)
@@ -114,32 +104,8 @@ class CreateViewController: UIViewController {
 		}
 		
 		fetchAllPhotos()
-		let firstAsset = fetchResult.object(at: 0)
-		let scale = UIScreen.main.scale
-		let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-		imageManager.requestImage(for: firstAsset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
-			let imageWidth = image!.size.width
-			let imageHeight = image!.size.height
-
-			
-			if imageWidth > imageHeight {
-				self.imageView.frame.size.height = self.cropAreaView.frame.height
-				self.imageView.frame.size.width = self.cropAreaView.frame.height * imageWidth / imageHeight
-			} else if imageWidth < imageHeight {
-				self.imageView.frame.size.width = self.cropAreaView.frame.width
-				self.imageView.frame.size.height = self.cropAreaView.frame.width * imageHeight / imageWidth
-			} else {
-				self.imageView.frame.size = self.cropAreaView.frame.size
-			}
-			
-			let contentInsetTop = self.navigationController?.navigationBar.frame.height
-			self.scrollView.contentInset.top = contentInsetTop!
-			self.scrollView.contentSize = self.imageView.frame.size
-
-			self.imageView.image = image
-			self.centerScrollView(animated: false)
-		})
 	}
+	
 	
 	func handlePanGestureRecognizer(_ panRecognizer: UIPanGestureRecognizer) {
 		
@@ -205,14 +171,13 @@ class CreateViewController: UIViewController {
 			let postEditorViewController = PostEditorViewController(image: croppedImage)
 			self.navigationController?.pushViewController(postEditorViewController, animated: true)
 		}
-
-		
 	}
 }
 
-extension CreateViewController: UICollectionViewDataSource {
+extension SelectionViewController: UICollectionViewDataSource {
 	
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+		
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "tileCell", for: indexPath) as! TileCell
 		let asset = fetchResult.object(at: indexPath.item)
 		
@@ -225,12 +190,32 @@ extension CreateViewController: UICollectionViewDataSource {
 			if cell.representedAssetIdentifier == asset.localIdentifier {
 				cell.configure(photo: image!)
 			}
+			
+			if asset == self.fetchResult.object(at: 0) {
+				let imageWidth = image!.size.width
+				let imageHeight = image!.size.height
+				
+				if imageWidth > imageHeight {
+					self.imageView.frame.size.height = self.cropAreaView.frame.height
+					self.imageView.frame.size.width = self.cropAreaView.frame.height * imageWidth / imageHeight
+				} else if imageWidth < imageHeight {
+					self.imageView.frame.size.width = self.cropAreaView.frame.width
+					self.imageView.frame.size.height = self.cropAreaView.frame.width * imageHeight / imageWidth
+				} else {
+					self.imageView.frame.size = self.cropAreaView.frame.size
+				}
+				
+				let contentInsetTop = self.navigationController?.navigationBar.frame.height
+				self.scrollView.contentInset.top = contentInsetTop!
+				self.scrollView.contentSize = self.imageView.frame.size
+				
+				self.imageView.image = image
+				self.centerScrollView(animated: false)
+			}
 		})
 
-		
 		return cell
 		
-
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -238,7 +223,7 @@ extension CreateViewController: UICollectionViewDataSource {
 	}
 }
 
-extension CreateViewController: UICollectionViewDelegateFlowLayout {
+extension SelectionViewController: UICollectionViewDelegateFlowLayout {
 	
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 		let collectionViewWidth = collectionView.frame.width
@@ -269,7 +254,7 @@ extension CreateViewController: UICollectionViewDelegateFlowLayout {
 	}
 }
 
-extension CreateViewController: UIScrollViewDelegate {
+extension SelectionViewController: UIScrollViewDelegate {
 	
 	func viewForZooming(in scrollView: UIScrollView) -> UIView? {
 		return imageView
