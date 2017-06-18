@@ -33,7 +33,6 @@ class ContainerViewController: UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		
 		setupView()
 	}
 	
@@ -56,6 +55,7 @@ class ContainerViewController: UIViewController {
 	
 	private func add(asChildViewController viewController: UIViewController) {
 		// Add Child View Controller
+
 		addChildViewController(viewController)
 		
 		// Add Child View as Subview

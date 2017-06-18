@@ -18,9 +18,7 @@ class WrapperViewController: UIViewController {
 		$0.backgroundColor = UIColor.lightGray
 	}
 	
-	fileprivate let containerView = UIView().then {
-		$0.backgroundColor = UIColor.yellow
-	}
+	fileprivate let containerViewController = ContainerViewController()
 	fileprivate let cameraView = UIView().then {
 		$0.backgroundColor = UIColor.blue
 	}
@@ -59,7 +57,9 @@ class WrapperViewController: UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		self.scrollView.addSubview(containerView)
+		
+		self.addChildViewController(containerViewController)
+		self.scrollView.addSubview(containerViewController.view)
 		self.scrollView.addSubview(cameraView)
 		self.view.addSubview(scrollView)
 		self.view.addSubview(customTabBar)
@@ -75,17 +75,17 @@ class WrapperViewController: UIViewController {
 			make.bottom.equalTo(self.customTabBar.snp.top)
 		}
 		
-		self.containerView.snp.makeConstraints { make in
+		self.containerViewController.view.snp.makeConstraints { make in
 			make.edges.equalTo(self.scrollView)
 			make.width.equalTo(self.scrollView.snp.width)
 			make.height.equalTo(self.scrollView.snp.height)
 		}
 		
 		self.cameraView.snp.makeConstraints { make in
-			make.left.equalTo(self.containerView.snp.right)
-			make.width.equalTo(self.containerView.snp.width)
-			make.height.equalTo(self.containerView.snp.height)
-			make.centerY.equalTo(self.containerView.snp.centerY)
+			make.left.equalTo(self.containerViewController.view.snp.right)
+			make.width.equalTo(self.containerViewController.view.snp.width)
+			make.height.equalTo(self.containerViewController.view.snp.height)
+			make.centerY.equalTo(self.containerViewController.view.snp.centerY)
 		}
 		
 	}
@@ -96,7 +96,7 @@ class WrapperViewController: UIViewController {
 			make.top.equalTo(self.navigationController!.navigationBar.snp.bottom)
 		}
 		DispatchQueue.main.async {
-			self.scrollView.contentSize = CGSize(width: self.containerView.frame.size.width * 2, height: self.containerView.frame.size.height)
+			self.scrollView.contentSize = CGSize(width: self.containerViewController.view.frame.size.width * 2, height: self.containerViewController.view.frame.size.height)
 		}
 	}
 	
