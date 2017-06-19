@@ -85,4 +85,5 @@ extension FeedViewController: UICollectionViewDelegateFlowLayout {
         layout.itemSize = (image?.setImage())!
         return layout.itemSize
     }
+
 }
