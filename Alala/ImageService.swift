@@ -1,5 +1,5 @@
 //
-//  PostCardCell.swift
+//  ImageService.swift
 //  Alala
 //
 //  Created by hoemoon on 19/06/2017.

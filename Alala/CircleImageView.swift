@@ -1,5 +1,5 @@
 //
-//  PostCardCell.swift
+//  CircleImageView.swift
 //  Alala
 //
 //  Created by hoemoon on 19/06/2017.
