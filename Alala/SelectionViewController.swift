@@ -9,7 +9,6 @@
 import UIKit
 import Photos
 
-
 class SelectionViewController: UIViewController {
 	
 	var fetchResult: PHFetchResult<PHAsset>!

@@ -30,6 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window.backgroundColor = .white
     window.makeKeyAndVisible()
     window.rootViewController = SplashViewController()
+//    window.rootViewController = AfterRegisterViewController()
     self.window = window
     return true
   }
