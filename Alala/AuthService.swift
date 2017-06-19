@@ -189,4 +189,49 @@ class AuthService {
         }
     }
   }
+  
+  func checkUsernameUnique(username: String, completion: @escaping (_ isUnique: Bool) -> Void) {
+    let headers = [
+      "Content-Type": "application/json; charset=utf-8"
+    ]
+    let body: [String : Any] = [
+      "name": username
+    ]
+    Alamofire.request(Constants.BASE_URL + "user/profile/checkname", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
+      .validate(statusCode: 200..<300)
+      .responseJSON { response in
+        switch response.result {
+        case .success(let json):
+          let dict = json as! [String: Any]
+          completion(dict["isunique"] as! Bool)
+        case .failure(let error):
+          print(error)
+          completion(false)
+        }
+    }
+  }
+  
+  func updateProfile(profileName: String, profileImageId: String, completion: @escaping (_ success: Bool) -> Void) {
+    guard let token = self.authToken else {
+      return
+    }
+    let headers = [
+      "Authorization": "Bearer " + token,
+      "Content-Type": "application/json; charset=utf-8"
+    ]
+    let body: [String : Any] = [
+      "profilename": profileName,
+      "photoId": profileImageId
+    ]
+    
+    Alamofire.request(Constants.BASE_URL + "/user/profile/", method: .put, parameters: body, encoding: JSONEncoding.default, headers: headers)
+      .validate(statusCode: 200..<300)
+      .responseJSON { response in
+        if response.result.error == nil {
+          completion(true)
+        } else {
+          completion(false)
+        }
+    }
+  }
 }
