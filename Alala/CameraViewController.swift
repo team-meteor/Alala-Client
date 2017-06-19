@@ -39,6 +39,14 @@ class CameraViewController: UIViewController {
 	
 	init() {
 		super.init(nibName: nil, bundle: nil)
+		
+		self.checkCameraAuthorization { authorized in
+			if authorized {
+				// Proceed to set up and use the camera.
+			} else {
+				print("Permission to use camera denied.")
+			}
+		}
 	
 		//cancle 버튼 생성
 		self.navigationItem.leftBarButtonItem = UIBarButtonItem(
@@ -152,6 +160,29 @@ class CameraViewController: UIViewController {
 		}
 		
 	}
+	
+	func checkCameraAuthorization(_ completionHandler: @escaping ((_ authorized: Bool) -> Void)) {
+		switch AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) {
+		case .authorized:
+			//The user has previously granted access to the camera.
+			completionHandler(true)
+			
+		case .notDetermined:
+			// The user has not yet been presented with the option to grant video access so request access.
+			AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { success in
+				completionHandler(success)
+			})
+			
+		case .denied:
+			// The user has previously denied access.
+			completionHandler(false)
+			
+		case .restricted:
+			// The user doesn't have the authority to request access e.g. parental restriction.
+			completionHandler(false)
+		}
+	}
+	
 }
 
 extension CameraViewController: UIScrollViewDelegate {
