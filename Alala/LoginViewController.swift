@@ -158,7 +158,7 @@ class LoginViewController: UIViewController {
     } else {
       AuthService.instance.register(email: email, password: password) { (success) in
         if success {
-          print("success")          
+          print("success")
           AuthService.instance.login(email: email, password: password, completion: { (success) in
             if success {
               DispatchQueue.main.async {
