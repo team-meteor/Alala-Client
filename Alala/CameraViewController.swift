@@ -10,7 +10,8 @@ import UIKit
 import AVFoundation
 import Photos
 
-class CameraViewController: UIViewController {
+class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate {
+  
   var captureSession = AVCaptureSession()
   var sessionOutput = AVCapturePhotoOutput()
   var sessionOutputSetting = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecJPEG])
@@ -70,9 +71,10 @@ class CameraViewController: UIViewController {
 	func doneButtonDidTap() {
 		
 	}
-	
+  
 	override func viewDidLoad() {
 		super.viewDidLoad()
+    
 		self.scrollView.delegate = self
 		self.title = "Photo"
 		NotificationCenter.default.addObserver(self, selector: #selector(photoModeSetting), name: Notification.Name("photoMode"), object: nil)
@@ -115,7 +117,7 @@ class CameraViewController: UIViewController {
 			make.width.height.equalTo(60)
 		}
 	}
-	
+  
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
 		
@@ -126,10 +128,11 @@ class CameraViewController: UIViewController {
 		DispatchQueue.main.async {
 			self.scrollView.contentSize = self.bottomView.bounds.size
 		}
-    previewLayer.frame = camView.bounds
+    self.previewLayer.frame = self.camView.bounds
   }
   
   override func viewWillAppear(_ animated: Bool) {
+    
     let deviceDiscoverySession = AVCaptureDeviceDiscoverySession(deviceTypes: [AVCaptureDeviceType.builtInDuoCamera, AVCaptureDeviceType.builtInTelephotoCamera,AVCaptureDeviceType.builtInWideAngleCamera], mediaType: AVMediaTypeVideo, position: AVCaptureDevicePosition.unspecified)
     for device in (deviceDiscoverySession?.devices)! {
       if (device.position == AVCaptureDevicePosition.front) {
@@ -144,6 +147,7 @@ class CameraViewController: UIViewController {
               previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
               previewLayer.connection.videoOrientation = AVCaptureVideoOrientation.portrait
               camView.layer.addSublayer(previewLayer)
+              captureSession.startRunning()
             }
           }
         }
@@ -152,11 +156,30 @@ class CameraViewController: UIViewController {
         }
       }
     }
-    captureSession.startRunning()
+    
+  }
+  
+  func capture(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhotoSampleBuffer photoSampleBuffer: CMSampleBuffer?, previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
+    
+    if let photoSampleBuffer = photoSampleBuffer {
+      // JPEG형식으로 이미지데이터 검색
+      let photoData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: photoSampleBuffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer)
+      let image = UIImage(data: photoData!)
+      
+      // 사진보관함에 저장
+      UIImageWriteToSavedPhotosAlbum(image!, nil, nil, nil)
+    }
   }
   
   func takePhotoButtonDidTap() {
-		
+    // 플래시 및 카메라 관련 설정
+    print("take")
+    let settingsForMonitoring = AVCapturePhotoSettings()
+    settingsForMonitoring.flashMode = .auto
+    settingsForMonitoring.isAutoStillImageStabilizationEnabled = true
+    settingsForMonitoring.isHighResolutionPhotoEnabled = false
+    // 촬영셔터 누름
+    sessionOutput.capturePhoto(with: settingsForMonitoring, delegate: self)
 	}
 	
 	func takeVideoButtonDidTap() {
@@ -183,7 +206,7 @@ class CameraViewController: UIViewController {
 		}
 		
 	}
-	
+
 }
 
 extension CameraViewController: UIScrollViewDelegate {
