@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>to record Live Photos and movies</string>
-	<key>NSCameraUsageDescription</key>
-	<string>the camera is used to take a picture</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
@@ -29,6 +25,10 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>the camera is used to take a picture</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>to record Live Photos and movies</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>The photo library is used to save silly pictures</string>
 	<key>UILaunchStoryboardName</key>

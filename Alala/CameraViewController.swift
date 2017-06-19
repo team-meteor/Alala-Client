@@ -8,14 +8,13 @@
 
 import UIKit
 import AVFoundation
-import Photos
 
-class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate {
-  
-  var captureSession = AVCaptureSession()
-  var sessionOutput = AVCapturePhotoOutput()
-  var sessionOutputSetting = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecJPEG])
-  var previewLayer = AVCaptureVideoPreviewLayer()
+class CameraViewController: UIViewController {
+  let capturedImageView = UIImageView()
+  var session = AVCaptureSession()
+  var camera : AVCaptureDevice?
+  var cameraPreviewLayer : AVCaptureVideoPreviewLayer?
+  var cameraCaptureOutput = AVCapturePhotoOutput()
   
 	private let camView = UIView().then {
 		$0.backgroundColor = UIColor.black
@@ -51,13 +50,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate {
 			target: self,
 			action: #selector(cancelButtonDidTap)
 		)
-		
-		//done 버튼 생성
-		self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-			barButtonSystemItem: .done,
-			target: self,
-			action: #selector(doneButtonDidTap)
-		)
+    
 	}
 	
 	required init?(coder aDecoder: NSCoder) {
@@ -69,8 +62,12 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate {
 	}
 	
 	func doneButtonDidTap() {
-		
-	}
+    
+    let postEditorViewController = PostEditorViewController(image: self.capturedImageView.image!)
+    self.navigationController?.pushViewController(postEditorViewController, animated: true)
+    self.capturedImageView.removeFromSuperview()
+    self.navigationItem.rightBarButtonItem = nil
+  }
   
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -128,58 +125,49 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate {
 		DispatchQueue.main.async {
 			self.scrollView.contentSize = self.bottomView.bounds.size
 		}
-    self.previewLayer.frame = self.camView.bounds
+    initializeCaptureSession()
   }
   
-  override func viewWillAppear(_ animated: Bool) {
+  func displayCapturPhoto() {
     
-    let deviceDiscoverySession = AVCaptureDeviceDiscoverySession(deviceTypes: [AVCaptureDeviceType.builtInDuoCamera, AVCaptureDeviceType.builtInTelephotoCamera,AVCaptureDeviceType.builtInWideAngleCamera], mediaType: AVMediaTypeVideo, position: AVCaptureDevicePosition.unspecified)
-    for device in (deviceDiscoverySession?.devices)! {
-      if (device.position == AVCaptureDevicePosition.front) {
-        do {
-          let input = try AVCaptureDeviceInput(device: device)
-          if (captureSession.canAddInput(input)) {
-            captureSession.addInput(input)
-            
-            if (captureSession.canAddOutput(sessionOutput)) {
-              captureSession.addOutput(sessionOutput)
-              previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-              previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
-              previewLayer.connection.videoOrientation = AVCaptureVideoOrientation.portrait
-              camView.layer.addSublayer(previewLayer)
-              captureSession.startRunning()
-            }
-          }
-        }
-        catch {
-          print("exception!")
-        }
+    //capturedImageView.contentMode = .scaleAspectFill
+    capturedImageView.frame = self.camView.bounds
+    self.camView.addSubview(capturedImageView)
+  }
+  
+  func savePhotoInLibrary() {
+    UIImageWriteToSavedPhotosAlbum(self.capturedImageView.image!, nil, nil, nil)
+  }
+  
+  func initializeCaptureSession() {
+    session.sessionPreset = AVCaptureSessionPresetHigh
+    camera = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+    do {
+      let cameraCaptureInput = try AVCaptureDeviceInput(device: camera!)
+      cameraCaptureOutput = AVCapturePhotoOutput()
+      if session.inputs.isEmpty {
+        session.addInput(cameraCaptureInput)
+        session.addOutput(cameraCaptureOutput)
       }
-    }
-    
-  }
-  
-  func capture(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhotoSampleBuffer photoSampleBuffer: CMSampleBuffer?, previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
-    
-    if let photoSampleBuffer = photoSampleBuffer {
-      // JPEG형식으로 이미지데이터 검색
-      let photoData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: photoSampleBuffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer)
-      let image = UIImage(data: photoData!)
       
-      // 사진보관함에 저장
-      UIImageWriteToSavedPhotosAlbum(image!, nil, nil, nil)
+    } catch {
+      print(error.localizedDescription)
     }
+    cameraPreviewLayer = AVCaptureVideoPreviewLayer(session: session)
+    cameraPreviewLayer?.videoGravity = AVLayerVideoGravityResizeAspectFill
+    cameraPreviewLayer?.frame = view.bounds
+    cameraPreviewLayer?.connection.videoOrientation = AVCaptureVideoOrientation.portrait
+    
+    camView.layer.insertSublayer(cameraPreviewLayer!, at: 0)
+    
+    session.startRunning()
+    
   }
   
   func takePhotoButtonDidTap() {
-    // 플래시 및 카메라 관련 설정
-    print("take")
-    let settingsForMonitoring = AVCapturePhotoSettings()
-    settingsForMonitoring.flashMode = .auto
-    settingsForMonitoring.isAutoStillImageStabilizationEnabled = true
-    settingsForMonitoring.isHighResolutionPhotoEnabled = false
-    // 촬영셔터 누름
-    sessionOutput.capturePhoto(with: settingsForMonitoring, delegate: self)
+    let settings = AVCapturePhotoSettings()
+    settings.flashMode = .off
+    cameraCaptureOutput.capturePhoto(with: settings, delegate: self)
 	}
 	
 	func takeVideoButtonDidTap() {
@@ -220,4 +208,31 @@ extension CameraViewController: UIScrollViewDelegate {
 			NotificationCenter.default.post(name: Notification.Name("videoModeOnTabBar"), object: nil)
 		}
 	}
+}
+
+extension CameraViewController : AVCapturePhotoCaptureDelegate {
+  
+  func capture(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhotoSampleBuffer photoSampleBuffer: CMSampleBuffer?, previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
+    
+    if let unwrappedError = error {
+      print(unwrappedError.localizedDescription)
+    } else {
+      
+      if let sampleBuffer = photoSampleBuffer, let dataImage = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: sampleBuffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer) {
+        
+        if let finalImage = UIImage(data: dataImage) {
+          capturedImageView.image = finalImage
+          displayCapturPhoto()
+          savePhotoInLibrary()
+          //done 버튼 생성
+          self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .done,
+            target: self,
+            action: #selector(doneButtonDidTap)
+          )
+        }
+      }
+    }
+  }
+  
 }
