@@ -11,7 +11,11 @@ import AVFoundation
 import Photos
 
 class CameraViewController: UIViewController {
-	
+  var captureSession = AVCaptureSession()
+  var sessionOutput = AVCapturePhotoOutput()
+  var sessionOutputSetting = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecJPEG])
+  var previewLayer = AVCaptureVideoPreviewLayer()
+  
 	private let camView = UIView().then {
 		$0.backgroundColor = UIColor.black
 	}
@@ -39,15 +43,7 @@ class CameraViewController: UIViewController {
 	
 	init() {
 		super.init(nibName: nil, bundle: nil)
-		
-		self.checkCameraAuthorization { authorized in
-			if authorized {
-				// Proceed to set up and use the camera.
-			} else {
-				print("Permission to use camera denied.")
-			}
-		}
-	
+    
 		//cancle 버튼 생성
 		self.navigationItem.leftBarButtonItem = UIBarButtonItem(
 			barButtonSystemItem: .cancel,
@@ -130,9 +126,36 @@ class CameraViewController: UIViewController {
 		DispatchQueue.main.async {
 			self.scrollView.contentSize = self.bottomView.bounds.size
 		}
-	}
-	
-	func takePhotoButtonDidTap() {
+    previewLayer.frame = camView.bounds
+  }
+  
+  override func viewWillAppear(_ animated: Bool) {
+    let deviceDiscoverySession = AVCaptureDeviceDiscoverySession(deviceTypes: [AVCaptureDeviceType.builtInDuoCamera, AVCaptureDeviceType.builtInTelephotoCamera,AVCaptureDeviceType.builtInWideAngleCamera], mediaType: AVMediaTypeVideo, position: AVCaptureDevicePosition.unspecified)
+    for device in (deviceDiscoverySession?.devices)! {
+      if (device.position == AVCaptureDevicePosition.front) {
+        do {
+          let input = try AVCaptureDeviceInput(device: device)
+          if (captureSession.canAddInput(input)) {
+            captureSession.addInput(input)
+            
+            if (captureSession.canAddOutput(sessionOutput)) {
+              captureSession.addOutput(sessionOutput)
+              previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+              previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+              previewLayer.connection.videoOrientation = AVCaptureVideoOrientation.portrait
+              camView.layer.addSublayer(previewLayer)
+            }
+          }
+        }
+        catch {
+          print("exception!")
+        }
+      }
+    }
+    captureSession.startRunning()
+  }
+  
+  func takePhotoButtonDidTap() {
 		
 	}
 	
@@ -159,28 +182,6 @@ class CameraViewController: UIViewController {
 				self.scrollView.contentOffset.x = self.scrollView.bounds.size.width}, completion: nil)
 		}
 		
-	}
-	
-	func checkCameraAuthorization(_ completionHandler: @escaping ((_ authorized: Bool) -> Void)) {
-		switch AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) {
-		case .authorized:
-			//The user has previously granted access to the camera.
-			completionHandler(true)
-			
-		case .notDetermined:
-			// The user has not yet been presented with the option to grant video access so request access.
-			AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { success in
-				completionHandler(success)
-			})
-			
-		case .denied:
-			// The user has previously denied access.
-			completionHandler(false)
-			
-		case .restricted:
-			// The user doesn't have the authority to request access e.g. parental restriction.
-			completionHandler(false)
-		}
 	}
 	
 }

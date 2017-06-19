@@ -9,7 +9,6 @@
 import UIKit
 import Photos
 
-
 class SelectionViewController: UIViewController {
 	
 	var fetchResult: PHFetchResult<PHAsset>!
@@ -259,6 +258,4 @@ extension SelectionViewController: UIScrollViewDelegate {
 	func viewForZooming(in scrollView: UIScrollView) -> UIView? {
 		return imageView
 	}
-
-
 }
