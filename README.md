@@ -2,8 +2,8 @@
 > 인스타그램 따라잡기
 
 ### 주요 화면
-![insta screen shot](/insta.png)
-![insta screen shot2](/insta2.png)
+![insta screen shot](screenshot/insta.png)
+![insta screen shot2](screenshot/insta2.png)
 
 ## 따라잡을 주요 기능
 - email로 회원가입 할 수 있다.
