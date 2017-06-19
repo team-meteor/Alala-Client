@@ -10,6 +10,7 @@ import UIKit
 import Photos
 
 class MainTabBarController: UITabBarController {
+
 	let feedViewController = FeedViewController()
 	let discoverViewController = DiscoverViewController()
 	let activityViewController = ActivityViewController()
@@ -51,4 +52,5 @@ extension MainTabBarController: UITabBarControllerDelegate {
 		}
 		return true
 	}
+
 }
