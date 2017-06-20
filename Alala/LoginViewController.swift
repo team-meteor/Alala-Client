@@ -60,9 +60,14 @@ class LoginViewController: UIViewController {
   }
   
   override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
     self.navigationController?.setNavigationBarHidden(true, animated: false)
+    super.viewWillAppear(animated)
   }
+  override func viewWillDisappear(_ animated: Bool) {
+    self.navigationController?.setNavigationBarHidden(false, animated: false)
+    super.viewWillDisappear(animated)
+  }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     self.emailTextField.addTarget(self, action: #selector(textFieldDidChangeText), for: .editingChanged)
@@ -153,13 +158,32 @@ class LoginViewController: UIViewController {
     } else {
       AuthService.instance.register(email: email, password: password) { (success) in
         if success {
-          DispatchQueue.main.async {
-            let afterRegisterVC = AfterRegisterViewController()
-            self.navigationController?.pushViewController(afterRegisterVC, animated: true)
-          }
           print("success")
+          AuthService.instance.login(email: email, password: password, completion: { (success) in
+            if success {
+              DispatchQueue.main.async {
+                let afterRegisterVC = AfterRegisterViewController()
+                self.navigationController?.pushViewController(afterRegisterVC, animated: true)
+              }
+
+            } else {
+              print("Login failed")
+              DispatchQueue.main.async {
+                self.emailTextField.isEnabled = true
+                self.passwordTextField.isEnabled = true
+                self.authRequestButton.isEnabled = true
+                self.authRequestButton.alpha = 1
+              }
+            }
+          })
         } else {
           print("register failed")
+          DispatchQueue.main.async {
+            self.emailTextField.isEnabled = true
+            self.passwordTextField.isEnabled = true
+            self.authRequestButton.isEnabled = true
+            self.authRequestButton.alpha = 1
+          }
         }
       }
     }
@@ -167,7 +191,6 @@ class LoginViewController: UIViewController {
   
   func signupLabelDidTap() {
     if repeatPasswordTextField.isHidden {
-      self.repeatPasswordTextField.isHidden = !repeatPasswordTextField.isHidden
       self.authRequestButton.setTitle("Sign up", for: .normal)
       self.signupLabel.text = "Log in"
       self.requestType = RequestType.Register
@@ -179,11 +202,11 @@ class LoginViewController: UIViewController {
       self.authRequestButton.setTitle("Log in", for: .normal)
       self.signupLabel.text = "Sign up"
       self.requestType = RequestType.Login
-      self.repeatPasswordTextField.isHidden = !repeatPasswordTextField.isHidden
       self.repeatPasswordTextField.snp.makeConstraints { (make) in
         height?.deactivate()
         height = make.height.equalTo(0).constraint
       }
     }
+    self.repeatPasswordTextField.isHidden = !repeatPasswordTextField.isHidden
   }
 }
