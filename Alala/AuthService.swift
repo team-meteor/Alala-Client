@@ -74,19 +74,19 @@ class AuthService {
       })
       task.resume()
       session.finishTasksAndInvalidate()
-      
+
     } catch let err {
       self.isRegistered = false
       completion(false)
       print(err)
     }
   }
-  
+
   func login(email: String, password: String, completion: @escaping (_ success: Bool) -> Void) {
     let json = ["email": email, "password": password]
     let sessionConfig = URLSessionConfiguration.default
     let session = URLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
-    
+
     guard let URL = URL(string: Constants.BASE_URL + "user/login") else {
       isAuthenticated = false
       completion(false)
@@ -140,13 +140,13 @@ class AuthService {
       })
       task.resume()
       session.finishTasksAndInvalidate()
-      
+
     } catch let err {
       completion(false)
       print(err)
     }
   }
-  
+
   func me(completion: @escaping (_ success: Bool) -> Void) {
     let urlString = Constants.BASE_URL + "user/me"
     guard let token = self.authToken else {
@@ -167,7 +167,7 @@ class AuthService {
         }
     }
   }
-  
+
   func logout(completion: @escaping (_ success: Bool) -> Void) {
     guard let token = self.authToken else {
       completion(false)
@@ -189,7 +189,7 @@ class AuthService {
         }
     }
   }
-  
+
   func checkUsernameUnique(username: String, completion: @escaping (_ isUnique: Bool) -> Void) {
     let headers = [
       "Content-Type": "application/json; charset=utf-8"
@@ -210,7 +210,7 @@ class AuthService {
         }
     }
   }
-  
+
   func updateProfile(profileName: String, profileImageId: String, completion: @escaping (_ success: Bool) -> Void) {
     guard let token = self.authToken else {
       return
@@ -223,7 +223,7 @@ class AuthService {
       "profilename": profileName,
       "photoId": profileImageId
     ]
-    
+
     Alamofire.request(Constants.BASE_URL + "/user/profile/", method: .put, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { response in

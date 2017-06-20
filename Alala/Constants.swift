@@ -24,10 +24,10 @@ struct Constants {
   }
   static let DEFAULTS_REGISTERED = "isRegistered"
   static let DEFAULTS_AUTHENTICATED = "isAuthenticated"
-  
+
   // Auth Email
   static let DEFAULTS_EMAIL = "email"
-  
+
   // Auth Token
   static let DEFAULTS_TOKEN = "authToken"
 }

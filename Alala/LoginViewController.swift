@@ -17,7 +17,7 @@ enum RequestType {
 class LoginViewController: UIViewController {
   var height: Constraint?
   var requestType = RequestType.Login
-  
+
   fileprivate let titleBackground = UIView().then {
     $0.isUserInteractionEnabled = false
     $0.backgroundColor = UIColor.gray
@@ -58,7 +58,7 @@ class LoginViewController: UIViewController {
     $0.font = UIFont.boldSystemFont(ofSize: 14)
     $0.textColor = $0.tintColor
   }
-  
+
   override func viewWillAppear(_ animated: Bool) {
     self.navigationController?.setNavigationBarHidden(true, animated: false)
     super.viewWillAppear(animated)
@@ -67,7 +67,7 @@ class LoginViewController: UIViewController {
     self.navigationController?.setNavigationBarHidden(false, animated: false)
     super.viewWillDisappear(animated)
   }
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
     self.emailTextField.addTarget(self, action: #selector(textFieldDidChangeText), for: .editingChanged)
@@ -76,7 +76,7 @@ class LoginViewController: UIViewController {
     let tap = UITapGestureRecognizer(target: self, action: #selector(signupLabelDidTap))
     signupLabel.isUserInteractionEnabled = true
     self.signupLabel.addGestureRecognizer(tap)
-    
+
     self.view.addSubview(self.titleBackground)
     self.titleBackground.addSubview(self.titleLabel)
     self.view.addSubview(self.emailTextField)
@@ -84,7 +84,7 @@ class LoginViewController: UIViewController {
     self.view.addSubview(self.repeatPasswordTextField)
     self.view.addSubview(self.authRequestButton)
     self.view.addSubview(self.signupLabel)
-    
+
     self.titleBackground.snp.makeConstraints { (make) in
       make.top.equalTo(self.view)
       make.left.equalTo(self.view)
@@ -124,11 +124,11 @@ class LoginViewController: UIViewController {
       make.bottom.equalTo(self.view).offset(-10)
     }
   }
-  
+
   func textFieldDidChangeText(_ textField: UITextField) {
     textField.backgroundColor = .white
   }
-  
+
   func authRequestButtonDidTap() {
     guard let email = self.emailTextField.text, !email.isEmpty else {
       return
@@ -140,7 +140,7 @@ class LoginViewController: UIViewController {
     self.passwordTextField.isEnabled = false
     self.authRequestButton.isEnabled = false
     self.authRequestButton.alpha = 0.4
-    
+
     if self.requestType == .Login {
       AuthService.instance.login(email: email, password: password, completion: { (success) in
         if success {
@@ -188,7 +188,7 @@ class LoginViewController: UIViewController {
       }
     }
   }
-  
+
   func signupLabelDidTap() {
     if repeatPasswordTextField.isHidden {
       self.authRequestButton.setTitle("Sign up", for: .normal)

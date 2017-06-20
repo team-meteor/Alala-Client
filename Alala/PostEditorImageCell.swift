@@ -9,7 +9,7 @@
 import UIKit
 
 class PostEditorImageCell: UITableViewCell {
-	
+
 	let photoView = UIImageView()
 	let textView = UITextView().then {
 		$0.text = "내용 입력..."
@@ -23,17 +23,17 @@ class PostEditorImageCell: UITableViewCell {
 		self.contentView.addSubview(self.textView)
 		self.textView.delegate = self
 	}
-	
+
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
-	
+
 	// MARK: Configuring
-	
+
 	func configure(image: UIImage) {
 		self.photoView.image = image
 	}
-	
+
 	override func layoutSubviews() {
 		super.layoutSubviews()
 		self.photoView.snp.makeConstraints { make in
@@ -55,7 +55,7 @@ extension PostEditorImageCell: UITextViewDelegate {
 			textView.textColor = UIColor.black
 		}
 	}
-	
+
 	func textViewDidEndEditing(_ textView: UITextView) {
 		if textView.text.isEmpty {
 			textView.text = "내용 입력..."
