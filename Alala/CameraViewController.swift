@@ -15,6 +15,10 @@ class CameraViewController: UIViewController {
   var camera : AVCaptureDevice?
   var cameraPreviewLayer : AVCaptureVideoPreviewLayer?
   var cameraCaptureOutput = AVCapturePhotoOutput()
+  let switchButton = UIButton().then {
+    $0.backgroundColor = UIColor.red
+    $0.addTarget(self, action: #selector(switchButtonDidTap), for: .touchUpInside)
+  }
   
 	private let camView = UIView().then {
 		$0.backgroundColor = UIColor.black
@@ -81,6 +85,7 @@ class CameraViewController: UIViewController {
 		self.scrollView.addSubview(bottomView)
 		self.view.addSubview(camView)
 		self.view.addSubview(scrollView)
+    self.camView.addSubview(switchButton)
 		
 		self.camView.snp.makeConstraints { make in
 			make.left.right.equalTo(self.view)
@@ -121,6 +126,11 @@ class CameraViewController: UIViewController {
 		self.camView.snp.makeConstraints { make in
 			make.top.equalTo((self.navigationController?.navigationBar.snp.bottom)!)
 		}
+    
+    self.switchButton.snp.makeConstraints { make in
+      make.height.width.equalTo(50)
+      make.center.equalTo(self.camView)
+    }
 		
 		DispatchQueue.main.async {
 			self.scrollView.contentSize = self.bottomView.bounds.size
@@ -128,7 +138,7 @@ class CameraViewController: UIViewController {
     
     checkCameraAuthorization() { status in
       if status == true {
-        self.initializeCaptureSession()
+        self.initializeCaptureSession(camera: AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo))
       }
     }
     
@@ -145,13 +155,18 @@ class CameraViewController: UIViewController {
     UIImageWriteToSavedPhotosAlbum(self.capturedImageView.image!, nil, nil, nil)
   }
   
-  func initializeCaptureSession() {
+  func initializeCaptureSession(camera: AVCaptureDevice) {
     session.sessionPreset = AVCaptureSessionPresetHigh
-    camera = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+    self.camera = camera
     do {
-      let cameraCaptureInput = try AVCaptureDeviceInput(device: camera!)
+      let cameraCaptureInput = try AVCaptureDeviceInput(device: camera)
       cameraCaptureOutput = AVCapturePhotoOutput()
       if session.inputs.isEmpty {
+        session.addInput(cameraCaptureInput)
+        session.addOutput(cameraCaptureOutput)
+      } else {
+        session.removeInput(session.inputs.first as! AVCaptureInput)
+        session.removeOutput(session.outputs.first as! AVCaptureOutput)
         session.addInput(cameraCaptureInput)
         session.addOutput(cameraCaptureOutput)
       }
@@ -179,6 +194,26 @@ class CameraViewController: UIViewController {
 	func takeVideoButtonDidTap() {
 		
 	}
+  
+  func switchButtonDidTap() {
+    if self.camera?.position == .front {
+      initializeCaptureSession(camera: getDevice(position: .back)!)
+    } else {
+      initializeCaptureSession(camera: getDevice(position: .front)!)
+    }
+  }
+  
+  func getDevice(position: AVCaptureDevicePosition) -> AVCaptureDevice? {
+    let devices: NSArray = AVCaptureDevice.devices() as! NSArray;
+    for de in devices {
+      let deviceConverted = de as! AVCaptureDevice
+      if(deviceConverted.position == position){
+        return deviceConverted
+      }
+    }
+    return nil
+  }
+
 	
 	func photoModeSetting() {
 		
