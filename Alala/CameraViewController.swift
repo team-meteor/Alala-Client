@@ -10,10 +10,11 @@ import UIKit
 import AVFoundation
 
 class CameraViewController: UIViewController {
+
   let capturedImageView = UIImageView()
   var session = AVCaptureSession()
-  var camera : AVCaptureDevice?
-  var cameraPreviewLayer : AVCaptureVideoPreviewLayer?
+  var camera: AVCaptureDevice?
+  var cameraPreviewLayer: AVCaptureVideoPreviewLayer?
   var cameraCaptureOutput = AVCapturePhotoOutput()
   let switchButton = UIButton().then {
     $0.backgroundColor = UIColor.red
@@ -136,7 +137,7 @@ class CameraViewController: UIViewController {
 			self.scrollView.contentSize = self.bottomView.bounds.size
 		}
     
-    checkCameraAuthorization() { status in
+    checkCameraAuthorization { status in
       if status == true {
         self.initializeCaptureSession(camera: AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo))
       }
@@ -196,7 +197,9 @@ class CameraViewController: UIViewController {
 	}
   
   func switchButtonDidTap() {
+    
     if self.camera?.position == .front {
+      
       initializeCaptureSession(camera: getDevice(position: .back)!)
     } else {
       initializeCaptureSession(camera: getDevice(position: .front)!)
@@ -204,17 +207,16 @@ class CameraViewController: UIViewController {
   }
   
   func getDevice(position: AVCaptureDevicePosition) -> AVCaptureDevice? {
-    let devices: NSArray = AVCaptureDevice.devices() as! NSArray;
+    let devices: NSArray = AVCaptureDevice.devices() as! NSArray
     for de in devices {
       let deviceConverted = de as! AVCaptureDevice
-      if(deviceConverted.position == position){
+      if deviceConverted.position == position {
         return deviceConverted
       }
     }
     return nil
   }
 
-	
 	func photoModeSetting() {
 		
 		self.title = "Photo"

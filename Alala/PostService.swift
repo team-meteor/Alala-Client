@@ -21,7 +21,7 @@ struct PostService {
       // Add Headers
       let headers = [
         "Authorization": "Bearer " + token,
-        "Content-Type":"application/json; charset=utf-8",
+        "Content-Type": "application/json; charset=utf-8"
         ]
       
       // JSON Body
@@ -36,11 +36,10 @@ struct PostService {
       Alamofire.request(Constants.BASE_URL + "post/add", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
         .validate(statusCode: 200..<300)
         .responseJSON { response in
-          if (response.result.error == nil) {
+          if response.result.error == nil {
             debugPrint("HTTP Response Body: \(response.data)")
             completion(true)
-          }
-          else {
+          } else {
             debugPrint("HTTP Request failed: \(response.result.error)")
             completion(false)
           }
