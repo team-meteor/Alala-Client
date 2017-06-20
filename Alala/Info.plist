@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>Alala</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -27,8 +29,10 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>the camera is used to take a picture</string>
+
 	<key>NSMicrophoneUsageDescription</key>
 	<string>to record Live Photos and movies</string>
+
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>The photo library is used to save silly pictures</string>
 	<key>UILaunchStoryboardName</key>
