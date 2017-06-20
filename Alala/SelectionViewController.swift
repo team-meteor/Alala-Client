@@ -13,8 +13,17 @@ class SelectionViewController: UIViewController {
 	
 	var fetchResult: PHFetchResult<PHAsset>!
 	let imageManager = PHCachingImageManager()
-	
 	let tileCellSpacing = CGFloat(3)
+    
+    
+    
+    fileprivate let baseScrollView = UIScrollView().then {
+        $0.showsHorizontalScrollIndicator = false
+        $0.showsVerticalScrollIndicator = false
+        $0.bounces = false
+        $0.isPagingEnabled = true
+    }
+    
 	fileprivate let scrollView = UIScrollView().then {
 		$0.showsHorizontalScrollIndicator = false
 		$0.showsVerticalScrollIndicator = false
@@ -25,10 +34,7 @@ class SelectionViewController: UIViewController {
 	}
 	
 	fileprivate let imageView = UIImageView()
-	fileprivate let panView = UIView().then {
-		$0.backgroundColor = UIColor.yellow.withAlphaComponent(0.5)
-	}
-	var panViewYPosition: CGFloat!
+    
 	
 	fileprivate let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
 
@@ -71,25 +77,36 @@ class SelectionViewController: UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
+        let screenWidth = self.view.bounds.width
+        let screenHeight = self.view.bounds.height
+        
 		self.title = "Library"
 		collectionView.dataSource = self
 		collectionView.delegate = self
 		scrollView.delegate = self
+        baseScrollView.contentSize = CGSize(width: screenWidth, height: screenWidth + screenHeight - 50)
 		self.scrollView.addSubview(self.imageView)
-		self.view.addSubview(self.scrollView)
-		self.view.addSubview(self.cropAreaView)
-		self.view.addSubview(self.panView)
-		self.view.addSubview(self.collectionView)
-		let pan: UIPanGestureRecognizer = UIPanGestureRecognizer.init(target: self, action: #selector(handlePanGestureRecognizer(_:)))
-		self.panView.addGestureRecognizer(pan)
+        self.view.addSubview(baseScrollView)
+        
+		self.baseScrollView.addSubview(self.scrollView)
+		self.baseScrollView.addSubview(self.cropAreaView)
+        self.baseScrollView.addSubview(self.collectionView)
+        
+        self.baseScrollView.snp.makeConstraints { make in
+            make.bottom.left.right.top.equalTo(self.view)
+            //make.top.equalTo(self.navigationController!.navigationBar.snp.bottom)
+        }
 		
 		self.scrollView.snp.makeConstraints { make in
-			make.left.right.equalTo(self.view)
-			make.height.equalTo(self.view.bounds.width)
+			make.left.right.top.equalTo(self.baseScrollView)
+			make.height.equalTo(screenWidth)
+            make.width.equalTo(screenWidth)
 		}
 		
 		self.collectionView.snp.makeConstraints { make in
-			make.left.bottom.right.equalTo(self.view)
+			make.left.bottom.right.equalTo(self.baseScrollView)
+            make.height.equalTo(screenHeight - 50)
+            make.width.equalTo(screenWidth)
 			make.top.equalTo(self.scrollView.snp.bottom)
 		}
 		
@@ -97,46 +114,16 @@ class SelectionViewController: UIViewController {
 			make.edges.equalTo(self.scrollView)
 		}
 		
-		self.panView.snp.makeConstraints { make in
-			make.left.right.equalTo(self.view)
-			make.bottom.equalTo(self.collectionView.snp.top)
-			make.height.equalTo(50)
-		}
-		
 		fetchAllPhotos()
-	}
-	
-	func handlePanGestureRecognizer(_ panRecognizer: UIPanGestureRecognizer) {
-		
-		let translation: CGPoint = panRecognizer.translation(in: self.view)
-		
-		if panRecognizer.state == .began || panRecognizer.state == .changed {
-			
-			if self.panView.frame.origin.y <= panViewYPosition {
-				
-				panRecognizer.view!.center = CGPoint(x: panRecognizer.view!.center.x, y: panRecognizer.view!.center.y + translation.y)
-				self.scrollView.center = CGPoint(x: self.scrollView.center.x, y: self.scrollView.center.y + translation.y)
-				panRecognizer.setTranslation(CGPoint.zero, in: self.view)
-				self.navigationController?.navigationBar.transform = CGAffineTransform(translationX: 0, y: -(panViewYPosition - (panRecognizer.view?.frame.origin.y)!))
-				self.collectionView.frame.origin.y = (panRecognizer.view?.frame.origin.y)! + 50
-				self.collectionView.frame.size.height = 228 + (panViewYPosition - (panRecognizer.view?.frame.origin.y)!)
-				if self.panView.frame.origin.y > panViewYPosition {
-					self.panView.frame.origin.y = panViewYPosition
-					self.scrollView.frame.origin.y = 64
-					self.collectionView.frame.origin.y = 439
-				}
-			}
-		}
 	}
 	
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
-		self.scrollView.snp.makeConstraints { make in
+		self.baseScrollView.snp.makeConstraints { make in
 			make.top.equalTo(self.navigationController!.navigationBar.snp.bottom)
 		}
-		self.panViewYPosition = 389
-	}
-	
+    }
+
 	func centerScrollView(animated: Bool) {
 		let targetContentOffset = CGPoint(
 			x: (self.scrollView.contentSize.width - self.scrollView.bounds.width) / 2,
