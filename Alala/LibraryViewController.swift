@@ -37,13 +37,6 @@ class LibraryViewController: UIViewController {
 	}
 	
 	private func setupView() {
-//		self.checkPhotoLibraryAuthorization { authorized in
-//			if authorized {
-//				self.add(asChildViewController: self.selectionViewController)
-//			} else {
-//				self.add(asChildViewController: self.selectionViewController)
-//			}
-//		}
 		
 		if PHPhotoLibrary.authorizationStatus() != .authorized {
 			PHPhotoLibrary.requestAuthorization( { status in
@@ -60,28 +53,6 @@ class LibraryViewController: UIViewController {
 			self.add(asChildViewController: self.selectionViewController)
 		}
 	}
-	
-//	func checkPhotoLibraryAuthorization(_ completionHandler: @escaping ((_ authorized: Bool) -> Void)) {
-//		switch PHPhotoLibrary.authorizationStatus() {
-//		case .authorized:
-//			// The user has previously granted access to the photo library.
-//			completionHandler(true)
-//			
-//		case .notDetermined:
-//			// The user has not yet been presented with the option to grant photo library access so request access.
-//			PHPhotoLibrary.requestAuthorization({ status in
-//				completionHandler((status == .authorized))
-//			})
-//			
-//		case .denied:
-//			// The user has previously denied access.
-//			completionHandler(false)
-//			
-//		case .restricted:
-//			// The user doesn't have the authority to request access e.g. parental restriction.
-//			completionHandler(false)
-//		}
-//	}
 	
 	private func add(asChildViewController viewController: UIViewController) {
 		// Add Child View Controller

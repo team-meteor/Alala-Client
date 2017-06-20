@@ -9,6 +9,11 @@
 import UIKit
 
 class RejectViewController: UIViewController {
+  fileprivate let goToSettingButton = UIButton().then {
+    $0.setTitle("Go To Setting Apps", for: .normal)
+    $0.addTarget(self, action: #selector(goToSetting), for: .touchUpInside)
+    $0.setTitleColor(UIColor.black, for: .normal)
+  }
 	
 	init() {
 		super.init(nibName: nil, bundle: nil)
@@ -33,8 +38,19 @@ class RejectViewController: UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
+    self.view.addSubview(goToSettingButton)
 		self.view.backgroundColor = UIColor.yellow
 		self.title = "Rejected"
+    
+    self.goToSettingButton.snp.makeConstraints { make in
+      make.height.equalTo(100)
+      make.width.equalTo(300)
+      make.center.equalTo(self.view)
+    }
 	}
+  
+  func goToSetting() {
+    UIApplication.shared.openURL(NSURL(string: UIApplicationOpenSettingsURLString)! as URL)
+  }
 	
 }
