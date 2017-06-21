@@ -67,7 +67,13 @@ class AfterRegisterViewController: UIViewController {
     ImageService.uploadImage(image: profileImage, progress: nil) { (imageId) in
       AuthService.instance.updateProfile(profileName: username, profileImageId: imageId, completion: { (success) in
         if success {
-          NotificationCenter.default.post(name: .presentMainTabBar, object: nil)
+          AuthService.instance.me(completion: { (user) in
+            if user != nil {
+              DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .presentMainTabBar, object: nil)
+              }
+            }
+          })
         } else {
           print("failed update profile")
         }
