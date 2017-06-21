@@ -24,6 +24,7 @@ class PhotoLibraryViewController: UIViewController {
   var smartAlbums: PHFetchResult<PHAssetCollection>!
   var userCollections: PHFetchResult<PHCollection>!
   let sectionLocalizedTitles = ["", NSLocalizedString("Smart Albums", comment: ""), NSLocalizedString("Albums", comment: "")]
+  
   fileprivate let tableView = UITableView().then {
     $0.isScrollEnabled = true
     $0.register(GridViewCell.self, forCellReuseIdentifier: CellIdentifier.allPhotos.rawValue)
@@ -59,6 +60,31 @@ extension PhotoLibraryViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
     return 100
   }
+  
+//  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//    switch SegueIdentifier(rawValue: segue.identifier!)! {
+//    case .showAllPhotos:
+//      destination.fetchResult = allPhotos
+//      
+//    case .showCollection:
+//      
+//      let collection: PHCollection
+//      switch Section(rawValue: indexPath.section)! {
+//      case .smartAlbums:
+//        collection = smartAlbums.object(at: indexPath.row)
+//      case .userCollections:
+//        collection = userCollections.object(at: indexPath.row)
+//      default: return // not reached; all photos section already handled by other segue
+//      }
+//      
+//      // configure the view controller with the asset collection
+//      guard let assetCollection = collection as? PHAssetCollection
+//        else { fatalError("expected asset collection") }
+//      destination.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
+//      destination.assetCollection = assetCollection
+//    }
+//    self.dismiss(animated: true, completion: nil)
+//  }
 }
 
 extension PhotoLibraryViewController: UITableViewDataSource {
