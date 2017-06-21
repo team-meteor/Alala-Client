@@ -22,6 +22,15 @@ struct Constants {
       return "http://52.78.76.63/api/v1/"
     }
   }
+  
+  static var STATIC_URL: String {
+    if UIDevice.isSimulator {
+      return "http://localhost:3005/static"
+    } else {
+      return "http://52.78.76.63/static"
+    }
+  }
+  
   static let DEFAULTS_REGISTERED = "isRegistered"
   static let DEFAULTS_AUTHENTICATED = "isAuthenticated"
 

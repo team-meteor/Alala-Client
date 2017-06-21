@@ -9,16 +9,18 @@
 import ObjectMapper
 
 struct User: Mappable {
-  var id: Int!
-  var username: String!
+  var id: String!
+  var email: String!
+  var profileName: String?
   var photoID: String?
+  var following: [String]?
+  var followers: [String]?
+  var createdAt: String!
 
   init?(map: Map) {
   }
 
   mutating func mapping(map: Map) {
-    self.id <- map["id"]
-    self.username <- map["username"]
-    self.photoID <- map["photo.id"]
+  
   }
 }
