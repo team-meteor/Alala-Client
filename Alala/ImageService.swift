@@ -16,7 +16,7 @@ struct ImageService {
       ]
     Alamofire.upload(multipartFormData: { multipartFormData in
       let imageData = UIImageJPEGRepresentation(image, 0.6)!
-      multipartFormData.append(imageData, withName: "photo", fileName: "file.jpg", mimeType: "image/jpg")
+      multipartFormData.append(imageData, withName: "photo", fileName: "\(UUID().uuidString).jpg", mimeType: "image/jpg")
     }, to: Constants.BASE_URL + "/photo/single", method: .post, headers: headers, encodingCompletion: { result in
       switch result {
       case .success(let upload, _, _):
@@ -33,8 +33,8 @@ struct ImageService {
       }
     })
   }
-  
+
   static func uploadMultiImages(images: [UIImage], progress: Progress, completion: @escaping (_ success: Bool) -> Void) {
-    
+
   }
 }

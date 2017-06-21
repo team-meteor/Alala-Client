@@ -13,7 +13,7 @@ class CircleImageView: UIImageView {
     super.layoutSubviews()
     updateCornerRadius()
   }
-  
+
   private func updateCornerRadius() {
     self.layer.cornerRadius = min(bounds.width, bounds.height) / 2
   }
