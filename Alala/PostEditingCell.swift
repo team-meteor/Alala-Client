@@ -15,6 +15,7 @@ class PostEditingCell: UITableViewCell {
 	let textView = UITextView().then {
 		$0.text = "내용 입력..."
 		$0.textColor = UIColor.lightGray
+    $0.backgroundColor = UIColor.yellow
 	}
 
 	override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
@@ -34,11 +35,6 @@ class PostEditingCell: UITableViewCell {
 	func imageConfigure(image: UIImage) {
 		self.photoView.image = image
 	}
-
-  func messageConfigure(message: String?) {
-    self.textView.text = message
-    self.setNeedsLayout()
-  }
 
 	override func layoutSubviews() {
 		super.layoutSubviews()
@@ -62,16 +58,16 @@ extension PostEditingCell: UITextViewDelegate {
   }
 
 	func textViewDidBeginEditing(_ textView: UITextView) {
-		if textView.textColor == UIColor.lightGray {
-			textView.text = nil
-			textView.textColor = UIColor.black
+		if self.textView.textColor == UIColor.lightGray {
+			self.textView.text = nil
+			self.textView.textColor = UIColor.black
 		}
 	}
 
 	func textViewDidEndEditing(_ textView: UITextView) {
-		if textView.text.isEmpty {
-			textView.text = "내용 입력..."
-			textView.textColor = UIColor.lightGray
+		if self.textView.text.isEmpty {
+			self.textView.text = "내용 입력..."
+			self.textView.textColor = UIColor.lightGray
 		}
 	}
 }

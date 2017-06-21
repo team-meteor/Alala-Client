@@ -124,7 +124,6 @@ class WrapperViewController: UIViewController {
 	}
 
 	func videoButtonDidTap() {
-		let page = Int(scrollView.contentOffset.x / scrollView.bounds.size.width)
 		UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
 			self.scrollView.contentOffset.x = self.scrollView.bounds.size.width}, completion: nil)
 		NotificationCenter.default.post(name: Notification.Name("videoMode"), object: nil)
