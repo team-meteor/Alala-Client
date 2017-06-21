@@ -7,10 +7,12 @@
 //
 
 import Alamofire
+import ObjectMapper
 
 class AuthService {
   static let instance = AuthService()
   let defaults = UserDefaults.standard
+  var currentUser: User?
   var isRegistered: Bool? {
     get {
       return defaults.bool(forKey: Constants.DEFAULTS_REGISTERED) == true
@@ -89,7 +91,6 @@ class AuthService {
     let session = URLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
 
     guard let URL = URL(string: Constants.BASE_URL + "user/login") else {
-      isAuthenticated = false
       completion(false)
       return
     }
@@ -116,8 +117,6 @@ class AuthService {
                   if let token = result?["token"] as? String {
                     self.email = email
                     self.authToken = token
-                    self.isRegistered = true
-                    self.isAuthenticated = true
                     completion(true)
                   } else {
                     completion(false)
@@ -148,10 +147,10 @@ class AuthService {
     }
   }
 
-  func me(completion: @escaping (_ success: Bool) -> Void) {
+  func me(completion: @escaping (_ user: User?) -> Void) {
     let urlString = Constants.BASE_URL + "user/me"
     guard let token = self.authToken else {
-      completion(false)
+      completion(nil)
       return
     }
     let headers = [
@@ -161,10 +160,12 @@ class AuthService {
       .validate(statusCode: 200..<300)
       .responseJSON { response in
         if response.result.error == nil {
-          completion(true)
+          self.currentUser = Mapper<User>().map(JSONObject: response.result.value)
+          print(self.currentUser)
+          completion(self.currentUser)
         } else {
           print("HTTP Request failed: \(String(describing: response.result.error))")
-          completion(false)
+          completion(nil)
         }
     }
   }
@@ -182,8 +183,6 @@ class AuthService {
       .response { (dataResponse) in
         if dataResponse.response?.statusCode == 200 {
           self.authToken = nil
-          self.isRegistered = false
-          self.isAuthenticated = false
           completion(true)
         } else {
           completion(false)
