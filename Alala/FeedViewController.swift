@@ -78,7 +78,7 @@ extension FeedViewController: UICollectionViewDataSource {
 extension FeedViewController: UICollectionViewDelegateFlowLayout {
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
     let dummyData = dummyDataSource.dummyData
-    let image = UIImage(named: dummyData[indexPath.item])
+    _ = UIImage(named: dummyData[indexPath.item])
     let layout = collectionViewLayout as! UICollectionViewFlowLayout
 
 //    layout.itemSize = (image?.setImage())!

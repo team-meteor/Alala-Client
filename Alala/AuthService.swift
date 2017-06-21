@@ -43,13 +43,12 @@ class AuthService {
       defaults.set(newValue, forKey: Constants.DEFAULTS_TOKEN)
     }
   }
-  func register(email: String, password: String, completion: @escaping (_ success: Bool) -> Void) {
+  func register(email: String, password: String, completion: @escaping (_ success: Bool, _ message: String) -> Void) {
     let json = ["email": email, "password": password]
     let sessionConfig = URLSessionConfiguration.default
     let session = URLSession(configuration: sessionConfig)
     guard let URL = URL(string: Constants.BASE_URL + "user/register") else {
-      isRegistered = false
-      completion(false)
+      completion(false, "Register failed")
       return
     }
     var request = URLRequest(url: URL)
@@ -60,24 +59,26 @@ class AuthService {
       let task = session.dataTask(with: request, completionHandler: { (_: Data?, response: URLResponse?, error: Error?) in
         if error == nil {
           let statusCode = (response as! HTTPURLResponse).statusCode
-          if statusCode != 200 && statusCode != 409 {
-            self.isRegistered = false
-            completion(false)
+          print(statusCode)
+          if statusCode == 200 {
+            completion(true, "Register successe")
+            return
+          } else if statusCode == 409 {
+            completion(false, "User Exists")
             return
           } else {
-            self.isRegistered = true
-            completion(true)
+            completion(false, "Register failed")
+            return
           }
         } else {
-          completion(false)
+          completion(false, "Register failed")
         }
       })
       task.resume()
       session.finishTasksAndInvalidate()
 
     } catch let err {
-      self.isRegistered = false
-      completion(false)
+      completion(false, "Register failed")
       print(err)
     }
   }

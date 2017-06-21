@@ -21,6 +21,6 @@ struct User: Mappable {
   }
 
   mutating func mapping(map: Map) {
-  
+
   }
 }

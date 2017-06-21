@@ -156,9 +156,9 @@ class LoginViewController: UIViewController {
         }
       })
     } else {
-      AuthService.instance.register(email: email, password: password) { (success) in
+      AuthService.instance.register(email: email, password: password) { (success, message) in
         if success {
-          print("success")
+          print(message)
           AuthService.instance.login(email: email, password: password, completion: { (success) in
             if success {
               DispatchQueue.main.async {
@@ -167,7 +167,7 @@ class LoginViewController: UIViewController {
               }
 
             } else {
-              print("Login failed")
+              print(message)
               DispatchQueue.main.async {
                 self.emailTextField.isEnabled = true
                 self.passwordTextField.isEnabled = true
@@ -177,7 +177,7 @@ class LoginViewController: UIViewController {
             }
           })
         } else {
-          print("register failed")
+          print(message)
           DispatchQueue.main.async {
             self.emailTextField.isEnabled = true
             self.passwordTextField.isEnabled = true
