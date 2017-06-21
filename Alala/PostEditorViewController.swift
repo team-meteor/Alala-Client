@@ -53,7 +53,7 @@ class PostEditorViewController: UIViewController {
 
 }
 
-extension PostEditorViewController: UITableViewDataSource, UITextViewDelegate {
+extension PostEditorViewController: UITableViewDataSource {
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return 1
@@ -62,7 +62,6 @@ extension PostEditorViewController: UITableViewDataSource, UITextViewDelegate {
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "postEditingCell", for: indexPath) as! PostEditingCell
     cell.imageConfigure(image: self.image)
-    cell.messageConfigure(message: self.message)
     cell.textDidChange = { [weak self] message in
       guard let `self` = self else { return }
       self.message = message

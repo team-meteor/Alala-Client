@@ -207,9 +207,10 @@ class CameraViewController: UIViewController {
   }
 
   func getDevice(position: AVCaptureDevicePosition) -> AVCaptureDevice? {
-    let devices: NSArray = AVCaptureDevice.devices() as! NSArray
-    for de in devices {
-      let deviceConverted = de as! AVCaptureDevice
+    let deviceDiscoverySession = AVCaptureDeviceDiscoverySession(deviceTypes: [AVCaptureDeviceType.builtInDualCamera, AVCaptureDeviceType.builtInTelephotoCamera, AVCaptureDeviceType.builtInWideAngleCamera], mediaType: AVMediaTypeVideo, position: AVCaptureDevicePosition.unspecified)
+    let devices = deviceDiscoverySession?.devices
+    for device in devices! {
+      let deviceConverted = device
       if deviceConverted.position == position {
         return deviceConverted
       }
