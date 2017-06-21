@@ -145,7 +145,7 @@ class CameraViewController: UIViewController {
     }
 
   }
-  
+
   func cameraStop() {
     self.session.stopRunning()
   }
@@ -224,7 +224,7 @@ class CameraViewController: UIViewController {
   }
 
 	func photoModeSetting() {
-    
+
 		self.title = "Photo"
 		let page = Int(scrollView.contentOffset.x / scrollView.bounds.size.width)
 		if page != 0 {

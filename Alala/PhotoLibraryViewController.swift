@@ -24,7 +24,7 @@ class PhotoLibraryViewController: UIViewController {
   var smartAlbums: PHFetchResult<PHAssetCollection>!
   var userCollections: PHFetchResult<PHCollection>!
   let sectionLocalizedTitles = ["", NSLocalizedString("Smart Albums", comment: ""), NSLocalizedString("Albums", comment: "")]
-  
+
   fileprivate let tableView = UITableView().then {
     $0.isScrollEnabled = true
     $0.register(GridViewCell.self, forCellReuseIdentifier: CellIdentifier.allPhotos.rawValue)
@@ -60,7 +60,7 @@ extension PhotoLibraryViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
     return 100
   }
-  
+
 //  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 //    switch SegueIdentifier(rawValue: segue.identifier!)! {
 //    case .showAllPhotos:

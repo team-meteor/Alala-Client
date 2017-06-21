@@ -8,7 +8,7 @@
 
 import ObjectMapper
 
-struct Post:Mappable {
+struct Post: Mappable {
   var id: String!
   var photoIds: [String]!
   var createdBy: User!
@@ -17,7 +17,7 @@ struct Post:Mappable {
   var isLiked: Bool!
   var createdAt: Date!
   var comments: [Comment]?
-  
+
   init?(map: Map) {
   }
   mutating func mapping(map: Map) {
