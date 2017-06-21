@@ -39,7 +39,7 @@ class LibraryViewController: UIViewController {
 	private func setupView() {
 		
 		if PHPhotoLibrary.authorizationStatus() != .authorized {
-			PHPhotoLibrary.requestAuthorization( { status in
+			PHPhotoLibrary.requestAuthorization({ status in
 				if status == .authorized {
 					//self.remove(asChildViewController: self.rejectViewController)
 					self.add(asChildViewController: self.selectionViewController)
@@ -47,7 +47,7 @@ class LibraryViewController: UIViewController {
 					//self.remove(asChildViewController: self.selectionViewController)
 					self.add(asChildViewController: self.rejectViewController)
 				}
-			} )
+			})
 		} else {
 			//self.remove(asChildViewController: self.rejectViewController)
 			self.add(asChildViewController: self.selectionViewController)

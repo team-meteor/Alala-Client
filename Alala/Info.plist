@@ -29,10 +29,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>the camera is used to take a picture</string>
-
 	<key>NSMicrophoneUsageDescription</key>
 	<string>to record Live Photos and movies</string>
-
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>The photo library is used to save silly pictures</string>
 	<key>UILaunchStoryboardName</key>

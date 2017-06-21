@@ -8,8 +8,9 @@
 
 import UIKit
 
-class PostEditorImageCell: UITableViewCell {
-	
+class PostEditingCell: UITableViewCell {
+  
+	var textDidChange: ((String?) -> Void)?
 	let photoView = UIImageView()
 	let textView = UITextView().then {
 		$0.text = "내용 입력..."
@@ -30,12 +31,18 @@ class PostEditorImageCell: UITableViewCell {
 	
 	// MARK: Configuring
 	
-	func configure(image: UIImage) {
+	func imageConfigure(image: UIImage) {
 		self.photoView.image = image
 	}
+  
+  func messageConfigure(message: String?) {
+    self.textView.text = message
+    self.setNeedsLayout()
+  }
 	
 	override func layoutSubviews() {
 		super.layoutSubviews()
+    
 		self.photoView.snp.makeConstraints { make in
 			make.left.top.bottom.equalTo(self.contentView)
 			make.width.equalTo(self.contentView.snp.height)
@@ -48,7 +55,12 @@ class PostEditorImageCell: UITableViewCell {
 	}
 }
 
-extension PostEditorImageCell: UITextViewDelegate {
+extension PostEditingCell: UITextViewDelegate {
+  
+  func textViewDidChange(_ textView: UITextView) {
+    self.textDidChange?(textView.text)
+  }
+  
 	func textViewDidBeginEditing(_ textView: UITextView) {
 		if textView.textColor == UIColor.lightGray {
 			textView.text = nil

@@ -15,8 +15,6 @@ class SelectionViewController: UIViewController {
 	let imageManager = PHCachingImageManager()
 	let tileCellSpacing = CGFloat(3)
     
-    
-    
     fileprivate let baseScrollView = UIScrollView().then {
         $0.showsHorizontalScrollIndicator = false
         $0.showsVerticalScrollIndicator = false
@@ -34,7 +32,6 @@ class SelectionViewController: UIViewController {
 	}
 	
 	fileprivate let imageView = UIImageView()
-    
 	
 	fileprivate let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
 
