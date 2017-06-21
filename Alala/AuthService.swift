@@ -43,13 +43,12 @@ class AuthService {
       defaults.set(newValue, forKey: Constants.DEFAULTS_TOKEN)
     }
   }
-  func register(email: String, password: String, completion: @escaping (_ success: Bool) -> Void) {
+  func register(email: String, password: String, completion: @escaping (_ success: Bool, _ message: String) -> Void) {
     let json = ["email": email, "password": password]
     let sessionConfig = URLSessionConfiguration.default
     let session = URLSession(configuration: sessionConfig)
     guard let URL = URL(string: Constants.BASE_URL + "user/register") else {
-      isRegistered = false
-      completion(false)
+      completion(false, "Register failed")
       return
     }
     var request = URLRequest(url: URL)
@@ -60,33 +59,35 @@ class AuthService {
       let task = session.dataTask(with: request, completionHandler: { (_: Data?, response: URLResponse?, error: Error?) in
         if error == nil {
           let statusCode = (response as! HTTPURLResponse).statusCode
-          if statusCode != 200 && statusCode != 409 {
-            self.isRegistered = false
-            completion(false)
+          print(statusCode)
+          if statusCode == 200 {
+            completion(true, "Register successe")
+            return
+          } else if statusCode == 409 {
+            completion(false, "User Exists")
             return
           } else {
-            self.isRegistered = true
-            completion(true)
+            completion(false, "Register failed")
+            return
           }
         } else {
-          completion(false)
+          completion(false, "Register failed")
         }
       })
       task.resume()
       session.finishTasksAndInvalidate()
-      
+
     } catch let err {
-      self.isRegistered = false
-      completion(false)
+      completion(false, "Register failed")
       print(err)
     }
   }
-  
+
   func login(email: String, password: String, completion: @escaping (_ success: Bool) -> Void) {
     let json = ["email": email, "password": password]
     let sessionConfig = URLSessionConfiguration.default
     let session = URLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
-    
+
     guard let URL = URL(string: Constants.BASE_URL + "user/login") else {
       isAuthenticated = false
       completion(false)
@@ -140,13 +141,13 @@ class AuthService {
       })
       task.resume()
       session.finishTasksAndInvalidate()
-      
+
     } catch let err {
       completion(false)
       print(err)
     }
   }
-  
+
   func me(completion: @escaping (_ success: Bool) -> Void) {
     let urlString = Constants.BASE_URL + "user/me"
     guard let token = self.authToken else {
@@ -167,7 +168,7 @@ class AuthService {
         }
     }
   }
-  
+
   func logout(completion: @escaping (_ success: Bool) -> Void) {
     guard let token = self.authToken else {
       completion(false)
@@ -189,7 +190,7 @@ class AuthService {
         }
     }
   }
-  
+
   func checkUsernameUnique(username: String, completion: @escaping (_ isUnique: Bool) -> Void) {
     let headers = [
       "Content-Type": "application/json; charset=utf-8"
@@ -210,7 +211,7 @@ class AuthService {
         }
     }
   }
-  
+
   func updateProfile(profileName: String, profileImageId: String, completion: @escaping (_ success: Bool) -> Void) {
     guard let token = self.authToken else {
       return
@@ -223,7 +224,7 @@ class AuthService {
       "profilename": profileName,
       "photoId": profileImageId
     ]
-    
+
     Alamofire.request(Constants.BASE_URL + "/user/profile/", method: .put, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { response in

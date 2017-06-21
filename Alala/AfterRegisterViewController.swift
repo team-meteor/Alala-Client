@@ -31,10 +31,10 @@ class AfterRegisterViewController: UIViewController {
     doneButton.target = self
     doneButton.action = #selector(doneButtonDidTap)
     doneButton.isEnabled = false
-    
+
     self.view.addSubview(profilePhoto)
     self.view.addSubview(usernameTextField)
-    
+
     profilePhoto.snp.makeConstraints { (make) in
       make.centerX.equalTo(self.view)
       make.centerY.equalTo(self.view).multipliedBy(0.7)
@@ -52,13 +52,13 @@ class AfterRegisterViewController: UIViewController {
       action: #selector(AfterRegisterViewController.profilePhotoDidTap))
     )
   }
-  
+
   func profilePhotoDidTap() {
     let pickerController = UIImagePickerController()
     pickerController.delegate = self
     self.present(pickerController, animated: true, completion: nil)
   }
-  
+
   func doneButtonDidTap() {
     // profile update
     guard let profileImage = profilePhoto.image, let username = usernameTextField.text, !username.isEmpty else {
@@ -74,7 +74,7 @@ class AfterRegisterViewController: UIViewController {
       })
     }
   }
-  
+
   func usernameFieldDidChange(_ textField: UITextField) {
     let username = textField.text!
     AuthService.instance.checkUsernameUnique(username: username) { (isUnique) in

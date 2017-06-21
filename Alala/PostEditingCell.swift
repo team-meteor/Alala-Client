@@ -9,7 +9,7 @@
 import UIKit
 
 class PostEditingCell: UITableViewCell {
-  
+
 	var textDidChange: ((String?) -> Void)?
 	let photoView = UIImageView()
 	let textView = UITextView().then {
@@ -25,20 +25,20 @@ class PostEditingCell: UITableViewCell {
 		self.contentView.addSubview(self.textView)
 		self.textView.delegate = self
 	}
-	
+
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
-	
+
 	// MARK: Configuring
-	
+
 	func imageConfigure(image: UIImage) {
 		self.photoView.image = image
 	}
-	
+
 	override func layoutSubviews() {
 		super.layoutSubviews()
-    
+
 		self.photoView.snp.makeConstraints { make in
 			make.left.top.bottom.equalTo(self.contentView)
 			make.width.equalTo(self.contentView.snp.height)
@@ -52,18 +52,18 @@ class PostEditingCell: UITableViewCell {
 }
 
 extension PostEditingCell: UITextViewDelegate {
-  
+
   func textViewDidChange(_ textView: UITextView) {
     self.textDidChange?(textView.text)
   }
-  
+
 	func textViewDidBeginEditing(_ textView: UITextView) {
 		if self.textView.textColor == UIColor.lightGray {
 			self.textView.text = nil
 			self.textView.textColor = UIColor.black
 		}
 	}
-	
+
 	func textViewDidEndEditing(_ textView: UITextView) {
 		if self.textView.text.isEmpty {
 			self.textView.text = "내용 입력..."

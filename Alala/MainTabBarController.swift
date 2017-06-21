@@ -31,11 +31,11 @@ class MainTabBarController: UITabBarController {
 			personalViewController
 		]
 	}
-	
+
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
-	
+
 	fileprivate func presentWrapperViewController() {
 		let wrapperViewController = WrapperViewController()
 		//self.present(UINavigationController.init(rootViewController: wrapperViewController), animated: true, completion: nil)
@@ -44,7 +44,7 @@ class MainTabBarController: UITabBarController {
 }
 
 extension MainTabBarController: UITabBarControllerDelegate {
-	
+
 	func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
 		if viewController === self.fakeViewController {
 			self.presentWrapperViewController()

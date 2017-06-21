@@ -9,7 +9,7 @@
 import UIKit
 
 class DiscoverViewController: UIViewController {
-  
+
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     self.tabBarItem.image = UIImage(named: "discover")?.resizeImage(scaledTolength: 25)
@@ -17,14 +17,14 @@ class DiscoverViewController: UIViewController {
     self.tabBarItem.imageInsets.top = 5
     self.tabBarItem.imageInsets.bottom = -5
   }
-  
+
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+
     // Do any additional setup after loading the view.
   }
 }

@@ -14,20 +14,20 @@ class RejectViewController: UIViewController {
     $0.addTarget(self, action: #selector(goToSetting), for: .touchUpInside)
     $0.setTitleColor(UIColor.black, for: .normal)
   }
-	
+
 	init() {
 		super.init(nibName: nil, bundle: nil)
-		
+
 		//cancle 버튼 생성
 		self.navigationItem.leftBarButtonItem = UIBarButtonItem(
 			barButtonSystemItem: .cancel,
 			target: self,
 			action: #selector(cancelButtonDidTap)
 		)
-		
+
 		self.automaticallyAdjustsScrollViewInsets = false
 	}
-	
+
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
@@ -35,22 +35,22 @@ class RejectViewController: UIViewController {
 	func cancelButtonDidTap() {
 		self.dismiss(animated: true, completion: nil)
 	}
-	
+
 	override func viewDidLoad() {
 		super.viewDidLoad()
     self.view.addSubview(goToSettingButton)
 		self.view.backgroundColor = UIColor.yellow
 		self.title = "Rejected"
-    
+
     self.goToSettingButton.snp.makeConstraints { make in
       make.height.equalTo(100)
       make.width.equalTo(300)
       make.center.equalTo(self.view)
     }
 	}
-  
+
   func goToSetting() {
     UIApplication.shared.canOpenURL(NSURL(string: UIApplicationOpenSettingsURLString)! as URL)
   }
-	
+
 }
