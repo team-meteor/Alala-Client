@@ -161,7 +161,7 @@ class AuthService {
       .responseJSON { response in
         if response.result.error == nil {
           self.currentUser = Mapper<User>().map(JSONObject: response.result.value)
-          print(self.currentUser)
+          print(self.currentUser ?? "")
           completion(self.currentUser)
         } else {
           print("HTTP Request failed: \(String(describing: response.result.error))")

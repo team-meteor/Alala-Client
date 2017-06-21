@@ -22,7 +22,7 @@ struct User: Mappable {
   mutating func mapping(map: Map) {
     id <- map["_id"]
     email <- map["username"]
-    createdAt <- (map["createdAt"], DateTransform())
+    createdAt <- (map["createdAt"], ISO8601DateTransform())
     profileName <- map["profileName"]
     photoId <- map["photoId"]
     following <- map["following"]
