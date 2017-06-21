@@ -5,7 +5,6 @@ class SelectionViewController: UIViewController {
 
   var fetchResult: PHFetchResult<PHAsset>!
   let imageManager = PHCachingImageManager()
-
   let tileCellSpacing = CGFloat(3)
   fileprivate let scrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
@@ -14,6 +13,16 @@ class SelectionViewController: UIViewController {
     $0.minimumZoomScale = 0.1
     $0.zoomScale = 1.0
     $0.bounces = false
+  }
+
+  fileprivate let libraryButton = UIButton().then {
+    $0.setTitle("Library v", for: .normal)
+    $0.backgroundColor = UIColor.red
+  }
+
+  fileprivate let tempButton = UIButton().then {
+    $0.setTitle("Library ^", for: .normal)
+    $0.backgroundColor = UIColor.red
   }
 
   fileprivate let imageView = UIImageView()
@@ -74,6 +83,8 @@ class SelectionViewController: UIViewController {
     self.view.addSubview(self.collectionView)
     let pan: UIPanGestureRecognizer = UIPanGestureRecognizer.init(target: self, action: #selector(handlePanGestureRecognizer(_:)))
     self.panView.addGestureRecognizer(pan)
+    self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
+    self.tempButton.addTarget(self, action: #selector(tempButtonDidTap), for: .touchUpInside)
 
     self.scrollView.snp.makeConstraints { make in
       make.left.right.equalTo(self.view)
@@ -136,6 +147,14 @@ class SelectionViewController: UIViewController {
       y: (self.scrollView.contentSize.height - self.scrollView.bounds.height) / 2
     )
     self.scrollView.setContentOffset(targetContentOffset, animated: animated)
+    self.navigationController?.navigationBar.addSubview(self.libraryButton)
+
+    self.libraryButton.snp.makeConstraints { make in
+      make.height.equalTo(40)
+      make.width.equalTo(100)
+      make.center.equalTo((self.navigationController?.navigationBar)!)
+    }
+
   }
 
   func fetchAllPhotos() {
@@ -163,6 +182,25 @@ class SelectionViewController: UIViewController {
       let postEditorViewController = PostEditorViewController(image: croppedImage)
       self.navigationController?.pushViewController(postEditorViewController, animated: true)
     }
+  }
+
+  func libraryButtonDidTap() {
+    let photoLibraryViewController = PhotoLibraryViewController()
+    photoLibraryViewController.modalPresentationStyle = UIModalPresentationStyle.custom
+    self.present(photoLibraryViewController, animated: true, completion: {
+      photoLibraryViewController.view.addSubview(self.tempButton)
+      self.tempButton.snp.makeConstraints { make in
+        make.center.equalTo(self.libraryButton)
+        make.width.height.equalTo(self.libraryButton)
+      }
+
+    })
+
+  }
+
+  func tempButtonDidTap() {
+    self.dismiss(animated: true, completion: nil)
+    print("b")
   }
 }
 
@@ -242,7 +280,6 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
 
     self.centerScrollView(animated: false)
     self.scrollView.zoomScale = 1.0
-
   }
 }
 
@@ -252,3 +289,31 @@ extension SelectionViewController: UIScrollViewDelegate {
     return imageView
   }
 }
+
+//extension SelectionViewController: UIViewControllerTransitioningDelegate {
+//  func libraryButtonDidTap() {
+//    let photoLibraryViewController = PhotoLibraryViewController()
+//    photoLibraryViewController.modalPresentationStyle = UIModalPresentationStyle.custom
+//    photoLibraryViewController.transitioningDelegate = self
+//    self.present(photoLibraryViewController, animated: true, completion: nil)
+//    photoLibraryViewController.view.addSubview(tempButton)
+//    tempButton.frame = libraryButton.bounds
+//  }
+//  
+//  func tempButtonDidTap() {
+//    self.dismiss(animated: true, completion: nil)
+//    print("b")
+//  }
+//  
+//  func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+//    return HalfSizePresentationController(presentedViewController:presented, presenting: presenting)
+//  }
+//  
+//}
+//
+//class HalfSizePresentationController: UIPresentationController {
+//  override var frameOfPresentedViewInContainerView: CGRect {
+//    return CGRect(x: 0, y: 100, width: containerView!.bounds.width, height: containerView!.bounds.height - 100)
+//  }
+//
+//}
