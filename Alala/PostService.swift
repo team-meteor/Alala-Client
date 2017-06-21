@@ -26,7 +26,7 @@ struct PostService {
       
       // JSON Body
       let body: [String : Any] = [
-        "description": message,
+        "description": message as Any,
         "photos": [
           imageId
         ]
@@ -37,10 +37,10 @@ struct PostService {
         .validate(statusCode: 200..<300)
         .responseJSON { response in
           if response.result.error == nil {
-            debugPrint("HTTP Response Body: \(response.data)")
+            debugPrint("HTTP Response Body: \(String(describing: response.data))")
             completion(true)
           } else {
-            debugPrint("HTTP Request failed: \(response.result.error)")
+            debugPrint("HTTP Request failed: \(String(describing: response.result.error))")
             completion(false)
           }
       }
