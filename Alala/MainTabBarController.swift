@@ -15,6 +15,7 @@ class MainTabBarController: UITabBarController {
 	let discoverViewController = DiscoverViewController()
 	let activityViewController = ActivityViewController()
 	let personalViewController = PersonalViewController()
+    var statusBarShouldBeHidden = false
 	let fakeViewController = UIViewController().then {
 		$0.tabBarItem.image = UIImage(named: "plus")?.resizeImage(scaledTolength: 25)
 		$0.tabBarItem.imageInsets.top = 5
@@ -31,7 +32,15 @@ class MainTabBarController: UITabBarController {
 			personalViewController
 		]
 	}
-
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Show the status bar
+        statusBarShouldBeHidden = false
+        self.setNeedsStatusBarAppearanceUpdate()
+    }
+    override var prefersStatusBarHidden: Bool {
+        return statusBarShouldBeHidden
+    }
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
@@ -39,6 +48,8 @@ class MainTabBarController: UITabBarController {
 	fileprivate func presentWrapperViewController() {
 		let wrapperViewController = WrapperViewController()
 		//self.present(UINavigationController.init(rootViewController: wrapperViewController), animated: true, completion: nil)
+        statusBarShouldBeHidden = true
+        self.setNeedsStatusBarAppearanceUpdate()
 		self.present(wrapperViewController, animated: true, completion: nil)
 	}
 }
