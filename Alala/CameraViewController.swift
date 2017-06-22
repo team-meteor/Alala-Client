@@ -143,7 +143,6 @@ class CameraViewController: UIViewController {
         self.initializeCaptureSession(camera: AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo))
       }
     }
-
   }
 
   func cameraStop() {
@@ -306,5 +305,4 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate {
       }
     }
   }
-
 }

@@ -56,9 +56,6 @@ class SelectionViewController: UIViewController {
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  override var prefersStatusBarHidden: Bool {
-    return true
-  }
   override func viewDidLoad() {
     super.viewDidLoad()
     let screenWidth = self.view.bounds.width
@@ -115,6 +112,7 @@ class SelectionViewController: UIViewController {
       make.top.equalTo(self.view)
     }
   }
+
   func centerScrollView(animated: Bool) {
     let targetContentOffset = CGPoint(
       x: (self.scrollView.contentSize.width - self.scrollView.bounds.width) / 2,

@@ -411,7 +411,7 @@
 					6FFC06A81EE3D49000E542BC = {
 						CreatedOnToolsVersion = 8.3.2;
 
-						DevelopmentTeam = TM6U8P8E5J;
+						DevelopmentTeam = UJ82UGU342;
 
 						ProvisioningStyle = Automatic;
 					};
@@ -708,7 +708,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 
-				DEVELOPMENT_TEAM = TM6U8P8E5J;
+				DEVELOPMENT_TEAM = UJ82UGU342;
 
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -728,7 +728,7 @@
 					RevealServer,
 				);
 
-				PRODUCT_BUNDLE_IDENTIFIER = codesquad.kraa;
+				PRODUCT_BUNDLE_IDENTIFIER = hoemoon.com;
 
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
@@ -740,7 +740,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 
-				DEVELOPMENT_TEAM = TM6U8P8E5J;
+				DEVELOPMENT_TEAM = UJ82UGU342;
 
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -760,7 +760,7 @@
 					RevealServer,
 				);
 
-				PRODUCT_BUNDLE_IDENTIFIER = codesquad.kraa;
+				PRODUCT_BUNDLE_IDENTIFIER = hoemoon.com;
 
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
