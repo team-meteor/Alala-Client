@@ -106,6 +106,9 @@ class WrapperViewController: UIViewController {
 			self.scrollView.contentSize = CGSize(width: self.libraryViewController.view.frame.size.width * 2, height: self.libraryViewController.view.frame.size.height)
 		}
 	}
+  override var prefersStatusBarHidden: Bool {
+    return true
+  }
 
 	func libraryButtonDidTap() {
 
