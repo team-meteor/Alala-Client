@@ -15,10 +15,10 @@ struct Comment: Mappable {
   var likedUsers: [User]?
   var isLiked: Bool!
   var createdAt: Date!
-  
+
   init?(map: Map) {
   }
-  
+
   mutating func mapping(map: Map) {
     id <- map["_id"]
     content <- map["content"]
