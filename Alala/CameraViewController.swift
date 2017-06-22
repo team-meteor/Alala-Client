@@ -140,7 +140,7 @@ class CameraViewController: UIViewController {
 
     checkCameraAuthorization { status in
       if status == true {
-        self.initializeCaptureSession(camera: AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo))
+        //self.initializeCaptureSession(camera: AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo))
       }
     }
 

@@ -50,7 +50,7 @@ class RejectViewController: UIViewController {
 	}
 
   func goToSetting() {
-    UIApplication.shared.canOpenURL(NSURL(string: UIApplicationOpenSettingsURLString)! as URL)
+    UIApplication.shared.open(URL(string:UIApplicationOpenSettingsURLString)!)
   }
 
 }

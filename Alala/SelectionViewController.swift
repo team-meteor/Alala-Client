@@ -5,7 +5,7 @@ class SelectionViewController: UIViewController {
   var fetchResult: PHFetchResult<PHAsset>!
   let imageManager = PHCachingImageManager()
   let tileCellSpacing = CGFloat(3)
-  var statusBarShouldBeHidden = false
+
   fileprivate let baseScrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = false
@@ -65,7 +65,7 @@ class SelectionViewController: UIViewController {
     let screenHeight = self.view.bounds.height
     let navigationBarHeight = self.navigationController?.navigationBar.frame.height
     let bounds = self.navigationController!.navigationBar.bounds
-    self.statusBarShouldBeHidden = true
+
     self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
     self.title = "Library"
     collectionView.dataSource = self
@@ -107,7 +107,7 @@ class SelectionViewController: UIViewController {
     super.viewDidAppear(animated)
     let bounds = self.navigationController!.navigationBar.bounds
     self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
-    self.statusBarShouldBeHidden = true
+
   }
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
