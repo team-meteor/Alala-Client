@@ -101,17 +101,16 @@ class WrapperViewController: UIViewController {
 
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
-
 		DispatchQueue.main.async {
 			self.scrollView.contentSize = CGSize(width: self.libraryViewController.view.frame.size.width * 2, height: self.libraryViewController.view.frame.size.height)
 		}
 	}
+
   override var prefersStatusBarHidden: Bool {
     return true
   }
 
 	func libraryButtonDidTap() {
-
 		UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
 			self.scrollView.contentOffset.x = 0}, completion: nil)
 		self.libraryButton.setTitleColor(UIColor.blue, for: .normal)
@@ -153,6 +152,7 @@ extension WrapperViewController: UIScrollViewDelegate {
 			self.libraryButton.setTitleColor(UIColor.blue, for: .normal)
 			self.photoButton.setTitleColor(UIColor.lightGray, for: .normal)
 			self.videoButton.setTitleColor(UIColor.lightGray, for: .normal)
+      NotificationCenter.default.post(name: Notification.Name("cameraStop"), object: nil)
 		} else if page == 1 {
 			photoModeOnTabBar()
 			NotificationCenter.default.post(name: Notification.Name("photoMode"), object: nil)

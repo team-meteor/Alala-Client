@@ -81,6 +81,7 @@ class CameraViewController: UIViewController {
 		self.title = "Photo"
 		NotificationCenter.default.addObserver(self, selector: #selector(photoModeSetting), name: Notification.Name("photoMode"), object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(videoModeSetting), name: Notification.Name("videoMode"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(cameraStop), name: Notification.Name("cameraStop"), object: nil)
 		self.bottomView.addSubview(takePhotoButton)
 		self.bottomView.addSubview(takeVideoButton)
 		self.scrollView.addSubview(bottomView)
@@ -142,7 +143,10 @@ class CameraViewController: UIViewController {
         self.initializeCaptureSession(camera: AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo))
       }
     }
+  }
 
+  func cameraStop() {
+    self.session.stopRunning()
   }
 
   func displayCapturPhoto() {
@@ -226,6 +230,7 @@ class CameraViewController: UIViewController {
 			UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
 				self.scrollView.contentOffset.x = 0}, completion: nil)
 		}
+    self.session.startRunning()
 
 	}
 
@@ -300,5 +305,4 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate {
       }
     }
   }
-
 }
