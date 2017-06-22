@@ -86,9 +86,6 @@ class SelectionViewController: UIViewController {
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  override var prefersStatusBarHidden: Bool {
-    return true
-  }
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -170,6 +167,7 @@ class SelectionViewController: UIViewController {
       make.center.equalTo((self.navigationController?.navigationBar)!)
     }
   }
+
   func centerScrollView(animated: Bool) {
     let targetContentOffset = CGPoint(
       x: (self.scrollView.contentSize.width - self.scrollView.bounds.width) / 2,

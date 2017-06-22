@@ -10,16 +10,19 @@ import UIKit
 import Photos
 
 class MainTabBarController: UITabBarController {
-
   let feedViewController = FeedViewController()
   let discoverViewController = DiscoverViewController()
   let activityViewController = ActivityViewController()
   let personalViewController = PersonalViewController()
-  var statusBarShouldBeHidden = false
   let fakeViewController = UIViewController().then {
     $0.tabBarItem.image = UIImage(named: "plus")?.resizeImage(scaledTolength: 25)
     $0.tabBarItem.imageInsets.top = 5
     $0.tabBarItem.imageInsets.bottom = -5
+  }
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+
   }
   init() {
     super.init(nibName: nil, bundle: nil)
@@ -32,21 +35,14 @@ class MainTabBarController: UITabBarController {
       personalViewController
     ]
   }
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    // Show the status bar
-    statusBarShouldBeHidden = false
-    self.setNeedsStatusBarAppearanceUpdate()
-  }
-  override var prefersStatusBarHidden: Bool {
-    return statusBarShouldBeHidden
-  }
+
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-
   fileprivate func presentWrapperViewController() {
     let wrapperViewController = WrapperViewController()
+    self.feedViewController.navigationController?.setNavigationBarHidden(true, animated: true)
+
     self.present(wrapperViewController, animated: true, completion: nil)
   }
 }

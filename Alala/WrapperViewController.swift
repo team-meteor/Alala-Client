@@ -103,7 +103,6 @@ class WrapperViewController: UIViewController {
 
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
-
 		DispatchQueue.main.async {
 			self.scrollView.contentSize = CGSize(width: self.libraryViewController.view.frame.size.width * 2, height: self.libraryViewController.view.frame.size.height)
 		}
@@ -117,8 +116,11 @@ class WrapperViewController: UIViewController {
     UIView.animate(withDuration: 0.5, animations: {self.customTabBar.transform = CGAffineTransform(translationX: 0, y: 50)})
   }
 
-	func libraryButtonDidTap() {
+  override var prefersStatusBarHidden: Bool {
+    return true
+  }
 
+	func libraryButtonDidTap() {
 		UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
 			self.scrollView.contentOffset.x = 0}, completion: nil)
 		self.libraryButton.setTitleColor(UIColor.blue, for: .normal)
