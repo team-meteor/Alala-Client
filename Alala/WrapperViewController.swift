@@ -45,6 +45,8 @@ class WrapperViewController: UIViewController {
 		super.viewDidLoad()
 		NotificationCenter.default.addObserver(self, selector: #selector(photoModeOnTabBar), name: Notification.Name("photoModeOnTabBar"), object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(videoButtonDidTap), name: Notification.Name("videoModeOnTabBar"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(showCustomTabBar), name: Notification.Name("showCustomTabBar"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(hideCustomTabBar), name: Notification.Name("hideCustomTabBar"), object: nil)
 		self.scrollView.delegate = self
 		self.addChildViewController(libraryViewController)
 		self.addChildViewController(cameraViewController)
@@ -105,6 +107,14 @@ class WrapperViewController: UIViewController {
 			self.scrollView.contentSize = CGSize(width: self.libraryViewController.view.frame.size.width * 2, height: self.libraryViewController.view.frame.size.height)
 		}
 	}
+
+  func showCustomTabBar() {
+    UIView.animate(withDuration: 0.5, animations: {self.customTabBar.transform = CGAffineTransform.identity})
+  }
+
+  func hideCustomTabBar() {
+    UIView.animate(withDuration: 0.5, animations: {self.customTabBar.transform = CGAffineTransform(translationX: 0, y: 50)})
+  }
 
   override var prefersStatusBarHidden: Bool {
     return true
