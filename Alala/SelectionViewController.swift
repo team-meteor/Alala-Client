@@ -20,6 +20,8 @@ class SelectionViewController: UIViewController {
   var smartAlbums: PHFetchResult<PHAssetCollection>!
   var userCollections: PHFetchResult<PHCollection>!
   var fetchResult: PHFetchResult<PHAsset>!
+  var smartAlbumsFetchResult: PHFetchResult<PHAsset>!
+  var userCollectionsFetchResult: PHFetchResult<PHAsset>!
   var assetCollection: PHAssetCollection?
   let imageManager = PHCachingImageManager()
   let sectionLocalizedTitles = ["", NSLocalizedString("Smart Albums", comment: ""), NSLocalizedString("Albums", comment: "")]
@@ -340,18 +342,50 @@ extension SelectionViewController: UITableViewDataSource {
     case .allPhotos:
       let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.allPhotos.rawValue, for: indexPath)
       cell.textLabel!.text = NSLocalizedString("All Photos", comment: "")
+
+      if fetchResult.count != 0 {
+        let asset = fetchResult.object(at: 0)
+        let scale = UIScreen.main.scale
+        let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+          cell.imageView?.image = image
+        })
+      }
+
       return cell
 
     case .smartAlbums:
-      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath)
       let collection = smartAlbums.object(at: indexPath.row)
+      self.smartAlbumsFetchResult = PHAsset.fetchAssets(in: collection, options: nil)
+      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath)
       cell.textLabel!.text = collection.localizedTitle
+      if smartAlbumsFetchResult.count != 0 {
+        let asset = smartAlbumsFetchResult.object(at: 0)
+        let scale = UIScreen.main.scale
+        let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+          cell.imageView?.image = image
+        })
+      }
       return cell
 
     case .userCollections:
-      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath)
       let collection = userCollections.object(at: indexPath.row)
+      guard let assetCollection = collection as? PHAssetCollection
+        else { fatalError("expected asset collection") }
+      self.userCollectionsFetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
+
+      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath)
       cell.textLabel!.text = collection.localizedTitle
+
+      if userCollectionsFetchResult.count != 0 {
+        let asset = userCollectionsFetchResult.object(at: 0)
+        let scale = UIScreen.main.scale
+        let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+          cell.imageView?.image = image
+        })
+      }
       return cell
     }
   }
