@@ -22,6 +22,7 @@ class MainTabBarController: UITabBarController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
   }
   init() {
     super.init(nibName: nil, bundle: nil)
@@ -34,17 +35,20 @@ class MainTabBarController: UITabBarController {
       personalViewController
     ]
   }
+
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
   fileprivate func presentWrapperViewController() {
     let wrapperViewController = WrapperViewController()
     self.feedViewController.navigationController?.setNavigationBarHidden(true, animated: true)
+
     self.present(wrapperViewController, animated: true, completion: nil)
   }
 }
 
 extension MainTabBarController: UITabBarControllerDelegate {
+
   func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
     if viewController === self.fakeViewController {
       self.presentWrapperViewController()
@@ -52,4 +56,5 @@ extension MainTabBarController: UITabBarControllerDelegate {
     }
     return true
   }
+
 }

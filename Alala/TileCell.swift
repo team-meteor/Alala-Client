@@ -24,6 +24,8 @@ class TileCell: UICollectionViewCell {
   // MARK: Configuring
   func configure(photo: UIImage) {
     self.imageView.image = photo
+    self.imageView.contentMode = .scaleAspectFill
+    self.imageView.clipsToBounds = true
   }
 
   // MARK: Size

@@ -2,9 +2,41 @@ import UIKit
 import Photos
 
 class SelectionViewController: UIViewController {
+  enum Section: Int {
+    case allPhotos = 0
+    case smartAlbums
+    case userCollections
+
+    static let count = 3
+  }
+  enum CellIdentifier: String {
+    case allPhotos, collection
+  }
+  enum SegueIdentifier: String {
+    case showAllPhotos
+    case showCollection
+  }
+  var allPhotos: PHFetchResult<PHAsset>!
+  var smartAlbums: PHFetchResult<PHAssetCollection>!
+  var userCollections: PHFetchResult<PHCollection>!
   var fetchResult: PHFetchResult<PHAsset>!
+  var smartAlbumsFetchResult: PHFetchResult<PHAsset>!
+  var userCollectionsFetchResult: PHFetchResult<PHAsset>!
+  var assetCollection: PHAssetCollection?
   let imageManager = PHCachingImageManager()
   let tileCellSpacing = CGFloat(1)
+  let sectionLocalizedTitles = ["", NSLocalizedString("Smart Albums", comment: ""), NSLocalizedString("Albums", comment: "")]
+
+  fileprivate let tableView = UITableView().then {
+    $0.isScrollEnabled = true
+    $0.register(GridViewCell.self, forCellReuseIdentifier: CellIdentifier.allPhotos.rawValue)
+    $0.register(GridViewCell.self, forCellReuseIdentifier: CellIdentifier.collection.rawValue)
+  }
+  fileprivate let libraryButton = UIButton().then {
+    $0.backgroundColor = UIColor.red
+    $0.setTitle("Library v", for: .normal)
+  }
+
   fileprivate let baseScrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = false
@@ -56,6 +88,16 @@ class SelectionViewController: UIViewController {
   }
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
+
+    let allPhotosOptions = PHFetchOptions()
+    allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+    allPhotos = PHAsset.fetchAssets(with: allPhotosOptions)
+    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
+    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
+    self.fetchResult = allPhotos
+
     let screenWidth = self.view.bounds.width
     let screenHeight = self.view.bounds.height
     let navigationBarHeight = self.navigationController?.navigationBar.frame.height
@@ -72,6 +114,16 @@ class SelectionViewController: UIViewController {
     self.baseScrollView.addSubview(self.collectionView)
     self.baseScrollView.addSubview(self.ButtonBarView)
     self.view.addSubview(baseScrollView)
+    self.view.addSubview(self.tableView)
+    self.tableView.delegate = self
+    self.tableView.dataSource = self
+
+    self.tableView.snp.makeConstraints { make in
+      make.width.equalTo(self.view)
+      make.height.equalTo(self.view.frame.height - 90)
+      make.centerX.equalTo(self.view)
+      make.top.equalTo(self.view.snp.bottom)
+    }
     self.baseScrollView.snp.makeConstraints { make in
       make.bottom.left.right.equalTo(self.view)
     }
@@ -95,7 +147,6 @@ class SelectionViewController: UIViewController {
       make.height.equalTo(screenWidth/7)
       make.width.equalTo(screenWidth)
     }
-    fetchAllPhotos()
   }
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
@@ -107,6 +158,12 @@ class SelectionViewController: UIViewController {
     self.baseScrollView.snp.makeConstraints { make in
       make.top.equalTo(self.view)
     }
+    self.navigationController?.navigationBar.addSubview(self.libraryButton)
+    self.libraryButton.snp.makeConstraints { make in
+      make.height.equalTo(40)
+      make.width.equalTo(100)
+      make.center.equalTo((self.navigationController?.navigationBar)!)
+    }
   }
   func centerScrollView(animated: Bool) {
     let targetContentOffset = CGPoint(
@@ -115,11 +172,7 @@ class SelectionViewController: UIViewController {
     )
     self.scrollView.setContentOffset(targetContentOffset, animated: animated)
   }
-  func fetchAllPhotos() {
-    let allPhotosOptions = PHFetchOptions()
-    allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-    fetchResult = PHAsset.fetchAssets(with: allPhotosOptions)
-  }
+
   func cancelButtonDidTap() {
     self.dismiss(animated: true, completion: nil)
   }
@@ -136,21 +189,34 @@ class SelectionViewController: UIViewController {
       self.navigationController?.pushViewController(postEditorViewController, animated: true)
     }
   }
+  func libraryButtonDidTap() {
+    if libraryButton.currentTitle == "Library v" {
+      self.libraryButton.setTitle("Library ^", for: .normal)
+      UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: -self.tableView.frame.height)})
+      NotificationCenter.default.post(name: Notification.Name("hideCustomTabBar"), object: nil)
+    } else if libraryButton.currentTitle == "Library ^" {
+      self.libraryButton.setTitle("Library v", for: .normal)
+      UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)})
+      NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
+    }
+  }
 }
 
 extension SelectionViewController: UICollectionViewDataSource {
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "tileCell", for: indexPath) as! TileCell
-    let asset = fetchResult.object(at: indexPath.item)
+    let asset = self.fetchResult.object(at: indexPath.item)
+
     cell.representedAssetIdentifier = asset.localIdentifier
     //메타데이터를 이미지로 변환
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
-      if cell.representedAssetIdentifier == asset.localIdentifier {
+    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .default, options: nil, resultHandler: { image, _ in
+      if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
         cell.configure(photo: image!)
       }
-      if asset == self.fetchResult.object(at: 0) {
+
+      if asset == self.fetchResult.object(at: 0) && image != nil {
         let imageWidth = image!.size.width
         let imageHeight = image!.size.height
         if imageWidth > imageHeight {
@@ -192,7 +258,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     let asset = fetchResult.object(at: indexPath.item)
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
+    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
       self.imageView.image = image
     })
     self.centerScrollView(animated: false)
@@ -211,5 +277,113 @@ extension SelectionViewController: UIScrollViewDelegate {
     } else if page < 44 {
       self.navigationController?.navigationBar.frame.origin.y = -(page)
     }
+  }
+}
+
+extension SelectionViewController: UITableViewDelegate {
+
+  func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    return 100
+  }
+
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    switch Section(rawValue: indexPath.section)! {
+
+    case .allPhotos:
+      self.fetchResult = allPhotos
+
+    case .smartAlbums:
+      let collection: PHCollection
+      collection = smartAlbums.object(at: indexPath.row)
+      guard let assetCollection = collection as? PHAssetCollection
+        else { fatalError("expected asset collection") }
+      self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
+      self.assetCollection = assetCollection
+
+    case .userCollections:
+      let collection: PHCollection
+      collection = userCollections.object(at: indexPath.row)
+      guard let assetCollection = collection as? PHAssetCollection
+        else { fatalError("expected asset collection") }
+      self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
+      self.assetCollection = assetCollection
+
+    }
+
+    self.libraryButton.setTitle("Library v", for: .normal)
+    UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)})
+    NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
+    self.collectionView.reloadData()
+  }
+}
+
+extension SelectionViewController: UITableViewDataSource {
+  func numberOfSections(in tableView: UITableView) -> Int {
+    return Section.count
+  }
+
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    switch Section(rawValue: section)! {
+    case .allPhotos: return 1
+    case .smartAlbums: return smartAlbums.count
+    case .userCollections: return userCollections.count
+    }
+  }
+
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    switch Section(rawValue: indexPath.section)! {
+    case .allPhotos:
+      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.allPhotos.rawValue, for: indexPath)
+      cell.textLabel!.text = NSLocalizedString("All Photos", comment: "")
+
+      if fetchResult.count != 0 {
+        let asset = fetchResult.object(at: 0)
+        let scale = UIScreen.main.scale
+        let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+          cell.imageView?.image = image
+        })
+      }
+
+      return cell
+
+    case .smartAlbums:
+      let collection = smartAlbums.object(at: indexPath.row)
+      self.smartAlbumsFetchResult = PHAsset.fetchAssets(in: collection, options: nil)
+      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath)
+      cell.textLabel!.text = collection.localizedTitle
+      if smartAlbumsFetchResult.count != 0 {
+        let asset = smartAlbumsFetchResult.object(at: 0)
+        let scale = UIScreen.main.scale
+        let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+          cell.imageView?.image = image
+        })
+      }
+      return cell
+
+    case .userCollections:
+      let collection = userCollections.object(at: indexPath.row)
+      guard let assetCollection = collection as? PHAssetCollection
+        else { fatalError("expected asset collection") }
+      self.userCollectionsFetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
+
+      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath)
+      cell.textLabel!.text = collection.localizedTitle
+
+      if userCollectionsFetchResult.count != 0 {
+        let asset = userCollectionsFetchResult.object(at: 0)
+        let scale = UIScreen.main.scale
+        let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+          cell.imageView?.image = image
+        })
+      }
+      return cell
+    }
+  }
+
+  func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    return sectionLocalizedTitles[section]
   }
 }
