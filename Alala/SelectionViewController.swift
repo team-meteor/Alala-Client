@@ -24,6 +24,7 @@ class SelectionViewController: UIViewController {
   var userCollectionsFetchResult: PHFetchResult<PHAsset>!
   var assetCollection: PHAssetCollection?
   let imageManager = PHCachingImageManager()
+  let tileCellSpacing = CGFloat(1)
   let sectionLocalizedTitles = ["", NSLocalizedString("Smart Albums", comment: ""), NSLocalizedString("Albums", comment: "")]
 
   fileprivate let tableView = UITableView().then {
@@ -35,8 +36,6 @@ class SelectionViewController: UIViewController {
     $0.backgroundColor = UIColor.red
     $0.setTitle("Library v", for: .normal)
   }
-
-  let tileCellSpacing = CGFloat(3)
 
   fileprivate let baseScrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
@@ -53,7 +52,6 @@ class SelectionViewController: UIViewController {
     $0.bounces = false
   }
   fileprivate let imageView = UIImageView()
-
   fileprivate let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = false
@@ -104,7 +102,6 @@ class SelectionViewController: UIViewController {
     let screenHeight = self.view.bounds.height
     let navigationBarHeight = self.navigationController?.navigationBar.frame.height
     let bounds = self.navigationController!.navigationBar.bounds
-
     self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
     self.title = "Library"
     collectionView.dataSource = self
@@ -155,7 +152,6 @@ class SelectionViewController: UIViewController {
     super.viewDidAppear(animated)
     let bounds = self.navigationController!.navigationBar.bounds
     self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
-
   }
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
@@ -169,7 +165,6 @@ class SelectionViewController: UIViewController {
       make.center.equalTo((self.navigationController?.navigationBar)!)
     }
   }
-
   func centerScrollView(animated: Bool) {
     let targetContentOffset = CGPoint(
       x: (self.scrollView.contentSize.width - self.scrollView.bounds.width) / 2,
@@ -194,7 +189,6 @@ class SelectionViewController: UIViewController {
       self.navigationController?.pushViewController(postEditorViewController, animated: true)
     }
   }
-
   func libraryButtonDidTap() {
     if libraryButton.currentTitle == "Library v" {
       self.libraryButton.setTitle("Library ^", for: .normal)
@@ -206,7 +200,6 @@ class SelectionViewController: UIViewController {
       NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
     }
   }
-
 }
 
 extension SelectionViewController: UICollectionViewDataSource {
@@ -218,7 +211,7 @@ extension SelectionViewController: UICollectionViewDataSource {
     //메타데이터를 이미지로 변환
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .default, options: nil, resultHandler: { image, _ in
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
         cell.configure(photo: image!)
       }
@@ -252,7 +245,7 @@ extension SelectionViewController: UICollectionViewDataSource {
 extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
     let collectionViewWidth = collectionView.frame.width
-    let cellWidth = round((collectionViewWidth - 2 * tileCellSpacing) / 3)
+    let cellWidth = round((collectionViewWidth - 2 * tileCellSpacing) / 4)
     return TileCell.size(width: cellWidth)
   }
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
