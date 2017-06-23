@@ -4,7 +4,7 @@ import Photos
 class SelectionViewController: UIViewController {
   var fetchResult: PHFetchResult<PHAsset>!
   let imageManager = PHCachingImageManager()
-  let tileCellSpacing = CGFloat(3)
+  let tileCellSpacing = CGFloat(1)
   fileprivate let baseScrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = false
@@ -179,7 +179,7 @@ extension SelectionViewController: UICollectionViewDataSource {
 extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
     let collectionViewWidth = collectionView.frame.width
-    let cellWidth = round((collectionViewWidth - 2 * tileCellSpacing) / 3)
+    let cellWidth = round((collectionViewWidth - 2 * tileCellSpacing) / 4)
     return TileCell.size(width: cellWidth)
   }
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
@@ -192,7 +192,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     let asset = fetchResult.object(at: indexPath.item)
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
       self.imageView.image = image
     })
     self.centerScrollView(animated: false)
