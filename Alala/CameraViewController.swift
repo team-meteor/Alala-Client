@@ -134,15 +134,20 @@ class CameraViewController: UIViewController {
       make.center.equalTo(self.camView)
     }
 
-		DispatchQueue.main.async {
-			self.scrollView.contentSize = self.bottomView.bounds.size
-		}
-
-    checkCameraAuthorization { status in
-      if status == true {
-        self.initializeCaptureSession(camera: AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo))
-      }
+    DispatchQueue.main.async {
+      self.scrollView.contentSize = self.bottomView.bounds.size
     }
+
+    if AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) != .authorized {
+      AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { success in
+        if success == true {
+          self.initializeCaptureSession(camera: AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo))
+        }
+      })
+    } else {
+      self.initializeCaptureSession(camera: AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo))
+    }
+
   }
 
   func cameraStop() {
