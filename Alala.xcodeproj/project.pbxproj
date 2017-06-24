@@ -15,7 +15,6 @@
 		48F73CA61EF613F400E75022 /* WrapperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F73CA51EF613F400E75022 /* WrapperViewController.swift */; };
 		48F857921EF65FE600957B3A /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F857911EF65FE600957B3A /* CameraViewController.swift */; };
 		48F857961EF8B6C800957B3A /* PostService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F857951EF8B6C800957B3A /* PostService.swift */; };
-		48F8579E1EFA474200957B3A /* PhotoLibraryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F8579D1EFA474200957B3A /* PhotoLibraryViewController.swift */; };
 		48F857A01EFA4B4200957B3A /* GridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F8579F1EFA4B4200957B3A /* GridViewCell.swift */; };
 		6F0068891EFE161D009EDFBF /* FeedService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0068881EFE161D009EDFBF /* FeedService.swift */; };
 		6F01C2971EF797C400552782 /* UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F01C2961EF797C400552782 /* UIImageView.swift */; };
@@ -80,7 +79,6 @@
 		48F73CA51EF613F400E75022 /* WrapperViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WrapperViewController.swift; sourceTree = "<group>"; };
 		48F857911EF65FE600957B3A /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		48F857951EF8B6C800957B3A /* PostService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostService.swift; sourceTree = "<group>"; };
-		48F8579D1EFA474200957B3A /* PhotoLibraryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibraryViewController.swift; sourceTree = "<group>"; };
 		48F8579F1EFA4B4200957B3A /* GridViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridViewCell.swift; sourceTree = "<group>"; };
 		6F0068881EFE161D009EDFBF /* FeedService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedService.swift; sourceTree = "<group>"; };
 		6F01C2961EF797C400552782 /* UIImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageView.swift; sourceTree = "<group>"; };
@@ -214,7 +212,6 @@
 				48F73CA31EF60ABA00E75022 /* LibraryViewController.swift */,
 				48F73CA51EF613F400E75022 /* WrapperViewController.swift */,
 				48F857911EF65FE600957B3A /* CameraViewController.swift */,
-				48F8579D1EFA474200957B3A /* PhotoLibraryViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -402,7 +399,7 @@
 				TargetAttributes = {
 					6FFC06A81EE3D49000E542BC = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = UJ82UGU342;
+						DevelopmentTeam = QLAGA64KZQ;
 						ProvisioningStyle = Automatic;
 					};
 					6FFC06BC1EE3D49000E542BC = {
@@ -551,7 +548,6 @@
 				6F0A205F1EFA5D6700C71417 /* Comment.swift in Sources */,
 				6F09C8DE1EF101E800BCFFEF /* Constants.swift in Sources */,
 				6F5B854B1EE52520009285DD /* MainTabBarController.swift in Sources */,
-				48F8579E1EFA474200957B3A /* PhotoLibraryViewController.swift in Sources */,
 				48F73CA21EF50FDB00E75022 /* RejectViewController.swift in Sources */,
 				6F5B855B1EE54101009285DD /* Post.swift in Sources */,
 			);
@@ -697,7 +693,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = UJ82UGU342;
+				DEVELOPMENT_TEAM = QLAGA64KZQ;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -715,7 +711,7 @@
 					"-weak_framework",
 					RevealServer,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = hoemoon.com;
+				PRODUCT_BUNDLE_IDENTIFIER = smithLee;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -725,7 +721,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = UJ82UGU342;
+				DEVELOPMENT_TEAM = QLAGA64KZQ;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -743,7 +739,7 @@
 					"-weak_framework",
 					RevealServer,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = hoemoon.com;
+				PRODUCT_BUNDLE_IDENTIFIER = smithLee;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
