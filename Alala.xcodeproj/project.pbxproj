@@ -16,6 +16,7 @@
 		48F857921EF65FE600957B3A /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F857911EF65FE600957B3A /* CameraViewController.swift */; };
 		48F857961EF8B6C800957B3A /* PostService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F857951EF8B6C800957B3A /* PostService.swift */; };
 		48F857A01EFA4B4200957B3A /* GridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F8579F1EFA4B4200957B3A /* GridViewCell.swift */; };
+		6F0068891EFE161D009EDFBF /* FeedService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0068881EFE161D009EDFBF /* FeedService.swift */; };
 		6F01C2971EF797C400552782 /* UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F01C2961EF797C400552782 /* UIImageView.swift */; };
 		6F01C2991EF7984000552782 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F01C2981EF7984000552782 /* UIImage.swift */; };
 		6F01C29B1EF7996800552782 /* CircleImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F01C29A1EF7996800552782 /* CircleImageView.swift */; };
@@ -50,7 +51,6 @@
 		6FFC06C21EE3D49000E542BC /* AlalaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06C11EE3D49000E542BC /* AlalaTests.swift */; };
 		6FFC06CD1EE3D49000E542BC /* AlalaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06CC1EE3D49000E542BC /* AlalaUITests.swift */; };
 		6FFC06DC1EE3D78A00E542BC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */; };
-		9BDD94651EF126E400A9C0F3 /* DuumyDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BDD94641EF126E400A9C0F3 /* DuumyDataSource.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +80,7 @@
 		48F857911EF65FE600957B3A /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		48F857951EF8B6C800957B3A /* PostService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostService.swift; sourceTree = "<group>"; };
 		48F8579F1EFA4B4200957B3A /* GridViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridViewCell.swift; sourceTree = "<group>"; };
+		6F0068881EFE161D009EDFBF /* FeedService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedService.swift; sourceTree = "<group>"; };
 		6F01C2961EF797C400552782 /* UIImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageView.swift; sourceTree = "<group>"; };
 		6F01C2981EF7984000552782 /* UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		6F01C29A1EF7996800552782 /* CircleImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleImageView.swift; sourceTree = "<group>"; };
@@ -122,7 +123,6 @@
 		6FFC06CC1EE3D49000E542BC /* AlalaUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlalaUITests.swift; sourceTree = "<group>"; };
 		6FFC06CE1EE3D49000E542BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
-		9BDD94641EF126E400A9C0F3 /* DuumyDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DuumyDataSource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -181,6 +181,7 @@
 				6F09C8D91EF013B900BCFFEF /* AuthService.swift */,
 				6F01C29F1EF7B95800552782 /* ImageService.swift */,
 				48F857951EF8B6C800957B3A /* PostService.swift */,
+				6F0068881EFE161D009EDFBF /* FeedService.swift */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -250,7 +251,6 @@
 			isa = PBXGroup;
 			children = (
 				6F09C8DD1EF101E800BCFFEF /* Constants.swift */,
-				9BDD94631EF126C000A9C0F3 /* DummyDataSource */,
 				6F09C8AD1EEA862E00BCFFEF /* Extensions */,
 				6F5B85451EE5204B009285DD /* Models */,
 				6F5B85461EE52058009285DD /* Networking */,
@@ -328,14 +328,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		9BDD94631EF126C000A9C0F3 /* DummyDataSource */ = {
-			isa = PBXGroup;
-			children = (
-				9BDD94641EF126E400A9C0F3 /* DuumyDataSource.swift */,
-			);
-			name = DummyDataSource;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -408,7 +400,6 @@
 					6FFC06A81EE3D49000E542BC = {
 						CreatedOnToolsVersion = 8.3.2;
 						DevelopmentTeam = QLAGA64KZQ;
-
 						ProvisioningStyle = Automatic;
 					};
 					6FFC06BC1EE3D49000E542BC = {
@@ -544,6 +535,7 @@
 				48F857A01EFA4B4200957B3A /* GridViewCell.swift in Sources */,
 				6F09C8DA1EF013B900BCFFEF /* AuthService.swift in Sources */,
 				6FFC06AD1EE3D49000E542BC /* AppDelegate.swift in Sources */,
+				6F0068891EFE161D009EDFBF /* FeedService.swift in Sources */,
 				485ABFAD1EF37F5A00949456 /* PostEditingCell.swift in Sources */,
 				6F5B85571EE540EF009285DD /* User.swift in Sources */,
 				48F73CA61EF613F400E75022 /* WrapperViewController.swift in Sources */,
@@ -554,7 +546,6 @@
 				6F01C2A01EF7B95800552782 /* ImageService.swift in Sources */,
 				6F5B85531EE52B95009285DD /* PersonalViewController.swift in Sources */,
 				6F0A205F1EFA5D6700C71417 /* Comment.swift in Sources */,
-				9BDD94651EF126E400A9C0F3 /* DuumyDataSource.swift in Sources */,
 				6F09C8DE1EF101E800BCFFEF /* Constants.swift in Sources */,
 				6F5B854B1EE52520009285DD /* MainTabBarController.swift in Sources */,
 				48F73CA21EF50FDB00E75022 /* RejectViewController.swift in Sources */,
@@ -703,7 +694,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = QLAGA64KZQ;
-
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -722,7 +712,6 @@
 					RevealServer,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = smithLee;
-
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -732,9 +721,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-
 				DEVELOPMENT_TEAM = QLAGA64KZQ;
-
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -752,9 +739,7 @@
 					"-weak_framework",
 					RevealServer,
 				);
-
 				PRODUCT_BUNDLE_IDENTIFIER = smithLee;
-
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};

@@ -25,6 +25,12 @@ class FeedViewController: UIViewController {
     action: nil
   )
 
+  fileprivate var posts: [Post] = []
+  fileprivate var nextPage: Int?
+  fileprivate var isLoading: Bool = false
+
+  fileprivate let refreshControl = UIRefreshControl()
+
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     self.tabBarItem.image = UIImage(named: "feed")?.resizeImage(scaledTolength: 25)
@@ -46,9 +52,38 @@ class FeedViewController: UIViewController {
       $0.text = "Alala"
       $0.sizeToFit()
     }
+    self.fetchFeed(paging: .refresh)
   }
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     self.navigationController?.isNavigationBarHidden = false
   }
+
+  fileprivate func fetchFeed(paging: Paging) {
+    guard !self.isLoading else { return }
+    self.isLoading = true
+    FeedService.feed(paging: paging) { [weak self] response in
+      guard let `self` = self else { return }
+      self.refreshControl.endRefreshing()
+      self.isLoading = false
+
+      switch response.result {
+      case .success(let feed):
+        let newPosts = feed.posts ?? []
+        switch paging {
+        case .refresh:
+          self.posts = newPosts
+        case .next:
+          self.posts.append(contentsOf: newPosts)
+        }
+        self.nextPage = feed.nextPage
+        print(self.posts)
+//        self.collectionView.reloadData()
+      case .failure(let error):
+        print(error)
+      }
+
+    }
+  }
+
 }
