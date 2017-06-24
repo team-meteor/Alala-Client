@@ -51,6 +51,12 @@ class PostEditorViewController: UIViewController {
 
   }
 
+  override func didMove(toParentViewController parent: UIViewController?) {
+    if parent == nil {
+      NotificationCenter.default.post(name: Notification.Name("cameraStart"), object: nil)
+    }
+  }
+
 }
 
 extension PostEditorViewController: UITableViewDataSource {

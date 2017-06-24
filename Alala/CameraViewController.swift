@@ -5,7 +5,6 @@
 //  Created by junwoo on 2017. 6. 24..
 //  Copyright © 2017년 team-meteor. All rights reserved.
 //
-
 import UIKit
 import AVFoundation
 import Photos
@@ -15,8 +14,7 @@ class CameraViewController: UIViewController {
   let captureSession = AVCaptureSession()
   var previewLayer: AVCaptureVideoPreviewLayer!
   var activeInput: AVCaptureDeviceInput!
-  var imageOutput: AVCapturePhotoOutput!
-
+  var imageOutput = AVCapturePhotoOutput()
   let switchButton = UIButton().then {
     $0.backgroundColor = UIColor.blue
     $0.setTitle("switch", for: .normal)
@@ -69,7 +67,7 @@ class CameraViewController: UIViewController {
   }
 
   func doneButtonDidTap() {
-
+    stopSession()
     let postEditorViewController = PostEditorViewController(image: self.capturedImageView.image!)
     self.navigationController?.pushViewController(postEditorViewController, animated: true)
     self.capturedImageView.removeFromSuperview()
@@ -83,6 +81,7 @@ class CameraViewController: UIViewController {
     NotificationCenter.default.addObserver(self, selector: #selector(photoModeSetting), name: Notification.Name("photoMode"), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(videoModeSetting), name: Notification.Name("videoMode"), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(stopSession), name: Notification.Name("cameraStop"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(startSession), name: Notification.Name("cameraStart"), object: nil)
     self.bottomView.addSubview(takePhotoButton)
     self.bottomView.addSubview(takeVideoButton)
     self.scrollView.addSubview(bottomView)
@@ -200,7 +199,6 @@ class CameraViewController: UIViewController {
       videoQueue().async {
         self.captureSession.startRunning()
       }
-
     }
   }
 
