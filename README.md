@@ -44,6 +44,7 @@ Feed, Discover, Create, Heart, Profile
 ## 개발 환경 설정
 서버는 node.js, 데이터베이스는 mongodb 사용. [저장소](https://github.com/team-meteor/Alala-Server)  
 ```
+brew install carthage
 carthage update --platform iOS
 ```
 
