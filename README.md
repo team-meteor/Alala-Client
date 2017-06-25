@@ -22,6 +22,11 @@
 - post를 tile 또는 card 형태로 볼 수 있다.
 
 ### create
+- Photos 적용하여 사용자의 PhotoLibrary 접근
+- collectionView에 IGListKit 적용
+- containerView에 multiple ViewController 삽입
+- AVFoundation 적용하여 photo, video Capture
+- 사진, 비디오, description 을 posting
 
 ### comment
 
