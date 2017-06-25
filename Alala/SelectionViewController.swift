@@ -259,7 +259,9 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
     imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+
       self.imageView.image = image
+
     })
     self.centerScrollView(animated: false)
     self.scrollView.zoomScale = 1.0
@@ -335,13 +337,14 @@ extension SelectionViewController: UITableViewDataSource {
     case .allPhotos:
       let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.allPhotos.rawValue, for: indexPath)
       cell.textLabel!.text = NSLocalizedString("All Photos", comment: "")
-
       if fetchResult.count != 0 {
         let asset = fetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+
           cell.imageView?.image = image
+
         })
       }
 
@@ -357,7 +360,9 @@ extension SelectionViewController: UITableViewDataSource {
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+
           cell.imageView?.image = image
+
         })
       }
       return cell
@@ -376,7 +381,9 @@ extension SelectionViewController: UITableViewDataSource {
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+
           cell.imageView?.image = image
+
         })
       }
       return cell
