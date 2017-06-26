@@ -74,7 +74,7 @@ class CameraViewController: UIViewController {
 
   func doneButtonDidTap() {
     stopSession()
-    let postEditorViewController = PostEditorViewController(image: self.capturedImageView.image!)
+    let postEditorViewController = PostEditorViewController(image: self.capturedImageView.image!, movieUrl: nil)
     self.navigationController?.pushViewController(postEditorViewController, animated: true)
     self.capturedImageView.removeFromSuperview()
     self.navigationItem.rightBarButtonItem = nil

@@ -18,7 +18,7 @@ class PostEditorViewController: UIViewController {
     $0.register(PostEditingCell.self, forCellReuseIdentifier: "postEditingCell")
   }
 
-  init(image: UIImage) {
+  init(image: UIImage, movieUrl: URL?) {
     self.image = image
     super.init(nibName: nil, bundle: nil)
     self.view.backgroundColor = UIColor.yellow
@@ -34,6 +34,7 @@ class PostEditorViewController: UIViewController {
       print(result)
     }
   }
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
