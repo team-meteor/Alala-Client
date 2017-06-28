@@ -408,7 +408,6 @@
 					6FFC06A81EE3D49000E542BC = {
 						CreatedOnToolsVersion = 8.3.2;
 						DevelopmentTeam = QLAGA64KZQ;
-
 						ProvisioningStyle = Automatic;
 					};
 					6FFC06BC1EE3D49000E542BC = {
@@ -504,7 +503,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\nswiftlint\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "if which swiftlint >/dev/null; then\nswiftlint autocorrect\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 		6F6D38741EE4EE8500681C56 /* Integrate Reveal Server */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -703,7 +702,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = QLAGA64KZQ;
-
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -722,7 +720,6 @@
 					RevealServer,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = smithLee;
-
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -732,9 +729,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-
 				DEVELOPMENT_TEAM = QLAGA64KZQ;
-
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -752,9 +747,7 @@
 					"-weak_framework",
 					RevealServer,
 				);
-
 				PRODUCT_BUNDLE_IDENTIFIER = smithLee;
-
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
