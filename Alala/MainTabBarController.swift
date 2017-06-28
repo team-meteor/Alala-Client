@@ -32,7 +32,7 @@ class MainTabBarController: UITabBarController {
       self.discoverViewController,
       fakeViewController,
       activityViewController,
-      personalViewController
+      UINavigationController(rootViewController: self.personalViewController)
     ]
   }
 
@@ -42,7 +42,7 @@ class MainTabBarController: UITabBarController {
   fileprivate func presentWrapperViewController() {
     let wrapperViewController = WrapperViewController()
     self.feedViewController.navigationController?.setNavigationBarHidden(true, animated: true)
-
+    
     self.present(wrapperViewController, animated: true, completion: nil)
   }
 }
