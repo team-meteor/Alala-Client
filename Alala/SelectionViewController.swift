@@ -107,6 +107,7 @@ class SelectionViewController: UIViewController {
     collectionView.dataSource = self
     collectionView.delegate = self
     baseScrollView.delegate = self
+    scrollView.delegate = self
     baseScrollView.contentSize = CGSize(width: screenWidth, height: screenHeight * 2 / 3 + screenHeight - screenWidth/7 - navigationBarHeight!)
     self.baseScrollView.addSubview(self.scrollView)
     self.baseScrollView.addSubview(self.cropAreaView)
@@ -266,6 +267,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     let asset = fetchResult.object(at: indexPath.item)
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+
     imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .default, options: nil, resultHandler: { image, _ in
       self.scaleAspectFillSize(image: image!, imageView: self.imageView)
       self.scrollView.contentSize = self.imageView.frame.size
@@ -273,7 +275,13 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
       self.centerScrollView(animated: false)
 
     })
-    self.scrollView.zoomScale = 1.0
+    let scaleWidth = scrollView.frame.size.width / scrollView.contentSize.width
+    let scaleHeight = scrollView.frame.size.height / scrollView.contentSize.height
+    let minScale = min(scaleWidth, scaleHeight)
+    scrollView.minimumZoomScale = minScale
+    scrollView.maximumZoomScale = 1.0
+    scrollView.zoomScale = minScale
+
   }
 }
 
@@ -288,6 +296,9 @@ extension SelectionViewController: UIScrollViewDelegate {
     } else if page < 44 {
       self.navigationController?.navigationBar.frame.origin.y = -(page)
     }
+  }
+  func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
+    return imageView
   }
 }
 
@@ -346,13 +357,14 @@ extension SelectionViewController: UITableViewDataSource {
     case .allPhotos:
       let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.allPhotos.rawValue, for: indexPath)
       cell.textLabel!.text = NSLocalizedString("All Photos", comment: "")
-
       if fetchResult.count != 0 {
         let asset = fetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+
           cell.imageView?.image = image
+
         })
       }
 
@@ -368,7 +380,9 @@ extension SelectionViewController: UITableViewDataSource {
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+
           cell.imageView?.image = image
+
         })
       }
       return cell
@@ -387,7 +401,9 @@ extension SelectionViewController: UITableViewDataSource {
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+
           cell.imageView?.image = image
+
         })
       }
       return cell
