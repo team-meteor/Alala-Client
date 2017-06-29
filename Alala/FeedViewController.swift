@@ -63,10 +63,15 @@ class FeedViewController: UIViewController {
       $0.text = "Alala"
       $0.sizeToFit()
     }
-    view.addSubview(collectionView)
+    self.fetchFeed(paging: .refresh)
     adapter.collectionView = collectionView
     adapter.dataSource = self
-    self.fetchFeed(paging: .refresh)
+    view.addSubview(collectionView)
+  }
+
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    self.collectionView.frame = view.bounds
   }
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
@@ -91,8 +96,10 @@ class FeedViewController: UIViewController {
           self.posts.append(contentsOf: newPosts)
         }
         self.nextPage = feed.nextPage
-        print(self.posts)
-//        self.collectionView.reloadData()
+        print("fetchFeed : ", self.posts)
+        DispatchQueue.main.async {
+          self.adapter.performUpdates(animated: true, completion: nil)
+        }
       case .failure(let error):
         print(error)
       }
@@ -103,10 +110,15 @@ class FeedViewController: UIViewController {
 extension FeedViewController: ListAdapterDataSource {
   func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
     let items: [ListDiffable] = self.posts
+    print("in objects", items)
     return items
   }
   func listAdapter(_ listAdapter: ListAdapter, sectionControllerFor object: Any) -> ListSectionController {
-    return ListSectionController()
+    if object is Post {
+      return PostSectionController()
+    } else {
+      return ListSectionController()
+    }
   }
   func emptyView(for listAdapter: ListAdapter) -> UIView? {
     return nil

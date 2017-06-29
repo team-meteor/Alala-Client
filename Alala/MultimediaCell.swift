@@ -9,5 +9,8 @@
 import UIKit
 
 class MultimediaCell: UICollectionViewCell {
-
+  let multimediaImageView: UIImageView = {
+    let imageView = UIImageView()
+    return imageView
+  }()
 }

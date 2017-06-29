@@ -21,12 +21,13 @@ class UserCell: UICollectionViewCell {
     let label = UILabel()
     label.backgroundColor = UIColor.clear
     label.textColor = UIColor.black
+    label.sizeToFit()
     return label
   }()
 
   let moreButton: UIButton = {
     let button = UIButton(type: .custom)
-    button.setImage(UIImage(named: "more"), for: .normal)
+    button.setImage(UIImage(named: "more")?.resizeImage(scaledTolength: 20), for: .normal)
     return button
   }()
 
@@ -42,6 +43,19 @@ class UserCell: UICollectionViewCell {
   }
   override func layoutSubviews() {
     super.layoutSubviews()
-    // 배치하기
+    profilePhoto.snp.makeConstraints { (make) in
+      make.centerY.equalTo(self.contentView)
+      make.left.equalTo(10)
+      make.height.equalTo(32)
+      make.width.equalTo(32)
+    }
+    profileNameLabel.snp.makeConstraints { (make) in
+      make.centerY.equalTo(self.contentView)
+      make.left.equalTo(profilePhoto.snp.right).offset(10)
+    }
+    moreButton.snp.makeConstraints { (make) in
+      make.centerY.equalTo(self.contentView)
+      make.right.equalTo(self.contentView).offset(-15.5)
+    }
   }
 }
