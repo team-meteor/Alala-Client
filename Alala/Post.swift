@@ -20,6 +20,7 @@ class Post: NSObject, Mappable {
 
   required init?(map: Map) {
   }
+
   func mapping(map: Map) {
     id <- map["_id"]
     multipartIds <- map["multiparts"]

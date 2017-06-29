@@ -1,7 +1,10 @@
 import UIKit
 import Photos
+import AVKit
 
 class SelectionViewController: UIViewController {
+  var playerLayer: AVPlayerLayer?
+  var urlAsset: AVURLAsset?
   enum Section: Int {
     case allPhotos = 0
     case smartAlbums
@@ -46,10 +49,11 @@ class SelectionViewController: UIViewController {
   fileprivate let scrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = false
-    $0.maximumZoomScale = 3.0
-    $0.minimumZoomScale = 0.1
-    $0.zoomScale = 1.0
-    $0.bounces = false
+    $0.maximumZoomScale = 3
+    $0.alwaysBounceVertical = true
+    $0.alwaysBounceHorizontal = true
+    $0.isUserInteractionEnabled = true
+    $0.clipsToBounds = true
   }
   fileprivate let imageView = UIImageView()
   fileprivate let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
@@ -88,7 +92,6 @@ class SelectionViewController: UIViewController {
   }
   override func viewDidLoad() {
     super.viewDidLoad()
-
     self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
 
     let allPhotosOptions = PHFetchOptions()
@@ -107,17 +110,19 @@ class SelectionViewController: UIViewController {
     collectionView.dataSource = self
     collectionView.delegate = self
     baseScrollView.delegate = self
-    baseScrollView.contentSize = CGSize(width: screenWidth, height: screenWidth + screenHeight - screenWidth/7 - navigationBarHeight!)
-    self.scrollView.addSubview(self.imageView)
+    scrollView.delegate = self
+    baseScrollView.contentSize = CGSize(width: screenWidth, height: screenHeight * 2 / 3 + screenHeight - screenWidth/7 - navigationBarHeight!)
     self.baseScrollView.addSubview(self.scrollView)
     self.baseScrollView.addSubview(self.cropAreaView)
     self.baseScrollView.addSubview(self.collectionView)
     self.baseScrollView.addSubview(self.ButtonBarView)
+    self.scrollView.addSubview(self.imageView)
     self.view.addSubview(baseScrollView)
     self.view.addSubview(self.tableView)
     self.tableView.delegate = self
     self.tableView.dataSource = self
 
+    //constraints
     self.tableView.snp.makeConstraints { make in
       make.width.equalTo(self.view)
       make.height.equalTo(self.view.frame.height - 90)
@@ -129,7 +134,7 @@ class SelectionViewController: UIViewController {
     }
     self.scrollView.snp.makeConstraints { make in
       make.left.right.top.equalTo(self.baseScrollView)
-      make.height.equalTo(screenWidth)
+      make.height.equalTo(screenHeight * 2 / 3)
       make.width.equalTo(screenWidth)
     }
     self.collectionView.snp.makeConstraints { make in
@@ -156,7 +161,7 @@ class SelectionViewController: UIViewController {
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     self.baseScrollView.snp.makeConstraints { make in
-      make.top.equalTo(self.view)
+      make.top.equalTo((self.navigationController?.navigationBar.snp.bottom)!)
     }
     self.navigationController?.navigationBar.addSubview(self.libraryButton)
     self.libraryButton.snp.makeConstraints { make in
@@ -176,19 +181,25 @@ class SelectionViewController: UIViewController {
   func cancelButtonDidTap() {
     self.dismiss(animated: true, completion: nil)
   }
-  func doneButtonDidTap() {
-    guard let image = self.imageView.image else { return }
+
+  func getCropImage() -> UIImage {
+    let image = self.imageView.image!
     var rect = self.scrollView.convert(self.cropAreaView.frame, from: self.cropAreaView.superview)
     rect.origin.x *= image.size.width / self.imageView.frame.width
     rect.origin.y *= image.size.height / self.imageView.frame.height
     rect.size.width *= image.size.width / self.imageView.frame.width
     rect.size.height *= image.size.height / self.imageView.frame.height
-    if let croppedCGImage = image.cgImage?.cropping(to: rect) {
-      let croppedImage = UIImage(cgImage: croppedCGImage)
-      let postEditorViewController = PostEditorViewController(image: croppedImage)
-      self.navigationController?.pushViewController(postEditorViewController, animated: true)
-    }
+    let croppedCGImage = image.cgImage?.cropping(to: rect)
+    return UIImage(cgImage: croppedCGImage!)
   }
+
+  func doneButtonDidTap() {
+    let croppedImage = getCropImage()
+    let postEditorViewController = PostEditorViewController(image: croppedImage)
+    postEditorViewController.urlAsset = self.urlAsset
+    self.navigationController?.pushViewController(postEditorViewController, animated: true)
+  }
+
   func libraryButtonDidTap() {
     if libraryButton.currentTitle == "Library v" {
       self.libraryButton.setTitle("Library ^", for: .normal)
@@ -200,6 +211,27 @@ class SelectionViewController: UIViewController {
       NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
     }
   }
+
+  func scaleAspectFillSize(image: UIImage, imageView: UIImageView) {
+    var imageWidth = image.size.width
+    var imageHeight = image.size.height
+
+    imageView.frame.size = scrollView.frame.size
+
+    let imageViewWidth = imageView.frame.size.width
+    let imageViewHeight = imageView.frame.size.height
+
+    if imageWidth >= imageHeight {
+      imageWidth = imageWidth * imageViewHeight / imageHeight
+      imageHeight = imageViewHeight
+    } else if imageWidth < imageHeight {
+      imageHeight = imageHeight * imageViewWidth / imageWidth
+      imageWidth = imageViewWidth
+    }
+    imageView.frame.size = CGSize(width: imageWidth, height: imageHeight)
+
+  }
+
 }
 
 extension SelectionViewController: UICollectionViewDataSource {
@@ -211,25 +243,12 @@ extension SelectionViewController: UICollectionViewDataSource {
     //메타데이터를 이미지로 변환
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .default, options: nil, resultHandler: { image, _ in
+    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
         cell.configure(photo: image!)
       }
-
       if asset == self.fetchResult.object(at: 0) && image != nil {
-        let imageWidth = image!.size.width
-        let imageHeight = image!.size.height
-        if imageWidth > imageHeight {
-          self.imageView.frame.size.height = self.cropAreaView.frame.height
-          self.imageView.frame.size.width = self.cropAreaView.frame.height * imageWidth / imageHeight
-        } else if imageWidth < imageHeight {
-          self.imageView.frame.size.width = self.cropAreaView.frame.width
-          self.imageView.frame.size.height = self.cropAreaView.frame.width * imageHeight / imageWidth
-        } else {
-          self.imageView.frame.size = self.cropAreaView.frame.size
-        }
-        let contentInsetTop = self.navigationController?.navigationBar.frame.height
-        self.scrollView.contentInset.top = contentInsetTop!
+        self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
         self.centerScrollView(animated: false)
@@ -256,15 +275,76 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   }
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     let asset = fetchResult.object(at: indexPath.item)
-    let scale = UIScreen.main.scale
-    let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
 
-      self.imageView.image = image
+    if asset.mediaType == .video {
+      imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
+        if let urlAsset = asset as? AVURLAsset {
+          self.urlAsset = urlAsset
+          let localVideoUrl: URL = urlAsset.url as URL
+          self.imageView.image = self.previewImageFromVideo(videoUrl: localVideoUrl)
+          self.centerScrollView(animated: false)
+          self.scrollView.zoomScale = 1.0
+          self.addAVPlayer(videoUrl: localVideoUrl)
+        }
+      })
+    } else {
+      self.playerLayer?.removeFromSuperlayer()
+      self.urlAsset = nil
+      let scale = UIScreen.main.scale
+      let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+      imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
 
-    })
-    self.centerScrollView(animated: false)
-    self.scrollView.zoomScale = 1.0
+        self.imageView.image = image
+        let imageWidth = image!.size.width
+        let imageHeight = image!.size.height
+        if imageWidth > imageHeight {
+          self.imageView.frame.size.height = self.cropAreaView.frame.height
+          self.imageView.frame.size.width = self.cropAreaView.frame.height * imageWidth / imageHeight
+        } else if imageWidth < imageHeight {
+          self.imageView.frame.size.width = self.cropAreaView.frame.width
+          self.imageView.frame.size.height = self.cropAreaView.frame.width * imageHeight / imageWidth
+        } else {
+          self.imageView.frame.size = self.cropAreaView.frame.size
+        }
+        let contentInsetTop = self.navigationController?.navigationBar.frame.height
+        self.scrollView.contentInset.top = contentInsetTop!
+        self.scrollView.contentSize = self.imageView.frame.size
+        self.imageView.image = image
+        self.centerScrollView(animated: false)
+
+      })
+      self.centerScrollView(animated: false)
+      self.scrollView.zoomScale = 1.0
+    }
+
+  }
+
+  func previewImageFromVideo(videoUrl: URL) -> UIImage? {
+    let asset = AVAsset(url: videoUrl)
+    let imageGenerator = AVAssetImageGenerator(asset: asset)
+    imageGenerator.appliesPreferredTrackTransform = true
+
+    var time = asset.duration
+    time.value = min(time.value, 2)
+
+    do {
+      let imageRef = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+      return UIImage(cgImage: imageRef)
+    } catch {
+      return nil
+    }
+  }
+
+  func addAVPlayer(videoUrl: URL) {
+    self.playerLayer?.removeFromSuperlayer()
+    let player = AVPlayer(url: videoUrl)
+    self.playerLayer = AVPlayerLayer(player: player)
+    DispatchQueue.main.async {
+      self.playerLayer?.frame = self.imageView.frame
+      self.imageView.layer.addSublayer(self.playerLayer!)
+      player.play()
+    }
+
   }
 }
 
@@ -279,6 +359,9 @@ extension SelectionViewController: UIScrollViewDelegate {
     } else if page < 44 {
       self.navigationController?.navigationBar.frame.origin.y = -(page)
     }
+  }
+  func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
+    return imageView
   }
 }
 
