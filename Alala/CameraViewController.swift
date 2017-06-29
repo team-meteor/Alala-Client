@@ -10,6 +10,7 @@ import AVFoundation
 import Photos
 
 class CameraViewController: UIViewController {
+  var videoData: Data?
   let CaptureModePhoto = 0
   let CaptureModeMovie = 1
 
@@ -72,9 +73,18 @@ class CameraViewController: UIViewController {
     self.dismiss(animated: true, completion: nil)
   }
 
-  func doneButtonDidTap() {
+  func photoDoneButtonDidTap() {
     stopSession()
-    let postEditorViewController = PostEditorViewController(image: self.capturedImageView.image!, movieUrl: nil)
+    let postEditorViewController = PostEditorViewController(image: self.capturedImageView.image!)
+    self.navigationController?.pushViewController(postEditorViewController, animated: true)
+    self.capturedImageView.removeFromSuperview()
+    self.navigationItem.rightBarButtonItem = nil
+  }
+
+  func videoDoneButtonDidTap() {
+    stopSession()
+    let postEditorViewController = PostEditorViewController(image: self.capturedImageView.image!)
+    postEditorViewController.videoData = self.videoData
     self.navigationController?.pushViewController(postEditorViewController, animated: true)
     self.capturedImageView.removeFromSuperview()
     self.navigationItem.rightBarButtonItem = nil
@@ -379,9 +389,13 @@ extension CameraViewController: UIScrollViewDelegate {
   func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
     let page = Int(scrollView.contentOffset.x / scrollView.bounds.size.width)
     if page == 0 {
+      self.navigationItem.rightBarButtonItem = nil
+      self.capturedImageView.removeFromSuperview()
       photoModeSetting()
       NotificationCenter.default.post(name: Notification.Name("photoModeOnTabBar"), object: nil)
     } else if page == 1 {
+      self.navigationItem.rightBarButtonItem = nil
+      self.capturedImageView.removeFromSuperview()
       videoModeSetting()
       NotificationCenter.default.post(name: Notification.Name("videoModeOnTabBar"), object: nil)
     }
@@ -404,13 +418,12 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate {
         if let finalImage = UIImage(data: dataImage) {
 
           self.capturedImageView.image = finalImage
-
           displayCapturPhoto()
           savePhotoToLibrary()
           self.navigationItem.rightBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .done,
             target: self,
-            action: #selector(doneButtonDidTap)
+            action: #selector(photoDoneButtonDidTap)
           )
         }
       }
@@ -428,9 +441,39 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
     if error != nil {
       print("Error recording movie: \(error!.localizedDescription)")
     } else {
-      // Write video to library
+      var movieData: Data?
+      do {
+        movieData = try Data(contentsOf: outputFileURL)
+      } catch _ {
+        movieData = nil
+        return
+      }
+      self.videoData = movieData
+      self.capturedImageView.image = previewImageFromVideo(videoUrl: outputFileURL)
+      displayCapturPhoto()
       saveMovieToLibrary(movieURL: outputFileURL as URL)
       takeVideoButton.setImage(UIImage(named: "Capture_Butt"), for: .normal)
+      self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+        barButtonSystemItem: .done,
+        target: self,
+        action: #selector(videoDoneButtonDidTap)
+      )
+    }
+  }
+
+  func previewImageFromVideo(videoUrl: URL) -> UIImage? {
+    let asset = AVAsset(url: videoUrl)
+    let imageGenerator = AVAssetImageGenerator(asset: asset)
+    imageGenerator.appliesPreferredTrackTransform = true
+
+    var time = asset.duration
+    time.value = min(time.value, 2)
+
+    do {
+      let imageRef = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+      return UIImage(cgImage: imageRef)
+    } catch {
+      return nil
     }
   }
 }

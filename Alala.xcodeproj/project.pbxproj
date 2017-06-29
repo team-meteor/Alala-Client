@@ -11,7 +11,7 @@
 		485ABFAB1EF3735500949456 /* PostEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485ABFAA1EF3735500949456 /* PostEditorViewController.swift */; };
 		485ABFAD1EF37F5A00949456 /* PostEditingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485ABFAC1EF37F5A00949456 /* PostEditingCell.swift */; };
 		487394021EFE467300B3E1D0 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487394011EFE467300B3E1D0 /* CameraViewController.swift */; };
-		487394081F01398500B3E1D0 /* VideoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487394071F01398500B3E1D0 /* VideoService.swift */; };
+		4873940A1F03798B00B3E1D0 /* MultipartService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487394091F03798B00B3E1D0 /* MultipartService.swift */; };
 		48F73CA21EF50FDB00E75022 /* RejectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F73CA11EF50FDB00E75022 /* RejectViewController.swift */; };
 		48F73CA41EF60ABA00E75022 /* LibraryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F73CA31EF60ABA00E75022 /* LibraryViewController.swift */; };
 		48F73CA61EF613F400E75022 /* WrapperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F73CA51EF613F400E75022 /* WrapperViewController.swift */; };
@@ -22,7 +22,6 @@
 		6F01C2991EF7984000552782 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F01C2981EF7984000552782 /* UIImage.swift */; };
 		6F01C29B1EF7996800552782 /* CircleImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F01C29A1EF7996800552782 /* CircleImageView.swift */; };
 		6F01C29D1EF7999000552782 /* PostCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F01C29C1EF7999000552782 /* PostCardCell.swift */; };
-		6F01C2A01EF7B95800552782 /* ImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F01C29F1EF7B95800552782 /* ImageService.swift */; };
 		6F09C8D81EF0113600BCFFEF /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8D71EF0113600BCFFEF /* LoginViewController.swift */; };
 		6F09C8DA1EF013B900BCFFEF /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8D91EF013B900BCFFEF /* AuthService.swift */; };
 		6F09C8DE1EF101E800BCFFEF /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8DD1EF101E800BCFFEF /* Constants.swift */; };
@@ -76,7 +75,7 @@
 		485ABFAA1EF3735500949456 /* PostEditorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostEditorViewController.swift; sourceTree = "<group>"; };
 		485ABFAC1EF37F5A00949456 /* PostEditingCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostEditingCell.swift; sourceTree = "<group>"; };
 		487394011EFE467300B3E1D0 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
-		487394071F01398500B3E1D0 /* VideoService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoService.swift; sourceTree = "<group>"; };
+		487394091F03798B00B3E1D0 /* MultipartService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultipartService.swift; sourceTree = "<group>"; };
 		48F73CA11EF50FDB00E75022 /* RejectViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RejectViewController.swift; sourceTree = "<group>"; };
 		48F73CA31EF60ABA00E75022 /* LibraryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LibraryViewController.swift; sourceTree = "<group>"; };
 		48F73CA51EF613F400E75022 /* WrapperViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WrapperViewController.swift; sourceTree = "<group>"; };
@@ -87,7 +86,6 @@
 		6F01C2981EF7984000552782 /* UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		6F01C29A1EF7996800552782 /* CircleImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleImageView.swift; sourceTree = "<group>"; };
 		6F01C29C1EF7999000552782 /* PostCardCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostCardCell.swift; sourceTree = "<group>"; };
-		6F01C29F1EF7B95800552782 /* ImageService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageService.swift; sourceTree = "<group>"; };
 		6F09C8CE1EEE717400BCFFEF /* AWSCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AWSCore.framework; path = Carthage/Build/iOS/AWSCore.framework; sourceTree = "<group>"; };
 		6F09C8D01EEE717D00BCFFEF /* AWSS3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AWSS3.framework; path = Carthage/Build/iOS/AWSS3.framework; sourceTree = "<group>"; };
 		6F09C8D71EF0113600BCFFEF /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -181,10 +179,9 @@
 			isa = PBXGroup;
 			children = (
 				6F09C8D91EF013B900BCFFEF /* AuthService.swift */,
-				6F01C29F1EF7B95800552782 /* ImageService.swift */,
 				48F857951EF8B6C800957B3A /* PostService.swift */,
 				6F0068881EFE161D009EDFBF /* FeedService.swift */,
-				487394071F01398500B3E1D0 /* VideoService.swift */,
+				487394091F03798B00B3E1D0 /* MultipartService.swift */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -546,10 +543,9 @@
 				48F73CA41EF60ABA00E75022 /* LibraryViewController.swift in Sources */,
 				6F5B85511EE52B78009285DD /* ActivityViewController.swift in Sources */,
 				485647BF1EEE6B4D00834BBB /* TileCell.swift in Sources */,
-				6F01C2A01EF7B95800552782 /* ImageService.swift in Sources */,
+				4873940A1F03798B00B3E1D0 /* MultipartService.swift in Sources */,
 				6F5B85531EE52B95009285DD /* PersonalViewController.swift in Sources */,
 				6F0A205F1EFA5D6700C71417 /* Comment.swift in Sources */,
-				487394081F01398500B3E1D0 /* VideoService.swift in Sources */,
 				6F09C8DE1EF101E800BCFFEF /* Constants.swift in Sources */,
 				6F5B854B1EE52520009285DD /* MainTabBarController.swift in Sources */,
 				48F73CA21EF50FDB00E75022 /* RejectViewController.swift in Sources */,

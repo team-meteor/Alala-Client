@@ -64,7 +64,7 @@ class AfterRegisterViewController: UIViewController {
     guard let profileImage = profilePhoto.image, let username = usernameTextField.text, !username.isEmpty else {
       return
     }
-    ImageService.uploadImage(image: profileImage, progress: nil) { (imageId) in
+    MultipartService.uploadMultipart(image: profileImage, videoData: nil, progress: nil) { (imageId) in
       AuthService.instance.updateProfile(profileName: username, profileImageId: imageId, completion: { (success) in
         if success {
           AuthService.instance.me(completion: { (user) in

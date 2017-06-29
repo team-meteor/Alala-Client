@@ -3,6 +3,8 @@ import Photos
 import AVKit
 
 class SelectionViewController: UIViewController {
+  var playerLayer: AVPlayerLayer?
+  var urlAsset: AVURLAsset?
   enum Section: Int {
     case allPhotos = 0
     case smartAlbums
@@ -177,19 +179,25 @@ class SelectionViewController: UIViewController {
   func cancelButtonDidTap() {
     self.dismiss(animated: true, completion: nil)
   }
-  func doneButtonDidTap() {
-    guard let image = self.imageView.image else { return }
+
+  func getCropImage() -> UIImage {
+    let image = self.imageView.image!
     var rect = self.scrollView.convert(self.cropAreaView.frame, from: self.cropAreaView.superview)
     rect.origin.x *= image.size.width / self.imageView.frame.width
     rect.origin.y *= image.size.height / self.imageView.frame.height
     rect.size.width *= image.size.width / self.imageView.frame.width
     rect.size.height *= image.size.height / self.imageView.frame.height
-    if let croppedCGImage = image.cgImage?.cropping(to: rect) {
-      let croppedImage = UIImage(cgImage: croppedCGImage)
-      let postEditorViewController = PostEditorViewController(image: croppedImage, movieUrl: nil)
-      self.navigationController?.pushViewController(postEditorViewController, animated: true)
-    }
+    let croppedCGImage = image.cgImage?.cropping(to: rect)
+    return UIImage(cgImage: croppedCGImage!)
   }
+
+  func doneButtonDidTap() {
+    let croppedImage = getCropImage()
+    let postEditorViewController = PostEditorViewController(image: croppedImage)
+    postEditorViewController.urlAsset = self.urlAsset
+    self.navigationController?.pushViewController(postEditorViewController, animated: true)
+  }
+
   func libraryButtonDidTap() {
     if libraryButton.currentTitle == "Library v" {
       self.libraryButton.setTitle("Library ^", for: .normal)
@@ -201,6 +209,7 @@ class SelectionViewController: UIViewController {
       NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
     }
   }
+
 }
 
 extension SelectionViewController: UICollectionViewDataSource {
@@ -261,31 +270,72 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     if asset.mediaType == .video {
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
         if let urlAsset = asset as? AVURLAsset {
-          //print(2)
+          self.urlAsset = urlAsset
           let localVideoUrl: URL = urlAsset.url as URL
-
-          let player = AVPlayer(url: localVideoUrl)
-          let playerLayer = AVPlayerLayer(player: player)
-          DispatchQueue.main.async {
-            playerLayer.frame = self.imageView.frame
-            self.imageView.layer.addSublayer(playerLayer)
-            player.play()
-          }
+          self.imageView.image = self.previewImageFromVideo(videoUrl: localVideoUrl)
+          self.centerScrollView(animated: false)
+          self.scrollView.zoomScale = 1.0
+          self.addAVPlayer(videoUrl: localVideoUrl)
         }
       })
     } else {
+      self.playerLayer?.removeFromSuperlayer()
+      self.urlAsset = nil
       let scale = UIScreen.main.scale
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
       imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
 
         self.imageView.image = image
+        let imageWidth = image!.size.width
+        let imageHeight = image!.size.height
+        if imageWidth > imageHeight {
+          self.imageView.frame.size.height = self.cropAreaView.frame.height
+          self.imageView.frame.size.width = self.cropAreaView.frame.height * imageWidth / imageHeight
+        } else if imageWidth < imageHeight {
+          self.imageView.frame.size.width = self.cropAreaView.frame.width
+          self.imageView.frame.size.height = self.cropAreaView.frame.width * imageHeight / imageWidth
+        } else {
+          self.imageView.frame.size = self.cropAreaView.frame.size
+        }
+        let contentInsetTop = self.navigationController?.navigationBar.frame.height
+        self.scrollView.contentInset.top = contentInsetTop!
+        self.scrollView.contentSize = self.imageView.frame.size
+        self.imageView.image = image
+        self.centerScrollView(animated: false)
 
       })
       self.centerScrollView(animated: false)
       self.scrollView.zoomScale = 1.0
     }
+
   }
 
+  func previewImageFromVideo(videoUrl: URL) -> UIImage? {
+    let asset = AVAsset(url: videoUrl)
+    let imageGenerator = AVAssetImageGenerator(asset: asset)
+    imageGenerator.appliesPreferredTrackTransform = true
+
+    var time = asset.duration
+    time.value = min(time.value, 2)
+
+    do {
+      let imageRef = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+      return UIImage(cgImage: imageRef)
+    } catch {
+      return nil
+    }
+  }
+
+  func addAVPlayer(videoUrl: URL) {
+    self.playerLayer?.removeFromSuperlayer()
+    let player = AVPlayer(url: videoUrl)
+    self.playerLayer = AVPlayerLayer(player: player)
+    DispatchQueue.main.async {
+      self.playerLayer?.frame = self.imageView.frame
+      self.imageView.layer.addSublayer(self.playerLayer!)
+      player.play()
+    }
+  }
 }
 
 extension SelectionViewController: UIScrollViewDelegate {

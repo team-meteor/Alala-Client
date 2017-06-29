@@ -7,18 +7,21 @@
 //
 
 import UIKit
+import Photos
 
 class PostEditorViewController: UIViewController {
 
   fileprivate let image: UIImage
   fileprivate var message: String?
+  var videoData: Data?
+  var urlAsset: AVURLAsset?
 
   fileprivate let tableView = UITableView().then {
     $0.isScrollEnabled = false
     $0.register(PostEditingCell.self, forCellReuseIdentifier: "postEditingCell")
   }
 
-  init(image: UIImage, movieUrl: URL?) {
+  init(image: UIImage) {
     self.image = image
     super.init(nibName: nil, bundle: nil)
     self.view.backgroundColor = UIColor.yellow
@@ -30,9 +33,42 @@ class PostEditorViewController: UIViewController {
   }
 
   func shareButtonDidTap() {
-    PostService.postWithSingleImage(photo: self.image, message: self.message, progress: nil) { result in
-      print(result)
+    if urlAsset != nil {
+      let videoUrl = urlAsset?.url
+      var movieData: Data?
+      do {
+        movieData = try Data(contentsOf: videoUrl!)
+      } catch _ {
+        movieData = nil
+        return
+      }
+      print("movie = \(movieData)")
+      MultipartService.uploadMultipart(image: self.image, videoData: movieData!, progress: nil) { multipartId in
+        PostService.postWithSingleMultipart(multipartId: multipartId, message: self.message, progress: nil) { [weak self] response in
+          guard let `self` = self else { return }
+          switch response.result {
+          case .success(let post):
+            print(post)
+          case .failure(let error):
+            print(error)
+          }
+        }
+      }
+    } else {
+      print("video = \(self.videoData)")
+      MultipartService.uploadMultipart(image: self.image, videoData: self.videoData, progress: nil) { multipartId in
+        PostService.postWithSingleMultipart(multipartId: multipartId, message: self.message, progress: nil) { [weak self] response in
+          guard let `self` = self else { return }
+          switch response.result {
+          case .success(let post):
+            print(post)
+          case .failure(let error):
+            print(error)
+          }
+        }
+      }
     }
+
   }
 
   override func viewDidLoad() {

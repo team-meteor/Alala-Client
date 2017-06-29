@@ -20,6 +20,7 @@ struct Post: Mappable {
 
   init?(map: Map) {
   }
+
   mutating func mapping(map: Map) {
     id <- map["_id"]
     photoIds <- map["photos"]
