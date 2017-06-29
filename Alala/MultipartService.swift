@@ -12,7 +12,7 @@ import Alamofire
 struct MultipartService {
   static func uploadMultipart(image: UIImage?, videoData: Data?, progress: Progress?, completion: @escaping (_ multipartId: String) -> Void) {
     let headers = [
-      "Content-Type": "multipart/form-data; charset=utf-8; boundary=__X_PAW_BOUNDARY__",
+      "Content-Type": "multipart/form-data; charset=utf-8; boundary=__X_PAW_BOUNDARY__"
       ]
     Alamofire.upload(multipartFormData: { multipartFormData in
       if videoData != nil {
