@@ -8,24 +8,24 @@
 
 import ObjectMapper
 
-struct Post: Mappable {
+class Post: NSObject, Mappable {
   var id: String!
-  var photoIds: [String]!
+  var multipartIds: [String]!
   var createdBy: User!
-  var description: String?
+  var postDescription: String?
   var likedUsers: [User]?
   var isLiked: Bool!
   var createdAt: Date!
   var comments: [Comment]?
 
-  init?(map: Map) {
+  required init?(map: Map) {
   }
 
-  mutating func mapping(map: Map) {
+  func mapping(map: Map) {
     id <- map["_id"]
-    photoIds <- map["photos"]
+    multipartIds <- map["multiparts"]
     createdBy <- map["createdBy"]
-    description <- map["description"]
+    postDescription <- map["description"]
     likedUsers <- map["likedUsers"]
     isLiked <- map["isLiked"]
     createdAt <- (map["createdAt"], ISO8601DateTransform())
