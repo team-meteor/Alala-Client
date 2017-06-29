@@ -42,10 +42,9 @@ class PostEditorViewController: UIViewController {
         movieData = nil
         return
       }
-      print("movie = \(movieData)")
       MultipartService.uploadMultipart(image: self.image, videoData: movieData!, progress: nil) { multipartId in
-        PostService.postWithSingleMultipart(multipartId: multipartId, message: self.message, progress: nil) { [weak self] response in
-          guard let `self` = self else { return }
+        PostService.postWithSingleMultipart(multipartId: multipartId, message: self.message, progress: nil) { response in
+
           switch response.result {
           case .success(let post):
             print(post)
@@ -55,10 +54,9 @@ class PostEditorViewController: UIViewController {
         }
       }
     } else {
-      print("video = \(self.videoData)")
       MultipartService.uploadMultipart(image: self.image, videoData: self.videoData, progress: nil) { multipartId in
-        PostService.postWithSingleMultipart(multipartId: multipartId, message: self.message, progress: nil) { [weak self] response in
-          guard let `self` = self else { return }
+        PostService.postWithSingleMultipart(multipartId: multipartId, message: self.message, progress: nil) { response in
+
           switch response.result {
           case .success(let post):
             print(post)

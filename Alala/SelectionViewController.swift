@@ -49,10 +49,11 @@ class SelectionViewController: UIViewController {
   fileprivate let scrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = false
-    $0.maximumZoomScale = 3.0
-    $0.minimumZoomScale = 0.1
-    $0.zoomScale = 1.0
-    $0.bounces = false
+    $0.maximumZoomScale = 3
+    $0.alwaysBounceVertical = true
+    $0.alwaysBounceHorizontal = true
+    $0.isUserInteractionEnabled = true
+    $0.clipsToBounds = true
   }
   fileprivate let imageView = UIImageView()
   fileprivate let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
@@ -91,7 +92,6 @@ class SelectionViewController: UIViewController {
   }
   override func viewDidLoad() {
     super.viewDidLoad()
-
     self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
 
     let allPhotosOptions = PHFetchOptions()
@@ -110,17 +110,19 @@ class SelectionViewController: UIViewController {
     collectionView.dataSource = self
     collectionView.delegate = self
     baseScrollView.delegate = self
-    baseScrollView.contentSize = CGSize(width: screenWidth, height: screenWidth + screenHeight - screenWidth/7 - navigationBarHeight!)
-    self.scrollView.addSubview(self.imageView)
+    scrollView.delegate = self
+    baseScrollView.contentSize = CGSize(width: screenWidth, height: screenHeight * 2 / 3 + screenHeight - screenWidth/7 - navigationBarHeight!)
     self.baseScrollView.addSubview(self.scrollView)
     self.baseScrollView.addSubview(self.cropAreaView)
     self.baseScrollView.addSubview(self.collectionView)
     self.baseScrollView.addSubview(self.ButtonBarView)
+    self.scrollView.addSubview(self.imageView)
     self.view.addSubview(baseScrollView)
     self.view.addSubview(self.tableView)
     self.tableView.delegate = self
     self.tableView.dataSource = self
 
+    //constraints
     self.tableView.snp.makeConstraints { make in
       make.width.equalTo(self.view)
       make.height.equalTo(self.view.frame.height - 90)
@@ -132,7 +134,7 @@ class SelectionViewController: UIViewController {
     }
     self.scrollView.snp.makeConstraints { make in
       make.left.right.top.equalTo(self.baseScrollView)
-      make.height.equalTo(screenWidth)
+      make.height.equalTo(screenHeight * 2 / 3)
       make.width.equalTo(screenWidth)
     }
     self.collectionView.snp.makeConstraints { make in
@@ -159,7 +161,7 @@ class SelectionViewController: UIViewController {
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     self.baseScrollView.snp.makeConstraints { make in
-      make.top.equalTo(self.view)
+      make.top.equalTo((self.navigationController?.navigationBar.snp.bottom)!)
     }
     self.navigationController?.navigationBar.addSubview(self.libraryButton)
     self.libraryButton.snp.makeConstraints { make in
@@ -210,6 +212,26 @@ class SelectionViewController: UIViewController {
     }
   }
 
+  func scaleAspectFillSize(image: UIImage, imageView: UIImageView) {
+    var imageWidth = image.size.width
+    var imageHeight = image.size.height
+
+    imageView.frame.size = scrollView.frame.size
+
+    let imageViewWidth = imageView.frame.size.width
+    let imageViewHeight = imageView.frame.size.height
+
+    if imageWidth >= imageHeight {
+      imageWidth = imageWidth * imageViewHeight / imageHeight
+      imageHeight = imageViewHeight
+    } else if imageWidth < imageHeight {
+      imageHeight = imageHeight * imageViewWidth / imageWidth
+      imageWidth = imageViewWidth
+    }
+    imageView.frame.size = CGSize(width: imageWidth, height: imageHeight)
+
+  }
+
 }
 
 extension SelectionViewController: UICollectionViewDataSource {
@@ -221,25 +243,12 @@ extension SelectionViewController: UICollectionViewDataSource {
     //메타데이터를 이미지로 변환
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .default, options: nil, resultHandler: { image, _ in
+    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
         cell.configure(photo: image!)
       }
-
       if asset == self.fetchResult.object(at: 0) && image != nil {
-        let imageWidth = image!.size.width
-        let imageHeight = image!.size.height
-        if imageWidth > imageHeight {
-          self.imageView.frame.size.height = self.cropAreaView.frame.height
-          self.imageView.frame.size.width = self.cropAreaView.frame.height * imageWidth / imageHeight
-        } else if imageWidth < imageHeight {
-          self.imageView.frame.size.width = self.cropAreaView.frame.width
-          self.imageView.frame.size.height = self.cropAreaView.frame.width * imageHeight / imageWidth
-        } else {
-          self.imageView.frame.size = self.cropAreaView.frame.size
-        }
-        let contentInsetTop = self.navigationController?.navigationBar.frame.height
-        self.scrollView.contentInset.top = contentInsetTop!
+        self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
         self.centerScrollView(animated: false)
@@ -335,6 +344,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
       self.imageView.layer.addSublayer(self.playerLayer!)
       player.play()
     }
+
   }
 }
 
@@ -349,6 +359,9 @@ extension SelectionViewController: UIScrollViewDelegate {
     } else if page < 44 {
       self.navigationController?.navigationBar.frame.origin.y = -(page)
     }
+  }
+  func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
+    return imageView
   }
 }
 
