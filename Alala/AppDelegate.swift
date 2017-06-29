@@ -52,10 +52,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       self.window?.rootViewController = tabBarController
     }
   }
-
-}
-
-extension Notification.Name {
-  static var presentMainTabBar: Notification.Name { return .init("presentMainTabBar") }
-  static var presentLogin: Notification.Name { return .init("presentLogin") }
 }
