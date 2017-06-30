@@ -221,7 +221,7 @@ class AuthService {
     ]
     let body: [String : Any] = [
       "profilename": profileName,
-      "photoId": profileImageId
+      "multipartId": profileImageId
     ]
 
     Alamofire.request(Constants.BASE_URL + "/user/profile/", method: .put, parameters: body, encoding: JSONEncoding.default, headers: headers)

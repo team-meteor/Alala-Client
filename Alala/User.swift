@@ -8,23 +8,24 @@
 
 import ObjectMapper
 
-struct User: Mappable {
+class User: NSObject, Mappable {
   var id: String!
   var email: String!
   var createdAt: Date!
   var profileName: String?
-  var photoId: String?
+  var multipartId: String?
   var following: [User]?
   var followers: [User]?
 
-  init?(map: Map) {
+  required init?(map: Map) {
   }
-  mutating func mapping(map: Map) {
+
+  func mapping(map: Map) {
     id <- map["_id"]
     email <- map["username"]
     createdAt <- (map["createdAt"], ISO8601DateTransform())
     profileName <- map["profileName"]
-    photoId <- map["photoId"]
+    multipartId <- map["multipartId"]
     following <- map["following"]
     followers <- map["followers"]
   }

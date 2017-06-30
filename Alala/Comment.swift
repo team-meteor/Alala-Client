@@ -8,7 +8,7 @@
 
 import ObjectMapper
 
-struct Comment: Mappable {
+class Comment: NSObject, Mappable {
   var id: String!
   var content: String!
   var createdBy: User!
@@ -16,10 +16,10 @@ struct Comment: Mappable {
   var isLiked: Bool!
   var createdAt: Date!
 
-  init?(map: Map) {
+  required init?(map: Map) {
   }
 
-  mutating func mapping(map: Map) {
+  func mapping(map: Map) {
     id <- map["_id"]
     content <- map["content"]
     createdBy <- map["createdBy"]

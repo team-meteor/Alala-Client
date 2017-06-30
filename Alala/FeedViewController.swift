@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import IGListKit
 import Alamofire
 
 class FeedViewController: UIViewController {
@@ -31,6 +32,16 @@ class FeedViewController: UIViewController {
 
   fileprivate let refreshControl = UIRefreshControl()
 
+  let collectionView: UICollectionView = {
+    let view = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    view.backgroundColor = UIColor.white
+    return view
+  }()
+
+  lazy var adapter: ListAdapter = {
+    return ListAdapter(updater: ListAdapterUpdater(), viewController: self)
+  }()
+
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     self.tabBarItem.image = UIImage(named: "feed")?.resizeImage(scaledTolength: 25)
@@ -52,6 +63,9 @@ class FeedViewController: UIViewController {
       $0.text = "Alala"
       $0.sizeToFit()
     }
+    view.addSubview(collectionView)
+    adapter.collectionView = collectionView
+    adapter.dataSource = self
     self.fetchFeed(paging: .refresh)
   }
   override func viewWillAppear(_ animated: Bool) {
@@ -82,7 +96,19 @@ class FeedViewController: UIViewController {
       case .failure(let error):
         print(error)
       }
-
     }
+  }
+}
+
+extension FeedViewController: ListAdapterDataSource {
+  func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
+    let items: [ListDiffable] = self.posts
+    return items
+  }
+  func listAdapter(_ listAdapter: ListAdapter, sectionControllerFor object: Any) -> ListSectionController {
+    return ListSectionController()
+  }
+  func emptyView(for listAdapter: ListAdapter) -> UIView? {
+    return nil
   }
 }

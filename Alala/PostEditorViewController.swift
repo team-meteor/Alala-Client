@@ -7,11 +7,14 @@
 //
 
 import UIKit
+import Photos
 
 class PostEditorViewController: UIViewController {
 
   fileprivate let image: UIImage
   fileprivate var message: String?
+  var videoData: Data?
+  var urlAsset: AVURLAsset?
 
   fileprivate let tableView = UITableView().then {
     $0.isScrollEnabled = false
@@ -30,10 +33,42 @@ class PostEditorViewController: UIViewController {
   }
 
   func shareButtonDidTap() {
-    PostService.postWithSingleImage(photo: self.image, message: self.message, progress: nil) { result in
-      print(result)
+    if urlAsset != nil {
+      let videoUrl = urlAsset?.url
+      var movieData: Data?
+      do {
+        movieData = try Data(contentsOf: videoUrl!)
+      } catch _ {
+        movieData = nil
+        return
+      }
+      MultipartService.uploadMultipart(image: self.image, videoData: movieData!, progress: nil) { multipartId in
+        PostService.postWithSingleMultipart(multipartId: multipartId, message: self.message, progress: nil) { response in
+
+          switch response.result {
+          case .success(let post):
+            print(post)
+          case .failure(let error):
+            print(error)
+          }
+        }
+      }
+    } else {
+      MultipartService.uploadMultipart(image: self.image, videoData: self.videoData, progress: nil) { multipartId in
+        PostService.postWithSingleMultipart(multipartId: multipartId, message: self.message, progress: nil) { response in
+
+          switch response.result {
+          case .success(let post):
+            print(post)
+          case .failure(let error):
+            print(error)
+          }
+        }
+      }
     }
+
   }
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
