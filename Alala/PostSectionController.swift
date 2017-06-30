@@ -11,16 +11,22 @@ import IGListKit
 
 class PostSectionController: ListSectionController {
   var post: Post!
-  var user: User!
 
   override init() {
     super.init()
-    user = AuthService.instance.currentUser
     inset = UIEdgeInsets(top: 0, left: 0, bottom: 5, right: 0)
   }
-  override func sizeForItem(at index: Int) -> CGSize {
-    return CGSize(width: collectionContext!.containerSize.width, height: 55)
+  override func numberOfItems() -> Int {
+    return 3
   }
+  override func sizeForItem(at index: Int) -> CGSize {
+    return CGSize(width: collectionContext!.containerSize.width, height: 100)
+  }
+
+  override func didUpdate(to object: Any) {
+    post = object as? Post
+  }
+
   override func cellForItem(at index: Int) -> UICollectionViewCell {
     let cellClass: AnyClass
     if index == 0 {
@@ -30,11 +36,14 @@ class PostSectionController: ListSectionController {
     } else {
       cellClass = ButtonGroupCell.self
     }
-    let cell = collectionContext?.dequeueReusableCell(of: cellClass, for: self, at: index)
+    let cell = collectionContext!.dequeueReusableCell(of: cellClass, for: self, at: index)
     if let cell = cell as? UserCell {
-      cell.profilePhoto.setImage(with: user.multipartId, size: .thumbnail)
+      cell.profilePhoto.setImage(with: post.createdBy.profilePhotoId, size: .thumbnail)
+      cell.profileNameLabel.text = post.createdBy.profileName
+    } else if let cell = cell as? MultimediaCell {
+      print(post.multipartIds[0], "multi")
+      cell.multimediaImageView.setImage(with: post.multipartIds[0], size: .hd)
     }
-
-    return UICollectionViewCell()
+    return cell
   }
 }

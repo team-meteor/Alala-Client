@@ -26,9 +26,9 @@ struct MultipartService {
       case .success(let upload, _, _):
         upload.responseJSON { response in
           switch response.result {
-          case .success(let data):
-            completion(data as! String)
-
+          case .success(let multipartId):
+//            completion(String(describing: multipartId))
+            completion(multipartId as! String)
           case .failure(let error):
             print(error)
           }
@@ -37,6 +37,5 @@ struct MultipartService {
         print(encodingError)
       }
     })
-
   }
 }

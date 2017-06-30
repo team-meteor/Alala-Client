@@ -13,7 +13,7 @@ class User: NSObject, Mappable {
   var email: String!
   var createdAt: Date!
   var profileName: String?
-  var multipartId: String?
+  var profilePhotoId: String?
   var following: [User]?
   var followers: [User]?
 
@@ -25,7 +25,7 @@ class User: NSObject, Mappable {
     email <- map["username"]
     createdAt <- (map["createdAt"], ISO8601DateTransform())
     profileName <- map["profileName"]
-    multipartId <- map["multipartId"]
+    profilePhotoId <- map["multipartId"]
     following <- map["following"]
     followers <- map["followers"]
   }
