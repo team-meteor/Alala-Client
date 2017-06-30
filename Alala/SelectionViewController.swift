@@ -296,27 +296,12 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
       imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
 
-        self.imageView.image = image
-        let imageWidth = image!.size.width
-        let imageHeight = image!.size.height
-        if imageWidth > imageHeight {
-          self.imageView.frame.size.height = self.cropAreaView.frame.height
-          self.imageView.frame.size.width = self.cropAreaView.frame.height * imageWidth / imageHeight
-        } else if imageWidth < imageHeight {
-          self.imageView.frame.size.width = self.cropAreaView.frame.width
-          self.imageView.frame.size.height = self.cropAreaView.frame.width * imageHeight / imageWidth
-        } else {
-          self.imageView.frame.size = self.cropAreaView.frame.size
-        }
-        let contentInsetTop = self.navigationController?.navigationBar.frame.height
-        self.scrollView.contentInset.top = contentInsetTop!
+        self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
         self.centerScrollView(animated: false)
 
       })
-      self.centerScrollView(animated: false)
-      self.scrollView.zoomScale = 1.0
     }
 
   }
