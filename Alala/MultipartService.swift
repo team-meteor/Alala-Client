@@ -28,6 +28,7 @@ struct MultipartService {
           switch response.result {
           case .success(let multipartId):
 //            completion(String(describing: multipartId))
+            print("multipart it", multipartId)
             completion(multipartId as! String)
           case .failure(let error):
             print(error)
