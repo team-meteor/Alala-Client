@@ -13,4 +13,22 @@ class MultimediaCell: UICollectionViewCell {
     let imageView = UIImageView()
     return imageView
   }()
+
+  override init(frame: CGRect) {
+    super.init(frame: frame)
+    contentView.addSubview(multimediaImageView)
+  }
+
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    multimediaImageView.snp.makeConstraints { (make) in
+      make.width.equalTo(self.contentView)
+      make.centerY.equalTo(self.contentView)
+      make.centerX.equalTo(self.contentView)
+    }
+  }
 }
