@@ -104,11 +104,15 @@ class SelectionViewController: UIViewController {
     let bounds = self.navigationController!.navigationBar.bounds
     self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
     self.title = "Library"
-    collectionView.dataSource = self
-    collectionView.delegate = self
-    baseScrollView.delegate = self
-    scrollView.delegate = self
-    baseScrollView.contentSize = CGSize(width: screenWidth, height: screenHeight * 2 / 3 + screenHeight - screenWidth/7 - navigationBarHeight!)
+
+    self.collectionView.dataSource = self
+    self.collectionView.delegate = self
+    self.baseScrollView.delegate = self
+    self.scrollView.delegate = self
+    self.tableView.delegate = self
+    self.tableView.dataSource = self
+    self.baseScrollView.contentSize = CGSize(width: screenWidth, height: screenHeight * 2 / 3 + screenHeight - screenWidth/7 - navigationBarHeight!)
+
     self.baseScrollView.addSubview(self.scrollView)
     self.baseScrollView.addSubview(self.cropAreaView)
     self.baseScrollView.addSubview(self.collectionView)
@@ -116,8 +120,6 @@ class SelectionViewController: UIViewController {
     self.scrollView.addSubview(self.imageView)
     self.view.addSubview(baseScrollView)
     self.view.addSubview(self.tableView)
-    self.tableView.delegate = self
-    self.tableView.dataSource = self
 
     //constraints
     self.tableView.snp.makeConstraints { make in
@@ -275,12 +277,6 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
       self.centerScrollView(animated: false)
 
     })
-    let scaleWidth = scrollView.frame.size.width / scrollView.contentSize.width
-    let scaleHeight = scrollView.frame.size.height / scrollView.contentSize.height
-    let minScale = min(scaleWidth, scaleHeight)
-    scrollView.minimumZoomScale = minScale
-    scrollView.maximumZoomScale = 1.0
-    scrollView.zoomScale = minScale
 
   }
 }
@@ -296,9 +292,6 @@ extension SelectionViewController: UIScrollViewDelegate {
     } else if page < 44 {
       self.navigationController?.navigationBar.frame.origin.y = -(page)
     }
-  }
-  func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
-    return imageView
   }
 }
 
