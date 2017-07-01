@@ -400,11 +400,20 @@ extension SelectionViewController: UIScrollViewDelegate {
       self.navigationController?.navigationBar.frame.origin.y = -(page)
     }
 
-    if  page >= screenHeight / 2 + screenWidth / 8 {
-      self.buttonBarView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-    } else {
-      self.buttonBarView.backgroundColor = UIColor.clear
-    }
+//    if  page < valueLevel {
+//      self.buttonBarView.backgroundColor = UIColor.clear
+//    } else if(page >= valueLevel && page < valueLevel * 2) {
+//      self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(0.1)
+//    } else if(page >= valueLevel * 2 && page < valueLevel * 3) {
+//      self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+//    } else if(page >= valueLevel * 3 && page < valueLevel * 4) {
+//      self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+//    } else if(page >= valueLevel * 4 && page < valueLevel * 5) {
+//      self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+//    } else {
+//      self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+//    }
+    self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(page / 600)
   }
 
 }
