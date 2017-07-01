@@ -14,7 +14,7 @@ extension UIImageView {
       self.image = placeholder
       return
     }
-    let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(photoId)\(size.pixel)).jpg")
+    let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(size.pixel)_\(photoId)")
     self.kf.setImage(with: url, placeholder: placeholder)
   }
 }

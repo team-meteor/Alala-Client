@@ -21,20 +21,27 @@ class UserCell: UICollectionViewCell {
     let label = UILabel()
     label.backgroundColor = UIColor.clear
     label.textColor = UIColor.black
+    label.sizeToFit()
     return label
   }()
 
   let moreButton: UIButton = {
     let button = UIButton(type: .custom)
-    button.setImage(UIImage(named: "more"), for: .normal)
+    let image = UIImage(named: "more")?.resizeImage(scaledToFit: 15)
+    button.setImage(image, for: .normal)
     return button
   }()
+
+  let borderBottom = UIView().then {
+    $0.backgroundColor = UIColor(red:0.86, green:0.86, blue:0.86, alpha:1.00)
+  }
 
   override init(frame: CGRect) {
     super.init(frame: frame)
     contentView.addSubview(profilePhoto)
     contentView.addSubview(profileNameLabel)
     contentView.addSubview(moreButton)
+    contentView.addSubview(borderBottom)
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -42,6 +49,24 @@ class UserCell: UICollectionViewCell {
   }
   override func layoutSubviews() {
     super.layoutSubviews()
-    // 배치하기
+    profilePhoto.snp.makeConstraints { (make) in
+      make.centerY.equalTo(self.contentView)
+      make.left.equalTo(10)
+      make.height.equalTo(32)
+      make.width.equalTo(32)
+    }
+    profileNameLabel.snp.makeConstraints { (make) in
+      make.centerY.equalTo(self.contentView)
+      make.left.equalTo(profilePhoto.snp.right).offset(10)
+    }
+    moreButton.snp.makeConstraints { (make) in
+      make.centerY.equalTo(self.contentView)
+      make.right.equalTo(self.contentView).offset(-15.5)
+    }
+    borderBottom.snp.makeConstraints { (make) in
+      make.width.equalTo(self.contentView)
+      make.height.equalTo(1)
+      make.bottom.equalTo(self.contentView)
+    }
   }
 }

@@ -32,7 +32,7 @@ class MainTabBarController: UITabBarController {
       self.discoverViewController,
       fakeViewController,
       activityViewController,
-      personalViewController
+      UINavigationController(rootViewController: self.personalViewController)
     ]
   }
 

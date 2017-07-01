@@ -9,5 +9,27 @@
 import UIKit
 
 class MultimediaCell: UICollectionViewCell {
+  let multimediaImageView: UIImageView = {
+    let imageView = UIImageView()
+    imageView.contentMode = .scaleAspectFit
+    return imageView
+  }()
 
+  override init(frame: CGRect) {
+    super.init(frame: frame)
+    contentView.addSubview(multimediaImageView)
+  }
+
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    multimediaImageView.snp.makeConstraints { (make) in
+      make.size.equalTo(self.contentView)
+      make.centerY.equalTo(self.contentView)
+      make.centerX.equalTo(self.contentView)
+    }
+  }
 }
