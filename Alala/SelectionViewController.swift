@@ -5,6 +5,7 @@ import AVKit
 class SelectionViewController: UIViewController {
   var playerLayer: AVPlayerLayer?
   var urlAsset: AVURLAsset?
+  let photosLimit: Int = 1000
   enum Section: Int {
     case allPhotos = 0
     case smartAlbums
@@ -92,15 +93,9 @@ class SelectionViewController: UIViewController {
   }
   override func viewDidLoad() {
     super.viewDidLoad()
+    getLimitedAlbumFromLibrary()
+
     self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
-
-    let allPhotosOptions = PHFetchOptions()
-    allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-    allPhotos = PHAsset.fetchAssets(with: allPhotosOptions)
-    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
-    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
-    self.fetchResult = allPhotos
-
     let screenWidth = self.view.bounds.width
     let screenHeight = self.view.bounds.height
     let navigationBarHeight = self.navigationController?.navigationBar.frame.height
@@ -184,6 +179,26 @@ class SelectionViewController: UIViewController {
     self.dismiss(animated: true, completion: nil)
   }
 
+  func getLimitedAlbumFromLibrary() {
+    let limitedOptions = PHFetchOptions()
+    limitedOptions.fetchLimit = photosLimit
+    limitedOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+    allPhotos = PHAsset.fetchAssets(with: limitedOptions)
+    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
+    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
+    self.fetchResult = allPhotos
+    print("allcount = \(allPhotos.count)")
+  }
+
+  func getAllAlbumsAndReload() {
+    let AllOptions = PHFetchOptions()
+    AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+    allPhotos = PHAsset.fetchAssets(with: AllOptions)
+    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
+    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
+    self.collectionView.reloadData()
+  }
+
   func getCropImage() -> UIImage {
     let image = self.imageView.image!
     var rect = self.scrollView.convert(self.cropAreaView.frame, from: self.cropAreaView.superview)
@@ -234,6 +249,14 @@ class SelectionViewController: UIViewController {
 
   }
 
+}
+
+extension SelectionViewController: UICollectionViewDelegate {
+  func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    if self.allPhotos.count == photosLimit {
+      getAllAlbumsAndReload()
+    }
+  }
 }
 
 extension SelectionViewController: UICollectionViewDataSource {
@@ -326,11 +349,10 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     self.playerLayer?.removeFromSuperlayer()
     let player = AVPlayer(url: videoUrl)
     self.playerLayer = AVPlayerLayer(player: player)
-    DispatchQueue.main.async {
-      self.playerLayer?.frame = self.imageView.frame
-      self.imageView.layer.addSublayer(self.playerLayer!)
-      player.play()
-    }
+
+    self.playerLayer?.frame = self.imageView.frame
+    self.imageView.layer.addSublayer(self.playerLayer!)
+    player.play()
 
   }
 }
