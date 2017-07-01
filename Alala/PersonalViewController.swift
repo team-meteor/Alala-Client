@@ -10,7 +10,7 @@ import UIKit
 
 class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoContentsViewDelegate {
 
-  // MARK:- UI Objects
+  // MARK: - UI Objects
   let discoverPeopleButton = UIBarButtonItem(
     image: UIImage(named: "plus")?.resizeImage(scaledTolength: 25),
     style: .plain,
@@ -24,25 +24,26 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     target: nil,
     action: nil
   )
-    
+
   let scrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = true
     $0.bounces = true
   }
-  
+
   let personalInfoView = PersonalInfoView()
-  
+
   let noContentsGuideView = NoContentsView()
-  
-  // MARK:- Initialize
+
+  // MARK: - Initialize
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+
     self.tabBarItem.image = UIImage(named: "personal")?.resizeImage(scaledTolength: 25)
     self.tabBarItem.selectedImage = UIImage(named: "personal-selected")?.resizeImage(scaledTolength: 25)
     self.tabBarItem.imageInsets.top = 5
     self.tabBarItem.imageInsets.bottom = -5
-    
+
     self.navigationItem.leftBarButtonItem = discoverPeopleButton
     self.navigationItem.rightBarButtonItem = archiveButton
   }
@@ -53,13 +54,13 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+
     self.navigationItem.titleView = UILabel().then {
         $0.font = UIFont(name: "HelveticaNeue", size: 20)
         $0.text = "User ID"
         $0.sizeToFit()
     }
-    
+
     self.view.addSubview(scrollView)
     scrollView.snp.makeConstraints { (make) in
         make.top.equalTo(self.view)
@@ -67,10 +68,10 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
         make.right.equalTo(self.view)
         make.bottom.equalTo(self.view)
     }
-    
+
     //-- Section 1 : closable notice view (Optional)
-    // TODO
-    
+    // (todo)
+
     //-- Section 2 : personal infomation view (Required)
     scrollView.addSubview(personalInfoView)
     personalInfoView.snp.makeConstraints { (make) in
@@ -81,7 +82,7 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
         make.width.equalTo(scrollView)
     }
     personalInfoView.delegate = self
-    
+
     //-- Section 3 : personal post list or no contents view (one of both)
     scrollView.addSubview(noContentsGuideView)
     noContentsGuideView.snp.makeConstraints { (make) in
@@ -99,41 +100,41 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     self.navigationController?.isNavigationBarHidden = false
   }
 
-  // MARK:- PersonalInfoViewDelegate
+  // MARK: - PersonalInfoViewDelegate
   func discoverPeopleButtonTap() {
     let sampleVC = DiscoverPeopleViewController()
     self.navigationController?.pushViewController(sampleVC, animated: true)
   }
-  
+
   func postsAreaTap() {
     print("----- postsAreaTap")
   }
-  
+
   func followersAreaTap() {
     let followerVC = FollowViewController(type:.follower)
     self.navigationController?.pushViewController(followerVC, animated: true)
   }
-  
+
   func followingAreaTap() {
     let followingVC = FollowViewController(type:.following)
     self.navigationController?.pushViewController(followingVC, animated: true)
   }
-  
+
   func editProfileButtonTap(sender: UIButton) {
-    print("----- editProfileButtonTap")
-//    let sampleVC = DiscoverPeopleViewController()
-//    self.navigationController?.
+    let editProfileVC = UINavigationController(rootViewController: EditProfileViewController())
+    self.present(editProfileVC, animated: true, completion: nil)
   }
 
   func optionsButtonTap(sender: UIButton) {
-    print("----- optionsButtonTap")
+    let optionsVC = OptionsViewController()
+    self.navigationController?.pushViewController(optionsVC, animated: true)
   }
 
-  // MARK:- NoContentsViewDelegate
+  // MARK: - NoContentsViewDelegate
   func addContentButtonTap(sender: UIButton) {
     print("'Share your first photo or video' button pressed.")
   }
-  
+
   /*
   func logoutButtonDidTap() {
     AuthService.instance.logout { (success) in
