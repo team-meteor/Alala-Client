@@ -126,12 +126,14 @@ class WrapperViewController: UIViewController {
 		self.libraryButton.setTitleColor(UIColor.blue, for: .normal)
 		self.photoButton.setTitleColor(UIColor.lightGray, for: .normal)
 		self.videoButton.setTitleColor(UIColor.lightGray, for: .normal)
+    NotificationCenter.default.post(name: Notification.Name("cameraStop"), object: nil)
 	}
 
 	func photoButtonDidTap() {
 		UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
 			self.scrollView.contentOffset.x = self.scrollView.bounds.size.width}, completion: nil)
 		NotificationCenter.default.post(name: Notification.Name("photoMode"), object: nil)
+    NotificationCenter.default.post(name: Notification.Name("cameraStart"), object: nil)
 		photoModeOnTabBar()
 	}
 
@@ -139,6 +141,7 @@ class WrapperViewController: UIViewController {
 		UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
 			self.scrollView.contentOffset.x = self.scrollView.bounds.size.width}, completion: nil)
 		NotificationCenter.default.post(name: Notification.Name("videoMode"), object: nil)
+    NotificationCenter.default.post(name: Notification.Name("cameraStart"), object: nil)
 		videoModeOnTabBar()
 	}
 
@@ -166,6 +169,7 @@ extension WrapperViewController: UIScrollViewDelegate {
 		} else if page == 1 {
 			photoModeOnTabBar()
 			NotificationCenter.default.post(name: Notification.Name("photoMode"), object: nil)
+      NotificationCenter.default.post(name: Notification.Name("cameraStart"), object: nil)
 		}
 	}
 }

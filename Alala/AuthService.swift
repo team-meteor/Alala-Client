@@ -212,16 +212,14 @@ class AuthService {
   }
 
   func updateProfile(profileName: String, profileImageId: String, completion: @escaping (_ success: Bool) -> Void) {
-    guard let token = self.authToken else {
-      return
-    }
+    guard let token = self.authToken else { return }
     let headers = [
       "Authorization": "Bearer " + token,
       "Content-Type": "application/json; charset=utf-8"
     ]
     let body: [String : Any] = [
-      "profilename": profileName,
-      "photoId": profileImageId
+      "profileName": profileName,
+      "multipartId": profileImageId
     ]
 
     Alamofire.request(Constants.BASE_URL + "/user/profile/", method: .put, parameters: body, encoding: JSONEncoding.default, headers: headers)

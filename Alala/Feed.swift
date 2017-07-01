@@ -8,14 +8,14 @@
 
 import ObjectMapper
 
-struct Feed: Mappable {
+class Feed: NSObject, Mappable {
   var posts: [Post]?
   var nextPage: Int?
 
-  init?(map: Map) {
+  required init?(map: Map) {
   }
 
-  mutating func mapping(map: Map) {
+  func mapping(map: Map) {
     self.posts <- map["docs"]
     self.nextPage <- map["nextPage"]
   }

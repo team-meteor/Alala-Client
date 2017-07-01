@@ -74,6 +74,8 @@ class LoginViewController: UIViewController {
     self.passwordTextField.addTarget(self, action: #selector(textFieldDidChangeText), for: .editingChanged)
     self.authRequestButton.addTarget(self, action: #selector(authRequestButtonDidTap), for: .touchUpInside)
     let tap = UITapGestureRecognizer(target: self, action: #selector(signupLabelDidTap))
+    let dismissTap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+    view.addGestureRecognizer(dismissTap)
     signupLabel.isUserInteractionEnabled = true
     self.signupLabel.addGestureRecognizer(tap)
 
@@ -127,6 +129,10 @@ class LoginViewController: UIViewController {
 
   func textFieldDidChangeText(_ textField: UITextField) {
     textField.backgroundColor = .white
+  }
+
+  func dismissKeyboard() {
+    view.endEditing(true)
   }
 
   func authRequestButtonDidTap() {

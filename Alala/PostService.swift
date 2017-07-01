@@ -8,43 +8,41 @@
 
 import UIKit
 import Alamofire
+import ObjectMapper
 
 struct PostService {
+  static let instance = PostService()
+  let defaults = UserDefaults.standard
 
-  static func postWithSingleImage(photo: UIImage, message: String?, progress: Progress?, completion: @escaping (_ success: Bool) -> Void) {
+  static func postWithSingleMultipart(multipartId: String, message: String?, progress: Progress?, completion: @escaping (DataResponse<Post>) -> Void) {
 
     guard let token = AuthService.instance.authToken else {
       return
     }
-    ImageService.uploadImage(image: photo, progress: progress) { imageId in
+    let headers = [
+      "Authorization": "Bearer " + token,
+      "Content-Type": "application/json; charset=utf-8"
+    ]
 
-      // Add Headers
-      let headers = [
-        "Authorization": "Bearer " + token,
-        "Content-Type": "application/json; charset=utf-8"
-        ]
-
-      // JSON Body
-      let body: [String : Any] = [
-        "description": message as Any,
-        "photos": [
-          imageId
-        ]
+    let body: [String : Any] = [
+      "description": message as Any,
+      "multiparts": [
+        multipartId
       ]
+    ]
 
-      // Fetch Request
-      Alamofire.request(Constants.BASE_URL + "post/add", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
-        .validate(statusCode: 200..<300)
-        .responseJSON { response in
-          if response.result.error == nil {
-            debugPrint("HTTP Response Body: \(String(describing: response.data))")
-            completion(true)
-          } else {
-            debugPrint("HTTP Request failed: \(String(describing: response.result.error))")
-            completion(false)
-          }
-      }
+    // Fetch Request
+    Alamofire.request(Constants.BASE_URL + "post/add", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
+      .validate(statusCode: 200..<300)
+      .responseJSON { response in
+
+        if let post = Mapper<Post>().map(JSONObject: response.result.value!) {
+          print("post = \(post)")
+          let response = DataResponse(request: response.request, response: response.response, data: response.data, result: Result.success(post))
+
+          completion(response)
+        }
+
     }
   }
-
 }

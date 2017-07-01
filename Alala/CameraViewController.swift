@@ -10,15 +10,25 @@ import AVFoundation
 import Photos
 
 class CameraViewController: UIViewController {
+  var videoData: Data?
+  let CaptureModePhoto = 0
+  let CaptureModeMovie = 1
+
   let capturedImageView = UIImageView()
   let captureSession = AVCaptureSession()
   var previewLayer: AVCaptureVideoPreviewLayer!
   var activeInput: AVCaptureDeviceInput!
   var imageOutput = AVCapturePhotoOutput()
+  var captureMode = Int()
+  let movieOutput = AVCaptureMovieFileOutput()
+
   let switchButton = UIButton().then {
-    $0.backgroundColor = UIColor.blue
+    $0.setImage(UIImage(named: "Camera_Icon")!, for: .normal)
     $0.setTitle("switch", for: .normal)
     $0.addTarget(self, action: #selector(switchButtonDidTap), for: .touchUpInside)
+  }
+  let buttonBar = UIView().then {
+    $0.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
   }
 
   private let camPreview = UIView().then {
@@ -34,27 +44,24 @@ class CameraViewController: UIViewController {
     $0.backgroundColor = UIColor.green
   }
 
-  private let takePhotoButton = UIButton().then {
-    $0.backgroundColor = UIColor.red
-    $0.layer.cornerRadius = 30
+  fileprivate let takePhotoButton = UIButton().then {
+    $0.setImage(UIImage(named: "Capture_Butt")!, for: .normal)
     $0.addTarget(self, action: #selector(takePhotoButtonDidTap), for: .touchUpInside)
   }
 
-  private let takeVideoButton = UIButton().then {
-    $0.backgroundColor = UIColor.red
-    $0.layer.cornerRadius = 30
+  fileprivate let takeVideoButton = UIButton().then {
+    $0.setImage(UIImage(named: "Capture_Butt"), for: .normal)
     $0.addTarget(self, action: #selector(takeVideoButtonDidTap), for: .touchUpInside)
   }
 
   init() {
     super.init(nibName: nil, bundle: nil)
-    //cancle 버튼 생성
     self.navigationItem.leftBarButtonItem = UIBarButtonItem(
       barButtonSystemItem: .cancel,
       target: self,
       action: #selector(cancelButtonDidTap)
     )
-
+    captureMode = CaptureModePhoto
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -66,9 +73,18 @@ class CameraViewController: UIViewController {
     self.dismiss(animated: true, completion: nil)
   }
 
-  func doneButtonDidTap() {
+  func photoDoneButtonDidTap() {
     stopSession()
     let postEditorViewController = PostEditorViewController(image: self.capturedImageView.image!)
+    self.navigationController?.pushViewController(postEditorViewController, animated: true)
+    self.capturedImageView.removeFromSuperview()
+    self.navigationItem.rightBarButtonItem = nil
+  }
+
+  func videoDoneButtonDidTap() {
+    stopSession()
+    let postEditorViewController = PostEditorViewController(image: self.capturedImageView.image!)
+    postEditorViewController.videoData = self.videoData
     self.navigationController?.pushViewController(postEditorViewController, animated: true)
     self.capturedImageView.removeFromSuperview()
     self.navigationItem.rightBarButtonItem = nil
@@ -87,7 +103,8 @@ class CameraViewController: UIViewController {
     self.scrollView.addSubview(bottomView)
     self.view.addSubview(camPreview)
     self.view.addSubview(scrollView)
-    self.camPreview.addSubview(switchButton)
+    self.camPreview.addSubview(self.buttonBar)
+    self.buttonBar.addSubview(switchButton)
 
     self.camPreview.snp.makeConstraints { make in
       make.left.right.equalTo(self.view)
@@ -129,24 +146,28 @@ class CameraViewController: UIViewController {
       make.top.equalTo((self.navigationController?.navigationBar.snp.bottom)!)
     }
 
+    self.buttonBar.snp.makeConstraints { make in
+      make.left.top.right.equalTo(self.camPreview)
+      make.width.equalTo(self.camPreview)
+      make.height.equalTo(50)
+    }
+
     self.switchButton.snp.makeConstraints { make in
-      make.center.equalTo(self.camPreview)
+      make.center.equalTo(self.buttonBar.snp.center)
+      make.width.height.equalTo(50)
     }
 
     DispatchQueue.main.async {
       self.scrollView.contentSize = self.bottomView.bounds.size
     }
-    setupSession()
-    setupPreview()
-  }
 
-  func takeVideoButtonDidTap() {
-
+    if setupSession() {
+      setupPreview()
+      setupCaptureMode(CaptureModePhoto)
+    }
   }
 
   func photoModeSetting() {
-
-    startSession()
     self.title = "Photo"
     let page = Int(scrollView.contentOffset.x / scrollView.bounds.size.width)
     if page != 0 {
@@ -164,11 +185,19 @@ class CameraViewController: UIViewController {
     }
   }
 
-  override var prefersStatusBarHidden: Bool {
-    return true
+  func setupCaptureMode(_ mode: Int) {
+    captureMode = mode
+    if mode == CaptureModePhoto {
+      // Photo Mode
+
+    } else {
+      // Video Mode
+
+    }
   }
 
-  func setupSession() {
+  //setup 성공시 true
+  func setupSession() -> Bool {
     captureSession.sessionPreset = AVCaptureSessionPresetHigh
     let camera = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
 
@@ -180,11 +209,28 @@ class CameraViewController: UIViewController {
       }
     } catch {
       print("Error setting device input: \(error)")
+      return false
+    }
+
+    let microphone = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
+
+    do {
+      let micInput = try AVCaptureDeviceInput(device: microphone)
+      if captureSession.canAddInput(micInput) {
+        captureSession.addInput(micInput)
+      }
+    } catch {
+      print("Error setting device audio input: \(error)")
+      return false
     }
 
     if captureSession.canAddOutput(imageOutput) {
       captureSession.addOutput(imageOutput)
     }
+    if captureSession.canAddOutput(movieOutput) {
+      captureSession.addOutput(movieOutput)
+    }
+    return true
   }
 
   func setupPreview() {
@@ -192,6 +238,7 @@ class CameraViewController: UIViewController {
     previewLayer.frame = camPreview.bounds
     previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
     camPreview.layer.addSublayer(previewLayer)
+    camPreview.bringSubview(toFront: self.buttonBar)
   }
 
   func startSession() {
@@ -215,38 +262,39 @@ class CameraViewController: UIViewController {
   }
 
   func switchButtonDidTap() {
-    let deviceDiscoverySession = AVCaptureDeviceDiscoverySession(deviceTypes: [AVCaptureDeviceType.builtInDualCamera, AVCaptureDeviceType.builtInTelephotoCamera, AVCaptureDeviceType.builtInWideAngleCamera], mediaType: AVMediaTypeVideo, position: AVCaptureDevicePosition.unspecified)
-    if (deviceDiscoverySession?.devices.count)! > 1 {
-      var newPosition: AVCaptureDevicePosition!
-      if activeInput.device.position == AVCaptureDevicePosition.back {
-        newPosition = AVCaptureDevicePosition.front
-      } else {
-        newPosition = AVCaptureDevicePosition.back
-      }
-
-      var newCamera: AVCaptureDevice!
-      let devices = deviceDiscoverySession?.devices
-      for device in devices! where device.position == newPosition { newCamera = device }
-
-      do {
-        let input = try AVCaptureDeviceInput(device: newCamera)
-        captureSession.beginConfiguration()
-        captureSession.removeInput(activeInput)
-        if captureSession.canAddInput(input) {
-          captureSession.addInput(input)
-          activeInput = input
+    if movieOutput.isRecording == false {
+      let deviceDiscoverySession = AVCaptureDeviceDiscoverySession(deviceTypes: [AVCaptureDeviceType.builtInDualCamera, AVCaptureDeviceType.builtInTelephotoCamera, AVCaptureDeviceType.builtInWideAngleCamera], mediaType: AVMediaTypeVideo, position: AVCaptureDevicePosition.unspecified)
+      if (deviceDiscoverySession?.devices.count)! > 1 {
+        var newPosition: AVCaptureDevicePosition!
+        if activeInput.device.position == AVCaptureDevicePosition.back {
+          newPosition = AVCaptureDevicePosition.front
         } else {
-          captureSession.addInput(activeInput)
+          newPosition = AVCaptureDevicePosition.back
         }
-        captureSession.commitConfiguration()
-      } catch {
-        print("Error switching cameras: \(error)")
+
+        var newCamera: AVCaptureDevice!
+        let devices = deviceDiscoverySession?.devices
+        for device in devices! where device.position == newPosition { newCamera = device }
+
+        do {
+          let input = try AVCaptureDeviceInput(device: newCamera)
+          captureSession.beginConfiguration()
+          captureSession.removeInput(activeInput)
+          if captureSession.canAddInput(input) {
+            captureSession.addInput(input)
+            activeInput = input
+          } else {
+            captureSession.addInput(activeInput)
+          }
+          captureSession.commitConfiguration()
+        } catch {
+          print("Error switching cameras: \(error)")
+        }
       }
     }
   }
 
   func displayCapturPhoto() {
-
     capturedImageView.frame = self.camPreview.bounds
     self.camPreview.addSubview(capturedImageView)
   }
@@ -261,15 +309,93 @@ class CameraViewController: UIViewController {
     UIImageWriteToSavedPhotosAlbum(self.capturedImageView.image!, nil, nil, nil)
   }
 
+  func takeVideoButtonDidTap() {
+    if movieOutput.isRecording == false {
+      let connection = movieOutput.connection(withMediaType: AVMediaTypeVideo)
+      if (connection?.isVideoOrientationSupported)! {
+        connection?.videoOrientation = currentVideoOrientation()
+      }
+
+      if (connection?.isVideoStabilizationSupported)! {
+        connection?.preferredVideoStabilizationMode = AVCaptureVideoStabilizationMode.auto
+      }
+
+      let device = activeInput.device
+      if (device?.isSmoothAutoFocusSupported)! {
+        do {
+          try device?.lockForConfiguration()
+          device?.isSmoothAutoFocusEnabled = false
+          device?.unlockForConfiguration()
+        } catch {
+          print("Error setting configuration: \(error)")
+        }
+      }
+      let outputURL = tempURL()
+      movieOutput.startRecording(toOutputFileURL: outputURL, recordingDelegate: self)
+    } else {
+      stopRecording()
+    }
+  }
+
+  func tempURL() -> URL? {
+    let directory = NSTemporaryDirectory() as NSString
+
+    if directory != "" {
+      let path = directory.appendingPathComponent("penCam.mov")
+      return URL(fileURLWithPath: path)
+    }
+    return nil
+  }
+
+  func currentVideoOrientation() -> AVCaptureVideoOrientation {
+    var orientation: AVCaptureVideoOrientation
+
+    switch UIDevice.current.orientation {
+    case .portrait:
+      orientation = AVCaptureVideoOrientation.portrait
+    case .landscapeRight:
+      orientation = AVCaptureVideoOrientation.landscapeLeft
+    case .portraitUpsideDown:
+      orientation = AVCaptureVideoOrientation.portraitUpsideDown
+    default:
+      orientation = AVCaptureVideoOrientation.landscapeRight
+    }
+
+    return orientation
+  }
+
+  func stopRecording() {
+    if movieOutput.isRecording == true {
+      movieOutput.stopRecording()
+    }
+  }
+
+  func saveMovieToLibrary(movieURL: URL) {
+    PHPhotoLibrary.shared().performChanges({
+      PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: movieURL)
+    }) { saved, _ in
+      if saved {
+        let alertController = UIAlertController(title: "Your video was successfully saved", message: nil, preferredStyle: .alert)
+        let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertController.addAction(defaultAction)
+        self.present(alertController, animated: true, completion: nil)
+      }
+    }
+  }
+
 }
 
 extension CameraViewController: UIScrollViewDelegate {
   func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
     let page = Int(scrollView.contentOffset.x / scrollView.bounds.size.width)
     if page == 0 {
+      self.navigationItem.rightBarButtonItem = nil
+      self.capturedImageView.removeFromSuperview()
       photoModeSetting()
       NotificationCenter.default.post(name: Notification.Name("photoModeOnTabBar"), object: nil)
     } else if page == 1 {
+      self.navigationItem.rightBarButtonItem = nil
+      self.capturedImageView.removeFromSuperview()
       videoModeSetting()
       NotificationCenter.default.post(name: Notification.Name("videoModeOnTabBar"), object: nil)
     }
@@ -279,7 +405,10 @@ extension CameraViewController: UIScrollViewDelegate {
 extension CameraViewController : AVCapturePhotoCaptureDelegate {
 
   func capture(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhotoSampleBuffer photoSampleBuffer: CMSampleBuffer?, previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
-
+    let connection = imageOutput.connection(withMediaType: AVMediaTypeVideo)
+    if (connection?.isVideoOrientationSupported)! {
+      connection?.videoOrientation = currentVideoOrientation()
+    }
     if let unwrappedError = error {
       print(unwrappedError.localizedDescription)
     } else {
@@ -289,16 +418,62 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate {
         if let finalImage = UIImage(data: dataImage) {
 
           self.capturedImageView.image = finalImage
-
           displayCapturPhoto()
           savePhotoToLibrary()
           self.navigationItem.rightBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .done,
             target: self,
-            action: #selector(doneButtonDidTap)
+            action: #selector(photoDoneButtonDidTap)
           )
         }
       }
+    }
+  }
+}
+
+extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
+
+  func capture(_ captureOutput: AVCaptureFileOutput!, didStartRecordingToOutputFileAt fileURL: URL!, fromConnections connections: [Any]!) {
+    takeVideoButton.setImage(UIImage(named: "Capture_Butt1"), for: .normal)
+  }
+
+  func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!) {
+    if error != nil {
+      print("Error recording movie: \(error!.localizedDescription)")
+    } else {
+      var movieData: Data?
+      do {
+        movieData = try Data(contentsOf: outputFileURL)
+      } catch _ {
+        movieData = nil
+        return
+      }
+      self.videoData = movieData
+      self.capturedImageView.image = previewImageFromVideo(videoUrl: outputFileURL)
+      displayCapturPhoto()
+      saveMovieToLibrary(movieURL: outputFileURL as URL)
+      takeVideoButton.setImage(UIImage(named: "Capture_Butt"), for: .normal)
+      self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+        barButtonSystemItem: .done,
+        target: self,
+        action: #selector(videoDoneButtonDidTap)
+      )
+    }
+  }
+
+  func previewImageFromVideo(videoUrl: URL) -> UIImage? {
+    let asset = AVAsset(url: videoUrl)
+    let imageGenerator = AVAssetImageGenerator(asset: asset)
+    imageGenerator.appliesPreferredTrackTransform = true
+
+    var time = asset.duration
+    time.value = min(time.value, 2)
+
+    do {
+      let imageRef = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+      return UIImage(cgImage: imageRef)
+    } catch {
+      return nil
     }
   }
 }
