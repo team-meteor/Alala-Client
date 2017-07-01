@@ -27,7 +27,8 @@ class UserCell: UICollectionViewCell {
 
   let moreButton: UIButton = {
     let button = UIButton(type: .custom)
-    button.setImage(UIImage(named: "more")?.resizeImage(scaledTolength: 20), for: .normal)
+    let image = UIImage(named: "more")?.resizeImage(scaledToFit: 15)
+    button.setImage(image, for: .normal)
     return button
   }()
 

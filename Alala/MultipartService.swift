@@ -18,8 +18,9 @@ struct MultipartService {
       if videoData != nil {
         multipartFormData.append(videoData!, withName: "multipart", fileName: "\(UUID().uuidString).mp4", mimeType: "video/mp4")
       } else {
-        let imageData = UIImageJPEGRepresentation(image!, 0.6)!
-        multipartFormData.append(imageData, withName: "multipart", fileName: "\(UUID().uuidString).jpg", mimeType: "image/jpg")
+        if let image = image, let imageData = UIImagePNGRepresentation(image) {
+          multipartFormData.append(imageData, withName: "multipart", fileName: "\(UUID().uuidString).png", mimeType: "image/png")
+        }
       }
     }, to: Constants.BASE_URL + "/multipart", method: .post, headers: headers, encodingCompletion: { result in
       switch result {

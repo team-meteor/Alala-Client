@@ -212,15 +212,13 @@ class AuthService {
   }
 
   func updateProfile(profileName: String, profileImageId: String, completion: @escaping (_ success: Bool) -> Void) {
-    guard let token = self.authToken else {
-      return
-    }
+    guard let token = self.authToken else { return }
     let headers = [
       "Authorization": "Bearer " + token,
       "Content-Type": "application/json; charset=utf-8"
     ]
     let body: [String : Any] = [
-      "profilename": profileName,
+      "profileName": profileName,
       "multipartId": profileImageId
     ]
 

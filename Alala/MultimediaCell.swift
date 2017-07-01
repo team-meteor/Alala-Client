@@ -11,6 +11,7 @@ import UIKit
 class MultimediaCell: UICollectionViewCell {
   let multimediaImageView: UIImageView = {
     let imageView = UIImageView()
+    imageView.contentMode = .scaleAspectFit
     return imageView
   }()
 
@@ -26,7 +27,7 @@ class MultimediaCell: UICollectionViewCell {
   override func layoutSubviews() {
     super.layoutSubviews()
     multimediaImageView.snp.makeConstraints { (make) in
-      make.width.equalTo(self.contentView)
+      make.size.equalTo(self.contentView)
       make.centerY.equalTo(self.contentView)
       make.centerX.equalTo(self.contentView)
     }
