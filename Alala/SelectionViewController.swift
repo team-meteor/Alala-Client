@@ -5,7 +5,9 @@ import AVKit
 class SelectionViewController: UIViewController {
   var playerLayer: AVPlayerLayer?
   var urlAsset: AVURLAsset?
+
   let photosLimit: Int = 500
+
   enum Section: Int {
     case allPhotos = 0
     case smartAlbums
@@ -40,7 +42,6 @@ class SelectionViewController: UIViewController {
     $0.backgroundColor = UIColor.red
     $0.setTitle("Library v", for: .normal)
   }
-
   fileprivate let baseScrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = false
@@ -51,6 +52,7 @@ class SelectionViewController: UIViewController {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = false
     $0.maximumZoomScale = 3
+    $0.minimumZoomScale = 0.7
     $0.alwaysBounceVertical = true
     $0.alwaysBounceHorizontal = true
     $0.isUserInteractionEnabled = true
@@ -69,9 +71,10 @@ class SelectionViewController: UIViewController {
     $0.layer.borderColor = UIColor.lightGray.cgColor
     $0.layer.borderWidth = 1 / UIScreen.main.scale
   }
-  fileprivate let ButtonBarView = UIView().then {
-    $0.backgroundColor = UIColor.yellow.withAlphaComponent(0.5)
+  fileprivate let buttonBarView = UIView().then {
+    $0.backgroundColor = UIColor.clear
   }
+  fileprivate let scrollViewZoomButton = Button()
   init() {
     super.init(nibName: nil, bundle: nil)
     //cancle 버튼 생성
@@ -95,60 +98,14 @@ class SelectionViewController: UIViewController {
     super.viewDidLoad()
     getLimitedAlbumFromLibrary()
 
-    self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
-    let screenWidth = self.view.bounds.width
-    let screenHeight = self.view.bounds.height
-    let navigationBarHeight = self.navigationController?.navigationBar.frame.height
-    let bounds = self.navigationController!.navigationBar.bounds
-    self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
-    self.title = "Library"
-
     self.collectionView.dataSource = self
     self.collectionView.delegate = self
     self.baseScrollView.delegate = self
     self.scrollView.delegate = self
     self.tableView.delegate = self
     self.tableView.dataSource = self
-    self.baseScrollView.contentSize = CGSize(width: screenWidth, height: screenHeight * 2 / 3 + screenHeight - screenWidth/7 - navigationBarHeight!)
 
-    self.baseScrollView.addSubview(self.scrollView)
-    self.baseScrollView.addSubview(self.cropAreaView)
-    self.baseScrollView.addSubview(self.collectionView)
-    self.baseScrollView.addSubview(self.ButtonBarView)
-    self.scrollView.addSubview(self.imageView)
-    self.view.addSubview(baseScrollView)
-    self.view.addSubview(self.tableView)
-
-    //constraints
-    self.tableView.snp.makeConstraints { make in
-      make.width.equalTo(self.view)
-      make.height.equalTo(self.view.frame.height - 90)
-      make.centerX.equalTo(self.view)
-      make.top.equalTo(self.view.snp.bottom)
-    }
-    self.baseScrollView.snp.makeConstraints { make in
-      make.bottom.left.right.equalTo(self.view)
-    }
-    self.scrollView.snp.makeConstraints { make in
-      make.left.right.top.equalTo(self.baseScrollView)
-      make.height.equalTo(screenHeight * 2 / 3)
-      make.width.equalTo(screenWidth)
-    }
-    self.collectionView.snp.makeConstraints { make in
-      make.left.bottom.right.equalTo(self.baseScrollView)
-      make.top.equalTo(self.scrollView.snp.bottom)
-      make.height.equalTo(screenHeight - screenWidth/7 - navigationBarHeight!)
-      make.width.equalTo(screenWidth)
-    }
-    self.cropAreaView.snp.makeConstraints { make in
-      make.edges.equalTo(self.scrollView)
-    }
-    self.ButtonBarView.snp.makeConstraints { make in
-      make.left.right.equalTo(self.baseScrollView)
-      make.bottom.equalTo(self.collectionView.snp.top)
-      make.height.equalTo(screenWidth/7)
-      make.width.equalTo(screenWidth)
-    }
+    self.configureView()
   }
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
@@ -252,6 +209,77 @@ class SelectionViewController: UIViewController {
     }
     imageView.frame.size = CGSize(width: imageWidth, height: imageHeight)
 
+  }
+
+  func configureView() {
+
+    let screenWidth = self.view.bounds.width
+    let screenHeight = self.view.bounds.height
+    let navigationBarHeight = self.navigationController?.navigationBar.frame.height
+    let bounds = self.navigationController!.navigationBar.bounds
+    self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
+    self.title = "Library"
+
+    self.baseScrollView.contentSize = CGSize(width: screenWidth, height: screenHeight * 2 / 3 + screenHeight - screenWidth/8 * 2 - navigationBarHeight!)
+
+    self.buttonBarView.addSubview(scrollViewZoomButton)
+    self.baseScrollView.addSubview(self.scrollView)
+    self.baseScrollView.addSubview(self.cropAreaView)
+    self.baseScrollView.addSubview(self.collectionView)
+    self.baseScrollView.addSubview(self.buttonBarView)
+    self.scrollView.addSubview(self.imageView)
+    self.view.addSubview(baseScrollView)
+    self.view.addSubview(self.tableView)
+
+    //constraints
+    self.tableView.snp.makeConstraints { make in
+      make.width.equalTo(self.view)
+      make.height.equalTo(self.view.frame.height - 90)
+      make.centerX.equalTo(self.view)
+      make.top.equalTo(self.view.snp.bottom)
+    }
+    self.baseScrollView.snp.makeConstraints { make in
+      make.bottom.left.right.equalTo(self.view)
+    }
+    self.scrollView.snp.makeConstraints { make in
+      make.left.right.top.equalTo(self.baseScrollView)
+      make.height.equalTo(screenHeight * 2 / 3 - screenWidth/8 )
+      make.width.equalTo(screenWidth)
+    }
+    self.collectionView.snp.makeConstraints { make in
+      make.left.bottom.right.equalTo(self.baseScrollView)
+      make.top.equalTo(self.scrollView.snp.bottom)
+      make.height.equalTo(screenHeight - screenWidth/8 - navigationBarHeight!)
+      make.width.equalTo(screenWidth)
+    }
+    self.cropAreaView.snp.makeConstraints { make in
+      make.edges.equalTo(self.scrollView)
+    }
+    self.buttonBarView.snp.makeConstraints { make in
+      make.left.right.equalTo(self.baseScrollView)
+      make.bottom.equalTo(self.collectionView.snp.top)
+      make.height.equalTo(screenWidth/8)
+      make.width.equalTo(screenWidth)
+    }
+    self.scrollViewZoomButton.snp.makeConstraints { make in
+      make.width.equalTo(screenWidth/12)
+      make.height.equalTo(screenWidth/12)
+      make.centerY.equalTo(self.buttonBarView)
+      make.left.equalTo(self.buttonBarView).offset(10)
+    }
+
+    self.scrollViewZoomButton.addTarget(self, action: #selector(scrollViewZoom), for: .touchUpInside)
+
+    self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
+
+  }
+
+  func scrollViewZoom() {
+    if(scrollView.zoomScale <= 0.7) {
+      scrollView.setZoomScale(1.0, animated: true)
+    } else {
+      scrollView.setZoomScale(0.7, animated: true)
+    }
   }
 
 }
@@ -369,12 +397,18 @@ extension SelectionViewController: UIScrollViewDelegate {
   }
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
     let page = self.baseScrollView.contentOffset.y
+    let screenWidth = self.view.bounds.width
+    let screenHeight = self.view.bounds.height
+
     if page >= 44 {
       self.navigationController?.navigationBar.frame.origin.y = -44
+
     } else if page < 44 {
       self.navigationController?.navigationBar.frame.origin.y = -(page)
     }
+    self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(page / 600)
   }
+
 }
 
 extension SelectionViewController: UITableViewDelegate {

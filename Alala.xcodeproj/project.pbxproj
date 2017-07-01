@@ -58,6 +58,17 @@
 		6FFC06C21EE3D49000E542BC /* AlalaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06C11EE3D49000E542BC /* AlalaTests.swift */; };
 		6FFC06CD1EE3D49000E542BC /* AlalaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06CC1EE3D49000E542BC /* AlalaUITests.swift */; };
 		6FFC06DC1EE3D78A00E542BC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */; };
+		99C654E01F0159F30005AD3E /* ArchiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654DF1F0159F30005AD3E /* ArchiveViewController.swift */; };
+		99C654E21F015A310005AD3E /* DiscoverPeopleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654E11F015A310005AD3E /* DiscoverPeopleViewController.swift */; };
+		99C654E81F015AEC0005AD3E /* FollowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654E71F015AEC0005AD3E /* FollowViewController.swift */; };
+		99C654EA1F015D7A0005AD3E /* NoContentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654E91F015D7A0005AD3E /* NoContentsView.swift */; };
+		99C654EC1F017D380005AD3E /* PersonalInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654EB1F017D380005AD3E /* PersonalInfoView.swift */; };
+		99C654F01F0247A10005AD3E /* UIBorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654EF1F0247A10005AD3E /* UIBorderView.swift */; };
+		99C654F21F03EE5D0005AD3E /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654F11F03EE5D0005AD3E /* EditProfileViewController.swift */; };
+		99C654F41F03F50A0005AD3E /* OptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654F31F03F50A0005AD3E /* OptionsViewController.swift */; };
+		99C654F61F041E930005AD3E /* EditProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654F51F041E930005AD3E /* EditProfileTableViewCell.swift */; };
+		99C654FA1F0773CD0005AD3E /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654F91F0773CD0005AD3E /* UIColor.swift */; };
+		9B39112F1F077094008325E4 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B39112E1F077094008325E4 /* Button.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -137,6 +148,17 @@
 		6FFC06CC1EE3D49000E542BC /* AlalaUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlalaUITests.swift; sourceTree = "<group>"; };
 		6FFC06CE1EE3D49000E542BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
+		99C654DF1F0159F30005AD3E /* ArchiveViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveViewController.swift; sourceTree = "<group>"; };
+		99C654E11F015A310005AD3E /* DiscoverPeopleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscoverPeopleViewController.swift; sourceTree = "<group>"; };
+		99C654E71F015AEC0005AD3E /* FollowViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FollowViewController.swift; sourceTree = "<group>"; };
+		99C654E91F015D7A0005AD3E /* NoContentsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoContentsView.swift; sourceTree = "<group>"; };
+		99C654EB1F017D380005AD3E /* PersonalInfoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersonalInfoView.swift; sourceTree = "<group>"; };
+		99C654EF1F0247A10005AD3E /* UIBorderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIBorderView.swift; sourceTree = "<group>"; };
+		99C654F11F03EE5D0005AD3E /* EditProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
+		99C654F31F03F50A0005AD3E /* OptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsViewController.swift; sourceTree = "<group>"; };
+		99C654F51F041E930005AD3E /* EditProfileTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditProfileTableViewCell.swift; sourceTree = "<group>"; };
+		99C654F91F0773CD0005AD3E /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
+		9B39112E1F077094008325E4 /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,6 +209,7 @@
 				6F01C2981EF7984000552782 /* UIImage.swift */,
 				6FBD85491F04B4300097B82A /* NotificationName.swift */,
 				6FBD854B1F04C3390097B82A /* NSObject.swift */,
+				99C654F91F0773CD0005AD3E /* UIColor.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -228,6 +251,11 @@
 				48F73CA31EF60ABA00E75022 /* LibraryViewController.swift */,
 				48F73CA51EF613F400E75022 /* WrapperViewController.swift */,
 				487394011EFE467300B3E1D0 /* CameraViewController.swift */,
+				99C654DF1F0159F30005AD3E /* ArchiveViewController.swift */,
+				99C654E11F015A310005AD3E /* DiscoverPeopleViewController.swift */,
+				99C654E71F015AEC0005AD3E /* FollowViewController.swift */,
+				99C654F11F03EE5D0005AD3E /* EditProfileViewController.swift */,
+				99C654F31F03F50A0005AD3E /* OptionsViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -243,6 +271,11 @@
 				6FBD85531F04D0E10097B82A /* UserCell.swift */,
 				6FBD85551F04D0F90097B82A /* MultimediaCell.swift */,
 				6FBD85571F04D10C0097B82A /* ButtonGroupCell.swift */,
+				9B39112E1F077094008325E4 /* Button.swift */,
+				99C654E91F015D7A0005AD3E /* NoContentsView.swift */,
+				99C654EB1F017D380005AD3E /* PersonalInfoView.swift */,
+				99C654EF1F0247A10005AD3E /* UIBorderView.swift */,
+				99C654F51F041E930005AD3E /* EditProfileTableViewCell.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -447,7 +480,7 @@
 					};
 					6FFC06C71EE3D49000E542BC = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = TM6U8P8E5J;
+						DevelopmentTeam = QLAGA64KZQ;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 6FFC06A81EE3D49000E542BC;
 					};
@@ -557,6 +590,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				99C654E21F015A310005AD3E /* DiscoverPeopleViewController.swift in Sources */,
+				99C654FA1F0773CD0005AD3E /* UIColor.swift in Sources */,
 				48F857961EF8B6C800957B3A /* PostService.swift in Sources */,
 				6FBD854A1F04B4300097B82A /* NotificationName.swift in Sources */,
 				6F09C8D81EF0113600BCFFEF /* LoginViewController.swift in Sources */,
@@ -568,32 +603,41 @@
 				6FBD85541F04D0E10097B82A /* UserCell.swift in Sources */,
 				6F5B85591EE540F9009285DD /* Feed.swift in Sources */,
 				6F09C9021EF241F100BCFFEF /* SplashViewController.swift in Sources */,
+				99C654F41F03F50A0005AD3E /* OptionsViewController.swift in Sources */,
 				6F09C8E01EF1058200BCFFEF /* DataResponse+MapResults.swift in Sources */,
 				6F01C29D1EF7999000552782 /* PostCardCell.swift in Sources */,
 				6F5B854F1EE52B3B009285DD /* DiscoverViewController.swift in Sources */,
 				487394021EFE467300B3E1D0 /* CameraViewController.swift in Sources */,
 				6F5B85551EE52BB9009285DD /* SelectionViewController.swift in Sources */,
+				99C654E01F0159F30005AD3E /* ArchiveViewController.swift in Sources */,
 				6F09C8E21EF127C900BCFFEF /* AfterRegisterViewController.swift in Sources */,
 				485ABFAB1EF3735500949456 /* PostEditorViewController.swift in Sources */,
 				48F857A01EFA4B4200957B3A /* GridViewCell.swift in Sources */,
 				6FBD85581F04D10C0097B82A /* ButtonGroupCell.swift in Sources */,
 				6F09C8DA1EF013B900BCFFEF /* AuthService.swift in Sources */,
 				6FBD855D1F04EF8F0097B82A /* PhotoSize.swift in Sources */,
+				99C654EC1F017D380005AD3E /* PersonalInfoView.swift in Sources */,
 				6FFC06AD1EE3D49000E542BC /* AppDelegate.swift in Sources */,
 				6F0068891EFE161D009EDFBF /* FeedService.swift in Sources */,
 				485ABFAD1EF37F5A00949456 /* PostEditingCell.swift in Sources */,
 				6F5B85571EE540EF009285DD /* User.swift in Sources */,
+				99C654F01F0247A10005AD3E /* UIBorderView.swift in Sources */,
 				48F73CA61EF613F400E75022 /* WrapperViewController.swift in Sources */,
 				6FBD854C1F04C3390097B82A /* NSObject.swift in Sources */,
 				6FBD85561F04D0F90097B82A /* MultimediaCell.swift in Sources */,
+				99C654F21F03EE5D0005AD3E /* EditProfileViewController.swift in Sources */,
 				48F73CA41EF60ABA00E75022 /* LibraryViewController.swift in Sources */,
 				6F5B85511EE52B78009285DD /* ActivityViewController.swift in Sources */,
 				485647BF1EEE6B4D00834BBB /* TileCell.swift in Sources */,
 				4873940A1F03798B00B3E1D0 /* MultipartService.swift in Sources */,
+				99C654E81F015AEC0005AD3E /* FollowViewController.swift in Sources */,
 				6F5B85531EE52B95009285DD /* PersonalViewController.swift in Sources */,
 				6F0A205F1EFA5D6700C71417 /* Comment.swift in Sources */,
+				9B39112F1F077094008325E4 /* Button.swift in Sources */,
 				6F09C8DE1EF101E800BCFFEF /* Constants.swift in Sources */,
+				99C654F61F041E930005AD3E /* EditProfileTableViewCell.swift in Sources */,
 				6F5B854B1EE52520009285DD /* MainTabBarController.swift in Sources */,
+				99C654EA1F015D7A0005AD3E /* NoContentsView.swift in Sources */,
 				48F73CA21EF50FDB00E75022 /* RejectViewController.swift in Sources */,
 				6F5B855B1EE54101009285DD /* Post.swift in Sources */,
 			);
@@ -826,7 +870,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = TM6U8P8E5J;
+				DEVELOPMENT_TEAM = QLAGA64KZQ;
 				INFOPLIST_FILE = AlalaUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.team-meteor.AlalaUITests";
@@ -843,7 +887,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = TM6U8P8E5J;
+				DEVELOPMENT_TEAM = QLAGA64KZQ;
 				INFOPLIST_FILE = AlalaUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.team-meteor.AlalaUITests";

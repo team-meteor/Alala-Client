@@ -32,11 +32,16 @@ class UserCell: UICollectionViewCell {
     return button
   }()
 
+  let borderBottom = UIView().then {
+    $0.backgroundColor = UIColor(red:0.86, green:0.86, blue:0.86, alpha:1.00)
+  }
+
   override init(frame: CGRect) {
     super.init(frame: frame)
     contentView.addSubview(profilePhoto)
     contentView.addSubview(profileNameLabel)
     contentView.addSubview(moreButton)
+    contentView.addSubview(borderBottom)
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -57,6 +62,11 @@ class UserCell: UICollectionViewCell {
     moreButton.snp.makeConstraints { (make) in
       make.centerY.equalTo(self.contentView)
       make.right.equalTo(self.contentView).offset(-15.5)
+    }
+    borderBottom.snp.makeConstraints { (make) in
+      make.width.equalTo(self.contentView)
+      make.height.equalTo(1)
+      make.bottom.equalTo(self.contentView)
     }
   }
 }

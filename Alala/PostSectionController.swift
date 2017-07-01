@@ -28,6 +28,8 @@ class PostSectionController: ListSectionController {
       return CGSize(width: width, height: 56)
     case 1:
       return CGSize(width: width, height: width * CGFloat(multimediaCellRatio!))
+    case 2:
+      return CGSize(width: width, height: 56)
     default:
       return CGSize()
     }
@@ -39,11 +41,12 @@ class PostSectionController: ListSectionController {
 
   override func cellForItem(at index: Int) -> UICollectionViewCell {
     let cellClass: AnyClass
-    if index == 0 {
+    switch index {
+    case 0:
       cellClass = UserCell.self
-    } else if index == 1 {
+    case 1:
       cellClass = MultimediaCell.self
-    } else {
+    default:
       cellClass = ButtonGroupCell.self
     }
     let cell = collectionContext!.dequeueReusableCell(of: cellClass, for: self, at: index)
