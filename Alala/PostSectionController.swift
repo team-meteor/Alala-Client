@@ -8,6 +8,7 @@
 
 import UIKit
 import IGListKit
+//import ImageIO
 
 class PostSectionController: ListSectionController {
   var post: Post!
@@ -20,7 +21,16 @@ class PostSectionController: ListSectionController {
     return 3
   }
   override func sizeForItem(at index: Int) -> CGSize {
-    return CGSize(width: collectionContext!.containerSize.width, height: 100)
+    let width = collectionContext!.containerSize.width
+    let multimediaCellRatio = Float(post.multipartIds[0].components(separatedBy: "_")[0])
+    switch index {
+    case 0:
+      return CGSize(width: width, height: 56)
+    case 1:
+      return CGSize(width: width, height: width * CGFloat(multimediaCellRatio!))
+    default:
+      return CGSize()
+    }
   }
 
   override func didUpdate(to object: Any) {
@@ -41,7 +51,6 @@ class PostSectionController: ListSectionController {
       cell.profilePhoto.setImage(with: post.createdBy.profilePhotoId, size: .thumbnail)
       cell.profileNameLabel.text = post.createdBy.profileName
     } else if let cell = cell as? MultimediaCell {
-      print(post.multipartIds[0], "multi")
       cell.multimediaImageView.setImage(with: post.multipartIds[0], size: .hd)
     }
     return cell

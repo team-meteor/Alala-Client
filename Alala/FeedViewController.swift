@@ -33,7 +33,8 @@ class FeedViewController: UIViewController {
   fileprivate let refreshControl = UIRefreshControl()
 
   let collectionView: UICollectionView = {
-    let view = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    let flowLayout = UICollectionViewFlowLayout()
+    let view = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
     view.backgroundColor = UIColor.white
     return view
   }()
