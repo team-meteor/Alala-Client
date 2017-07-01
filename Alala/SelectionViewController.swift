@@ -220,6 +220,10 @@ class SelectionViewController: UIViewController {
 
   func libraryButtonDidTap() {
     if libraryButton.currentTitle == "Library v" {
+      if self.allPhotos.count == photosLimit {
+        getAllAlbums()
+        self.tableView.reloadData()
+      }
       self.libraryButton.setTitle("Library ^", for: .normal)
       UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: -self.tableView.frame.height)})
       NotificationCenter.default.post(name: Notification.Name("hideCustomTabBar"), object: nil)
@@ -383,33 +387,26 @@ extension SelectionViewController: UITableViewDelegate {
     switch Section(rawValue: indexPath.section)! {
 
     case .allPhotos:
-      if self.allPhotos.count == photosLimit {
-        getAllAlbums()
-        self.fetchResult = self.allPhotos
-      }
+
+      self.fetchResult = self.allPhotos
 
     case .smartAlbums:
-      if self.allPhotos.count == photosLimit {
-        getAllAlbums()
-        let collection: PHCollection
-        collection = smartAlbums.object(at: indexPath.row)
-        guard let assetCollection = collection as? PHAssetCollection
-          else { fatalError("expected asset collection") }
-        self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
-        self.assetCollection = assetCollection
 
-      }
+      let collection: PHCollection
+      collection = smartAlbums.object(at: indexPath.row)
+      guard let assetCollection = collection as? PHAssetCollection
+        else { fatalError("expected asset collection") }
+      self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
+      self.assetCollection = assetCollection
 
     case .userCollections:
-      if self.allPhotos.count == photosLimit {
-        getAllAlbums()
-        let collection: PHCollection
-        collection = userCollections.object(at: indexPath.row)
-        guard let assetCollection = collection as? PHAssetCollection
-          else { fatalError("expected asset collection") }
-        self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
-        self.assetCollection = assetCollection
-      }
+
+      let collection: PHCollection
+      collection = userCollections.object(at: indexPath.row)
+      guard let assetCollection = collection as? PHAssetCollection
+        else { fatalError("expected asset collection") }
+      self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
+      self.assetCollection = assetCollection
     }
 
     self.libraryButton.setTitle("Library v", for: .normal)
