@@ -190,13 +190,12 @@ class SelectionViewController: UIViewController {
     print("allcount = \(allPhotos.count)")
   }
 
-  func getAllAlbumsAndReload() {
+  func getAllAlbums() {
     let AllOptions = PHFetchOptions()
     AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
     allPhotos = PHAsset.fetchAssets(with: AllOptions)
     smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
     userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
-    self.collectionView.reloadData()
   }
 
   func getCropImage() -> UIImage {
@@ -253,8 +252,11 @@ class SelectionViewController: UIViewController {
 
 extension SelectionViewController: UICollectionViewDelegate {
   func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-    if self.allPhotos.count == photosLimit {
-      getAllAlbumsAndReload()
+
+    if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
+      getAllAlbums()
+      self.fetchResult = self.allPhotos
+      self.collectionView.reloadData()
     }
   }
 }
@@ -263,9 +265,7 @@ extension SelectionViewController: UICollectionViewDataSource {
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "tileCell", for: indexPath) as! TileCell
     let asset = self.fetchResult.object(at: indexPath.item)
-
     cell.representedAssetIdentifier = asset.localIdentifier
-    //메타데이터를 이미지로 변환
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
     imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
