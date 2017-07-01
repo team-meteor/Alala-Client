@@ -45,6 +45,8 @@
 		6F5C2D451EE51B3000E324E9 /* SWXMLHash.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5C2D3E1EE51B3000E324E9 /* SWXMLHash.framework */; };
 		6F5C2D461EE51B3000E324E9 /* Then.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5C2D3F1EE51B3000E324E9 /* Then.framework */; };
 		6F5C2D471EE51B3000E324E9 /* Yams.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5C2D401EE51B3000E324E9 /* Yams.framework */; };
+		6F8887A81F07832200CE9A04 /* LikeCountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8887A71F07832200CE9A04 /* LikeCountCell.swift */; };
+		6F8887AA1F0791DC00CE9A04 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8887A91F0791DC00CE9A04 /* CommentCell.swift */; };
 		6FBD854A1F04B4300097B82A /* NotificationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FBD85491F04B4300097B82A /* NotificationName.swift */; };
 		6FBD854C1F04C3390097B82A /* NSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FBD854B1F04C3390097B82A /* NSObject.swift */; };
 		6FBD85521F04CE150097B82A /* PostSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FBD85511F04CE150097B82A /* PostSectionController.swift */; };
@@ -128,6 +130,8 @@
 		6F5C2D3E1EE51B3000E324E9 /* SWXMLHash.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SWXMLHash.framework; path = Carthage/Build/iOS/SWXMLHash.framework; sourceTree = "<group>"; };
 		6F5C2D3F1EE51B3000E324E9 /* Then.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Then.framework; path = Carthage/Build/iOS/Then.framework; sourceTree = "<group>"; };
 		6F5C2D401EE51B3000E324E9 /* Yams.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Yams.framework; path = Carthage/Build/iOS/Yams.framework; sourceTree = "<group>"; };
+		6F8887A71F07832200CE9A04 /* LikeCountCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LikeCountCell.swift; sourceTree = "<group>"; };
+		6F8887A91F0791DC00CE9A04 /* CommentCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
 		6FBD85491F04B4300097B82A /* NotificationName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationName.swift; sourceTree = "<group>"; };
 		6FBD854B1F04C3390097B82A /* NSObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSObject.swift; sourceTree = "<group>"; };
 		6FBD85511F04CE150097B82A /* PostSectionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostSectionController.swift; sourceTree = "<group>"; };
@@ -273,6 +277,8 @@
 				99C654EB1F017D380005AD3E /* PersonalInfoView.swift */,
 				99C654EF1F0247A10005AD3E /* UIBorderView.swift */,
 				99C654F51F041E930005AD3E /* EditProfileTableViewCell.swift */,
+				6F8887A71F07832200CE9A04 /* LikeCountCell.swift */,
+				6F8887A91F0791DC00CE9A04 /* CommentCell.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -613,6 +619,7 @@
 				6FBD85581F04D10C0097B82A /* ButtonGroupCell.swift in Sources */,
 				6F09C8DA1EF013B900BCFFEF /* AuthService.swift in Sources */,
 				6FBD855D1F04EF8F0097B82A /* PhotoSize.swift in Sources */,
+				6F8887AA1F0791DC00CE9A04 /* CommentCell.swift in Sources */,
 				99C654EC1F017D380005AD3E /* PersonalInfoView.swift in Sources */,
 				6FFC06AD1EE3D49000E542BC /* AppDelegate.swift in Sources */,
 				6F0068891EFE161D009EDFBF /* FeedService.swift in Sources */,
@@ -623,12 +630,12 @@
 				6FBD854C1F04C3390097B82A /* NSObject.swift in Sources */,
 				6FBD85561F04D0F90097B82A /* MultimediaCell.swift in Sources */,
 				99C654F21F03EE5D0005AD3E /* EditProfileViewController.swift in Sources */,
+				6F8887A81F07832200CE9A04 /* LikeCountCell.swift in Sources */,
 				48F73CA41EF60ABA00E75022 /* LibraryViewController.swift in Sources */,
 				6F5B85511EE52B78009285DD /* ActivityViewController.swift in Sources */,
 				485647BF1EEE6B4D00834BBB /* TileCell.swift in Sources */,
 				4873940A1F03798B00B3E1D0 /* MultipartService.swift in Sources */,
 				99C654E81F015AEC0005AD3E /* FollowViewController.swift in Sources */,
-				6F01C2A01EF7B95800552782 /* ImageService.swift in Sources */,
 				6F5B85531EE52B95009285DD /* PersonalViewController.swift in Sources */,
 				6F0A205F1EFA5D6700C71417 /* Comment.swift in Sources */,
 				6F09C8DE1EF101E800BCFFEF /* Constants.swift in Sources */,
