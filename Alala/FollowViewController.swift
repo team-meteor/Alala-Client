@@ -10,24 +10,24 @@ import UIKit
 
 class FollowViewController: UIViewController {
 
-  enum FollowType : String {
+  enum FollowType: String {
     case follower  = "follower"
     case following = "following"
   }
 
-  var currentType : String
+  var currentType: String
 
   // MARK: - Initialize
   convenience init() {
     self.init(type:.follower)
   }
-  
-  init(type : FollowType) {
+
+  init(type: FollowType) {
     currentType = type.rawValue
 
     super.init(nibName: nil, bundle: nil)
   }
-  
+
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
@@ -36,8 +36,7 @@ class FollowViewController: UIViewController {
     super.viewDidLoad()
     if(FollowType.follower.rawValue==currentType) {
       setupUIForFollowerType()
-    }
-    else {
+    } else {
       setupUIForFollowingType()
     }
   }
@@ -49,7 +48,7 @@ class FollowViewController: UIViewController {
       $0.sizeToFit()
     }
   }
-  
+
   func setupUIForFollowingType() {
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)

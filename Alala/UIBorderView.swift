@@ -17,23 +17,22 @@ class UIBorderView: UIView {
     $0.backgroundColor = UIColor.lightGray
     $0.isHidden = true
   }
-  
-  // MARK:- Initialize
+
+  // MARK: - Initialize
   override init(frame: CGRect) {
     super.init(frame: frame)
     self.setupUI()
   }
-  
+
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
-  func setupUI()
-  {
+
+  func setupUI() {
     // Setup UI
     self.addSubview(topBorderLine)
     self.addSubview(bottomBorderLine)
-    
+
     // Setup Constraints
     topBorderLine.snp.makeConstraints { (make) in
       make.top.equalTo(self)
@@ -41,7 +40,7 @@ class UIBorderView: UIView {
       make.right.equalTo(self)
       make.height.equalTo(0.5)
     }
-    
+
     bottomBorderLine.snp.makeConstraints { (make) in
       make.left.equalTo(self)
       make.right.equalTo(self)

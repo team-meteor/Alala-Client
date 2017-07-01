@@ -31,9 +31,9 @@ class EditProfileViewController: UIViewController, UITableViewDataSource, UITabl
   let contentTableView = UITableView()
   let cellReuseIdentifier = "cell"
 
-  var allProfileItemArray : Array<Array<ProfileItem>> = []
-  var publicItemArray  : Array<ProfileItem> = []
-  var privateItemArray : Array<ProfileItem> = []
+  var allProfileItemArray: Array<Array<ProfileItem>> = []
+  var publicItemArray: Array<ProfileItem> = []
+  var privateItemArray: Array<ProfileItem> = []
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -128,7 +128,7 @@ class EditProfileViewController: UIViewController, UITableViewDataSource, UITabl
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     // create a new cell if needed or reuse an old one
-    let cell:EditProfileTableViewCell = contentTableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier) as! EditProfileTableViewCell
+    let cell: EditProfileTableViewCell = contentTableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier) as! EditProfileTableViewCell
     let array = allProfileItemArray[indexPath.section] as Array
     let profileItem = array[indexPath.row] as ProfileItem
     cell.textView.text = profileItem.placeHolder
@@ -146,12 +146,11 @@ class EditProfileViewController: UIViewController, UITableViewDataSource, UITabl
   }
 
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-    if(section == 0){
+    if(section == 0) {
       let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 0.5))
       view.backgroundColor = UIColor(rgb: 0xeeeeee)
       return view
-    }
-    else {
+    } else {
       let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 40))
       let label = UILabel()
       label.font = UIFont.systemFont(ofSize: 10)
@@ -170,10 +169,9 @@ class EditProfileViewController: UIViewController, UITableViewDataSource, UITabl
 
   func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
     if cell.responds(to: #selector(setter: UITableViewCell.separatorInset)) {
-      if(isLastRowOfTableView(tableView, indexPath: indexPath)){
+      if(isLastRowOfTableView(tableView, indexPath: indexPath)) {
         cell.separatorInset = UIEdgeInsets.zero
-      }
-      else {
+      } else {
         cell.separatorInset = EditProfileTableViewCell.cellSeparatorInsets
       }
     }
@@ -196,7 +194,7 @@ class EditProfileViewController: UIViewController, UITableViewDataSource, UITabl
   }
 
   func doneNaviButtonTap() {
-    
+
   }
 
   func changePhotoButtonTap() {
@@ -204,12 +202,11 @@ class EditProfileViewController: UIViewController, UITableViewDataSource, UITabl
   }
 }
 
-
 struct ProfileItem {
   var iconImageName: String
   var placeHolder: String
-  
-  init(iconImageName : String, placeHolder: String) {
+
+  init(iconImageName: String, placeHolder: String) {
     self.placeHolder = placeHolder
     self.iconImageName = iconImageName
   }
