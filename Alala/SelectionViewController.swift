@@ -5,7 +5,7 @@ import AVKit
 class SelectionViewController: UIViewController {
   var playerLayer: AVPlayerLayer?
   var urlAsset: AVURLAsset?
-  let photosLimit: Int = 1000
+  let photosLimit: Int = 500
   enum Section: Int {
     case allPhotos = 0
     case smartAlbums
@@ -181,13 +181,15 @@ class SelectionViewController: UIViewController {
 
   func getLimitedAlbumFromLibrary() {
     let limitedOptions = PHFetchOptions()
+    let sortOptions = PHFetchOptions()
     limitedOptions.fetchLimit = photosLimit
-    limitedOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-    allPhotos = PHAsset.fetchAssets(with: limitedOptions)
-    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
-    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
+    sortOptions.fetchLimit = photosLimit
+    sortOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+
+    allPhotos = PHAsset.fetchAssets(with: sortOptions)
+    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: limitedOptions)
+    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: limitedOptions)
     self.fetchResult = allPhotos
-    print("allcount = \(allPhotos.count)")
   }
 
   func getAllAlbums() {
@@ -381,24 +383,33 @@ extension SelectionViewController: UITableViewDelegate {
     switch Section(rawValue: indexPath.section)! {
 
     case .allPhotos:
-      self.fetchResult = allPhotos
+      if self.allPhotos.count == photosLimit {
+        getAllAlbums()
+        self.fetchResult = self.allPhotos
+      }
 
     case .smartAlbums:
-      let collection: PHCollection
-      collection = smartAlbums.object(at: indexPath.row)
-      guard let assetCollection = collection as? PHAssetCollection
-        else { fatalError("expected asset collection") }
-      self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
-      self.assetCollection = assetCollection
+      if self.allPhotos.count == photosLimit {
+        getAllAlbums()
+        let collection: PHCollection
+        collection = smartAlbums.object(at: indexPath.row)
+        guard let assetCollection = collection as? PHAssetCollection
+          else { fatalError("expected asset collection") }
+        self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
+        self.assetCollection = assetCollection
+
+      }
 
     case .userCollections:
-      let collection: PHCollection
-      collection = userCollections.object(at: indexPath.row)
-      guard let assetCollection = collection as? PHAssetCollection
-        else { fatalError("expected asset collection") }
-      self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
-      self.assetCollection = assetCollection
-
+      if self.allPhotos.count == photosLimit {
+        getAllAlbums()
+        let collection: PHCollection
+        collection = userCollections.object(at: indexPath.row)
+        guard let assetCollection = collection as? PHAssetCollection
+          else { fatalError("expected asset collection") }
+        self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
+        self.assetCollection = assetCollection
+      }
     }
 
     self.libraryButton.setTitle("Library v", for: .normal)
