@@ -436,16 +436,18 @@
 				TargetAttributes = {
 					6FFC06A81EE3D49000E542BC = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = QLAGA64KZQ;
+						DevelopmentTeam = TM6U8P8E5J;
 						ProvisioningStyle = Automatic;
 					};
 					6FFC06BC1EE3D49000E542BC = {
 						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = TM6U8P8E5J;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 6FFC06A81EE3D49000E542BC;
 					};
 					6FFC06C71EE3D49000E542BC = {
 						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = TM6U8P8E5J;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 6FFC06A81EE3D49000E542BC;
 					};
@@ -737,7 +739,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = QLAGA64KZQ;
+				DEVELOPMENT_TEAM = TM6U8P8E5J;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -755,7 +757,7 @@
 					"-weak_framework",
 					RevealServer,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = codesquad.smithLee;
+				PRODUCT_BUNDLE_IDENTIFIER = codesquad.kraa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -765,7 +767,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = QLAGA64KZQ;
+				DEVELOPMENT_TEAM = TM6U8P8E5J;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -783,7 +785,7 @@
 					"-weak_framework",
 					RevealServer,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = codesquad.smithLee;
+				PRODUCT_BUNDLE_IDENTIFIER = codesquad.kraa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -794,6 +796,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = TM6U8P8E5J;
 				INFOPLIST_FILE = AlalaTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.team-meteor.AlalaTests";
@@ -808,6 +811,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = TM6U8P8E5J;
 				INFOPLIST_FILE = AlalaTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.team-meteor.AlalaTests";
@@ -821,10 +825,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = TM6U8P8E5J;
 				INFOPLIST_FILE = AlalaUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.team-meteor.AlalaUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = Alala;
 			};
@@ -834,10 +842,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = TM6U8P8E5J;
 				INFOPLIST_FILE = AlalaUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.team-meteor.AlalaUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = Alala;
 			};
