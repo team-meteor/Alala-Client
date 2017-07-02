@@ -34,17 +34,8 @@ struct PostService {
     Alamofire.request(Constants.BASE_URL + "post/add", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { (response) in
-        print("a = \(response)")
-        print("dddd=\(response.result.value)")
-
-        if let savedPost = Mapper<Post>().map(JSONObject: response.result.value) {
-          print("b = \(savedPost.createdAt)")
-          print(savedPost.createdBy)
-          print(savedPost.id)
-          print(savedPost.multipartIds)
-          print(savedPost.postDescription)
-          let response = DataResponse(request: response.request, response: response.response, data: response.data, result: Result.success(savedPost))
-          print("c=\(response)")
+        if let post = Mapper<Post>().map(JSONObject: response.result.value) {
+          let response = DataResponse(request: response.request, response: response.response, data: response.data, result: Result.success(post))
           completion(response)
         }
     }

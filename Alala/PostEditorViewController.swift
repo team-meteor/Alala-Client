@@ -43,18 +43,33 @@ class PostEditorViewController: UIViewController {
         return
       }
       MultipartService.uploadMultipart(image: self.image, videoData: movieData!, progress: nil) { multipartId in
-        PostService.postWithSingleMultipart(multipartId: multipartId, message: self.message, progress: nil) { _ in
-
+        PostService.postWithSingleMultipart(multipartId: multipartId, message: self.message, progress: nil) { [weak self] response in
+          guard let `self` = self else { return }
+          switch response.result {
+          case .success(let post):
+            print(post)
+            self.dismiss(animated: true, completion: nil)
+          case .failure(let error):
+            print(error)
+          }
         }
       }
     } else {
       MultipartService.uploadMultipart(image: self.image, videoData: self.videoData, progress: nil) { multipartId in
-        PostService.postWithSingleMultipart(multipartId: multipartId, message: self.message, progress: nil) { _ in
-
+        PostService.postWithSingleMultipart(multipartId: multipartId, message: self.message, progress: nil) { [weak self] response in
+          guard let `self` = self else { return }
+          switch response.result {
+          case .success(let post):
+            print(post)
+            self.dismiss(animated: true, completion: nil)
+          case .failure(let error):
+            print(error)
+          }
         }
-      }
-    }
 
+      }
+
+    }
   }
 
   override func viewDidLoad() {
