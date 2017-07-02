@@ -179,7 +179,10 @@ class SelectionViewController: UIViewController {
     if libraryButton.currentTitle == "Library v" {
       if self.allPhotos.count == photosLimit {
         getAllAlbums()
-        self.tableView.reloadData()
+        DispatchQueue.main.async {
+          self.tableView.reloadData()
+        }
+
       }
       self.libraryButton.setTitle("Library ^", for: .normal)
       UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: -self.tableView.frame.height)})
@@ -290,7 +293,9 @@ extension SelectionViewController: UICollectionViewDelegate {
     if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
       getAllAlbums()
       self.fetchResult = self.allPhotos
-      self.collectionView.reloadData()
+      DispatchQueue.main.async {
+        self.collectionView.reloadData()
+      }
     }
   }
 }
@@ -383,11 +388,9 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     self.playerLayer?.removeFromSuperlayer()
     let player = AVPlayer(url: videoUrl)
     self.playerLayer = AVPlayerLayer(player: player)
-
     self.playerLayer?.frame = self.imageView.frame
     self.imageView.layer.addSublayer(self.playerLayer!)
     player.play()
-
   }
 }
 
@@ -397,8 +400,6 @@ extension SelectionViewController: UIScrollViewDelegate {
   }
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
     let page = self.baseScrollView.contentOffset.y
-    let screenWidth = self.view.bounds.width
-    let screenHeight = self.view.bounds.height
 
     if page >= 44 {
       self.navigationController?.navigationBar.frame.origin.y = -44
@@ -446,7 +447,10 @@ extension SelectionViewController: UITableViewDelegate {
     self.libraryButton.setTitle("Library v", for: .normal)
     UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)})
     NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
-    self.collectionView.reloadData()
+    DispatchQueue.main.async {
+      self.collectionView.reloadData()
+    }
+
   }
 }
 
