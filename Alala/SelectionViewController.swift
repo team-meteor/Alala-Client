@@ -4,6 +4,7 @@ import AVKit
 
 class SelectionViewController: UIViewController {
   var playerLayer: AVPlayerLayer?
+  var player: AVPlayer?
   var urlAsset: AVURLAsset?
 
   let photosLimit: Int = 500
@@ -97,6 +98,7 @@ class SelectionViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     getLimitedAlbumFromLibrary()
+    NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying(note:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
 
     self.collectionView.dataSource = self
     self.collectionView.delegate = self
@@ -179,9 +181,8 @@ class SelectionViewController: UIViewController {
     if libraryButton.currentTitle == "Library v" {
       if self.allPhotos.count == photosLimit {
         getAllAlbums()
-        DispatchQueue.main.async {
-          self.tableView.reloadData()
-        }
+
+        self.tableView.reloadData()
 
       }
       self.libraryButton.setTitle("Library ^", for: .normal)
@@ -293,9 +294,9 @@ extension SelectionViewController: UICollectionViewDelegate {
     if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
       getAllAlbums()
       self.fetchResult = self.allPhotos
-      DispatchQueue.main.async {
-        self.collectionView.reloadData()
-      }
+
+      self.collectionView.reloadData()
+
     }
   }
 }
@@ -341,10 +342,18 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     let asset = fetchResult.object(at: indexPath.item)
 
     if asset.mediaType == .video {
+
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
         if let urlAsset = asset as? AVURLAsset {
+
           self.urlAsset = urlAsset
           let localVideoUrl: URL = urlAsset.url as URL
+          let previewImage = self.previewImageFromVideo(videoUrl: localVideoUrl)
+          self.scaleAspectFillSize(image: previewImage!, imageView: self.imageView)
+          self.scrollView.contentSize = self.imageView.frame.size
+          self.imageView.image = previewImage
+          self.centerScrollView(animated: false)
+
           self.imageView.image = self.previewImageFromVideo(videoUrl: localVideoUrl)
           self.centerScrollView(animated: false)
           self.scrollView.zoomScale = 1.0
@@ -352,7 +361,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
         }
       })
     } else {
-      self.playerLayer?.removeFromSuperlayer()
+
       self.urlAsset = nil
       let scale = UIScreen.main.scale
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
@@ -385,12 +394,19 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   }
 
   func addAVPlayer(videoUrl: URL) {
-    self.playerLayer?.removeFromSuperlayer()
-    let player = AVPlayer(url: videoUrl)
+    self.player = AVPlayer(url: videoUrl)
     self.playerLayer = AVPlayerLayer(player: player)
-    self.playerLayer?.frame = self.imageView.frame
-    self.imageView.layer.addSublayer(self.playerLayer!)
-    player.play()
+    DispatchQueue.main.async {
+      self.playerLayer?.frame = self.imageView.frame
+      self.imageView.layer.addSublayer(self.playerLayer!)
+    }
+    self.player?.play()
+    print("video play")
+  }
+
+  func playerDidFinishPlaying(note: NSNotification) {
+    self.playerLayer?.removeFromSuperlayer()
+    print("remove videoplayer")
   }
 }
 
@@ -447,9 +463,8 @@ extension SelectionViewController: UITableViewDelegate {
     self.libraryButton.setTitle("Library v", for: .normal)
     UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)})
     NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
-    DispatchQueue.main.async {
-      self.collectionView.reloadData()
-    }
+
+    self.collectionView.reloadData()
 
   }
 }
