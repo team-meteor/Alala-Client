@@ -6,6 +6,7 @@ class SelectionViewController: UIViewController {
   var playerLayer: AVPlayerLayer?
   var urlAsset: AVURLAsset?
   let photosLimit: Int = 1000
+  var isZooming: Bool = false
 
   enum Section: Int {
     case allPhotos = 0
@@ -269,7 +270,7 @@ class SelectionViewController: UIViewController {
   }
 
   func scrollViewZoom() {
-    if(scrollView.zoomScale <= 0.7) {
+    if(isZooming) {
       scrollView.setZoomScale(1.0, animated: true)
     } else {
       scrollView.setZoomScale(0.7, animated: true)
@@ -327,6 +328,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   }
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     let asset = fetchResult.object(at: indexPath.item)
+    isZooming = false
 
     if asset.mediaType == .video {
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
@@ -390,8 +392,6 @@ extension SelectionViewController: UIScrollViewDelegate {
   }
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
     let page = self.baseScrollView.contentOffset.y
-    let screenWidth = self.view.bounds.width
-    let screenHeight = self.view.bounds.height
 
     if page >= 44 {
       self.navigationController?.navigationBar.frame.origin.y = -44
@@ -399,23 +399,15 @@ extension SelectionViewController: UIScrollViewDelegate {
     } else if page < 44 {
       self.navigationController?.navigationBar.frame.origin.y = -(page)
     }
-
-//    if  page < valueLevel {
-//      self.buttonBarView.backgroundColor = UIColor.clear
-//    } else if(page >= valueLevel && page < valueLevel * 2) {
-//      self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(0.1)
-//    } else if(page >= valueLevel * 2 && page < valueLevel * 3) {
-//      self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(0.2)
-//    } else if(page >= valueLevel * 3 && page < valueLevel * 4) {
-//      self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
-//    } else if(page >= valueLevel * 4 && page < valueLevel * 5) {
-//      self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
-//    } else {
-//      self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-//    }
     self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(page / 600)
   }
-
+  func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+    if isZooming {
+      isZooming = false
+    } else {
+      isZooming = true
+    }
+  }
 }
 
 extension SelectionViewController: UITableViewDelegate {
