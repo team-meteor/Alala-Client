@@ -4,8 +4,11 @@ import AVKit
 
 class SelectionViewController: UIViewController {
   var playerLayer: AVPlayerLayer?
+  var player: AVPlayer?
   var urlAsset: AVURLAsset?
-  let photosLimit: Int = 1000
+
+  let photosLimit: Int = 500
+
   enum Section: Int {
     case allPhotos = 0
     case smartAlbums
@@ -40,7 +43,6 @@ class SelectionViewController: UIViewController {
     $0.backgroundColor = UIColor.red
     $0.setTitle("Library v", for: .normal)
   }
-
   fileprivate let baseScrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = false
@@ -51,6 +53,7 @@ class SelectionViewController: UIViewController {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = false
     $0.maximumZoomScale = 3
+    $0.minimumZoomScale = 0.7
     $0.alwaysBounceVertical = true
     $0.alwaysBounceHorizontal = true
     $0.isUserInteractionEnabled = true
@@ -69,9 +72,10 @@ class SelectionViewController: UIViewController {
     $0.layer.borderColor = UIColor.lightGray.cgColor
     $0.layer.borderWidth = 1 / UIScreen.main.scale
   }
-  fileprivate let ButtonBarView = UIView().then {
-    $0.backgroundColor = UIColor.yellow.withAlphaComponent(0.5)
+  fileprivate let buttonBarView = UIView().then {
+    $0.backgroundColor = UIColor.clear
   }
+  fileprivate let scrollViewZoomButton = Button()
   init() {
     super.init(nibName: nil, bundle: nil)
     //cancle 버튼 생성
@@ -94,14 +98,7 @@ class SelectionViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     getLimitedAlbumFromLibrary()
-
-    self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
-    let screenWidth = self.view.bounds.width
-    let screenHeight = self.view.bounds.height
-    let navigationBarHeight = self.navigationController?.navigationBar.frame.height
-    let bounds = self.navigationController!.navigationBar.bounds
-    self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
-    self.title = "Library"
+    NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying(note:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
 
     self.collectionView.dataSource = self
     self.collectionView.delegate = self
@@ -109,46 +106,8 @@ class SelectionViewController: UIViewController {
     self.scrollView.delegate = self
     self.tableView.delegate = self
     self.tableView.dataSource = self
-    self.baseScrollView.contentSize = CGSize(width: screenWidth, height: screenHeight * 2 / 3 + screenHeight - screenWidth/7 - navigationBarHeight!)
 
-    self.baseScrollView.addSubview(self.scrollView)
-    self.baseScrollView.addSubview(self.cropAreaView)
-    self.baseScrollView.addSubview(self.collectionView)
-    self.baseScrollView.addSubview(self.ButtonBarView)
-    self.scrollView.addSubview(self.imageView)
-    self.view.addSubview(baseScrollView)
-    self.view.addSubview(self.tableView)
-
-    //constraints
-    self.tableView.snp.makeConstraints { make in
-      make.width.equalTo(self.view)
-      make.height.equalTo(self.view.frame.height - 90)
-      make.centerX.equalTo(self.view)
-      make.top.equalTo(self.view.snp.bottom)
-    }
-    self.baseScrollView.snp.makeConstraints { make in
-      make.bottom.left.right.equalTo(self.view)
-    }
-    self.scrollView.snp.makeConstraints { make in
-      make.left.right.top.equalTo(self.baseScrollView)
-      make.height.equalTo(screenHeight * 2 / 3)
-      make.width.equalTo(screenWidth)
-    }
-    self.collectionView.snp.makeConstraints { make in
-      make.left.bottom.right.equalTo(self.baseScrollView)
-      make.top.equalTo(self.scrollView.snp.bottom)
-      make.height.equalTo(screenHeight - screenWidth/7 - navigationBarHeight!)
-      make.width.equalTo(screenWidth)
-    }
-    self.cropAreaView.snp.makeConstraints { make in
-      make.edges.equalTo(self.scrollView)
-    }
-    self.ButtonBarView.snp.makeConstraints { make in
-      make.left.right.equalTo(self.baseScrollView)
-      make.bottom.equalTo(self.collectionView.snp.top)
-      make.height.equalTo(screenWidth/7)
-      make.width.equalTo(screenWidth)
-    }
+    self.configureView()
   }
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
@@ -181,22 +140,23 @@ class SelectionViewController: UIViewController {
 
   func getLimitedAlbumFromLibrary() {
     let limitedOptions = PHFetchOptions()
+    let sortOptions = PHFetchOptions()
     limitedOptions.fetchLimit = photosLimit
-    limitedOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-    allPhotos = PHAsset.fetchAssets(with: limitedOptions)
-    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
-    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
+    sortOptions.fetchLimit = photosLimit
+    sortOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+
+    allPhotos = PHAsset.fetchAssets(with: sortOptions)
+    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: limitedOptions)
+    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: limitedOptions)
     self.fetchResult = allPhotos
-    print("allcount = \(allPhotos.count)")
   }
 
-  func getAllAlbumsAndReload() {
+  func getAllAlbums() {
     let AllOptions = PHFetchOptions()
     AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
     allPhotos = PHAsset.fetchAssets(with: AllOptions)
     smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
     userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
-    self.collectionView.reloadData()
   }
 
   func getCropImage() -> UIImage {
@@ -219,6 +179,12 @@ class SelectionViewController: UIViewController {
 
   func libraryButtonDidTap() {
     if libraryButton.currentTitle == "Library v" {
+      if self.allPhotos.count == photosLimit {
+        getAllAlbums()
+
+        self.tableView.reloadData()
+
+      }
       self.libraryButton.setTitle("Library ^", for: .normal)
       UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: -self.tableView.frame.height)})
       NotificationCenter.default.post(name: Notification.Name("hideCustomTabBar"), object: nil)
@@ -249,12 +215,88 @@ class SelectionViewController: UIViewController {
 
   }
 
+  func configureView() {
+
+    let screenWidth = self.view.bounds.width
+    let screenHeight = self.view.bounds.height
+    let navigationBarHeight = self.navigationController?.navigationBar.frame.height
+    let bounds = self.navigationController!.navigationBar.bounds
+    self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
+    self.title = "Library"
+
+    self.baseScrollView.contentSize = CGSize(width: screenWidth, height: screenHeight * 2 / 3 + screenHeight - screenWidth/8 * 2 - navigationBarHeight!)
+
+    self.buttonBarView.addSubview(scrollViewZoomButton)
+    self.baseScrollView.addSubview(self.scrollView)
+    self.baseScrollView.addSubview(self.cropAreaView)
+    self.baseScrollView.addSubview(self.collectionView)
+    self.baseScrollView.addSubview(self.buttonBarView)
+    self.scrollView.addSubview(self.imageView)
+    self.view.addSubview(baseScrollView)
+    self.view.addSubview(self.tableView)
+
+    //constraints
+    self.tableView.snp.makeConstraints { make in
+      make.width.equalTo(self.view)
+      make.height.equalTo(self.view.frame.height - 90)
+      make.centerX.equalTo(self.view)
+      make.top.equalTo(self.view.snp.bottom)
+    }
+    self.baseScrollView.snp.makeConstraints { make in
+      make.bottom.left.right.equalTo(self.view)
+    }
+    self.scrollView.snp.makeConstraints { make in
+      make.left.right.top.equalTo(self.baseScrollView)
+      make.height.equalTo(screenHeight * 2 / 3 - screenWidth/8 )
+      make.width.equalTo(screenWidth)
+    }
+    self.collectionView.snp.makeConstraints { make in
+      make.left.bottom.right.equalTo(self.baseScrollView)
+      make.top.equalTo(self.scrollView.snp.bottom)
+      make.height.equalTo(screenHeight - screenWidth/8 - navigationBarHeight!)
+      make.width.equalTo(screenWidth)
+    }
+    self.cropAreaView.snp.makeConstraints { make in
+      make.edges.equalTo(self.scrollView)
+    }
+    self.buttonBarView.snp.makeConstraints { make in
+      make.left.right.equalTo(self.baseScrollView)
+      make.bottom.equalTo(self.collectionView.snp.top)
+      make.height.equalTo(screenWidth/8)
+      make.width.equalTo(screenWidth)
+    }
+    self.scrollViewZoomButton.snp.makeConstraints { make in
+      make.width.equalTo(screenWidth/12)
+      make.height.equalTo(screenWidth/12)
+      make.centerY.equalTo(self.buttonBarView)
+      make.left.equalTo(self.buttonBarView).offset(10)
+    }
+
+    self.scrollViewZoomButton.addTarget(self, action: #selector(scrollViewZoom), for: .touchUpInside)
+
+    self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
+
+  }
+
+  func scrollViewZoom() {
+    if(scrollView.zoomScale <= 0.7) {
+      scrollView.setZoomScale(1.0, animated: true)
+    } else {
+      scrollView.setZoomScale(0.7, animated: true)
+    }
+  }
+
 }
 
 extension SelectionViewController: UICollectionViewDelegate {
   func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-    if self.allPhotos.count == photosLimit {
-      getAllAlbumsAndReload()
+
+    if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
+      getAllAlbums()
+      self.fetchResult = self.allPhotos
+
+      self.collectionView.reloadData()
+
     }
   }
 }
@@ -263,9 +305,7 @@ extension SelectionViewController: UICollectionViewDataSource {
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "tileCell", for: indexPath) as! TileCell
     let asset = self.fetchResult.object(at: indexPath.item)
-
     cell.representedAssetIdentifier = asset.localIdentifier
-    //메타데이터를 이미지로 변환
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
     imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
@@ -302,10 +342,18 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     let asset = fetchResult.object(at: indexPath.item)
 
     if asset.mediaType == .video {
+
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
         if let urlAsset = asset as? AVURLAsset {
+
           self.urlAsset = urlAsset
           let localVideoUrl: URL = urlAsset.url as URL
+          let previewImage = self.previewImageFromVideo(videoUrl: localVideoUrl)
+          self.scaleAspectFillSize(image: previewImage!, imageView: self.imageView)
+          self.scrollView.contentSize = self.imageView.frame.size
+          self.imageView.image = previewImage
+          self.centerScrollView(animated: false)
+
           self.imageView.image = self.previewImageFromVideo(videoUrl: localVideoUrl)
           self.centerScrollView(animated: false)
           self.scrollView.zoomScale = 1.0
@@ -313,7 +361,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
         }
       })
     } else {
-      self.playerLayer?.removeFromSuperlayer()
+
       self.urlAsset = nil
       let scale = UIScreen.main.scale
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
@@ -346,14 +394,19 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   }
 
   func addAVPlayer(videoUrl: URL) {
-    self.playerLayer?.removeFromSuperlayer()
-    let player = AVPlayer(url: videoUrl)
+    self.player = AVPlayer(url: videoUrl)
     self.playerLayer = AVPlayerLayer(player: player)
+    DispatchQueue.main.async {
+      self.playerLayer?.frame = self.imageView.frame
+      self.imageView.layer.addSublayer(self.playerLayer!)
+    }
+    self.player?.play()
+    print("video play")
+  }
 
-    self.playerLayer?.frame = self.imageView.frame
-    self.imageView.layer.addSublayer(self.playerLayer!)
-    player.play()
-
+  func playerDidFinishPlaying(note: NSNotification) {
+    self.playerLayer?.removeFromSuperlayer()
+    print("remove videoplayer")
   }
 }
 
@@ -363,12 +416,16 @@ extension SelectionViewController: UIScrollViewDelegate {
   }
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
     let page = self.baseScrollView.contentOffset.y
+
     if page >= 44 {
       self.navigationController?.navigationBar.frame.origin.y = -44
+
     } else if page < 44 {
       self.navigationController?.navigationBar.frame.origin.y = -(page)
     }
+    self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(page / 600)
   }
+
 }
 
 extension SelectionViewController: UITableViewDelegate {
@@ -381,9 +438,11 @@ extension SelectionViewController: UITableViewDelegate {
     switch Section(rawValue: indexPath.section)! {
 
     case .allPhotos:
-      self.fetchResult = allPhotos
+
+      self.fetchResult = self.allPhotos
 
     case .smartAlbums:
+
       let collection: PHCollection
       collection = smartAlbums.object(at: indexPath.row)
       guard let assetCollection = collection as? PHAssetCollection
@@ -392,19 +451,21 @@ extension SelectionViewController: UITableViewDelegate {
       self.assetCollection = assetCollection
 
     case .userCollections:
+
       let collection: PHCollection
       collection = userCollections.object(at: indexPath.row)
       guard let assetCollection = collection as? PHAssetCollection
         else { fatalError("expected asset collection") }
       self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
       self.assetCollection = assetCollection
-
     }
 
     self.libraryButton.setTitle("Library v", for: .normal)
     UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)})
     NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
+
     self.collectionView.reloadData()
+
   }
 }
 
