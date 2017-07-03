@@ -36,11 +36,6 @@ class SelectionViewController: UIViewController {
   let tileCellSpacing = CGFloat(1)
   let sectionLocalizedTitles = ["", NSLocalizedString("Smart Albums", comment: ""), NSLocalizedString("Albums", comment: "")]
 
-  let playbackSlider = UISlider().then {
-    $0.minimumValue = 0
-    $0.isContinuous = true
-    $0.tintColor = UIColor.green
-  }
   let initialRequestOptions = PHImageRequestOptions().then {
     $0.isSynchronous = true
     $0.resizeMode = .fast
@@ -57,8 +52,8 @@ class SelectionViewController: UIViewController {
     $0.setTitle("Library v", for: .normal)
   }
   fileprivate let playButton = UIButton().then {
-    $0.backgroundColor = UIColor.yellow
-    //$0.setTitle("Play", for: UIControlState.normal)
+    $0.backgroundColor = UIColor.blue
+    $0.setTitle("Play", for: UIControlState.normal)
   }
   fileprivate let baseScrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
@@ -85,7 +80,7 @@ class SelectionViewController: UIViewController {
     $0.register(TileCell.self, forCellWithReuseIdentifier: "tileCell")
   }
   fileprivate let cropAreaView = UIView().then {
-    $0.isUserInteractionEnabled = false
+    $0.isUserInteractionEnabled = true
     $0.layer.borderColor = UIColor.lightGray.cgColor
     $0.layer.borderWidth = 1 / UIScreen.main.scale
   }
@@ -292,9 +287,7 @@ class SelectionViewController: UIViewController {
     }
 
     self.scrollViewZoomButton.addTarget(self, action: #selector(scrollViewZoom), for: .touchUpInside)
-
     self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
-    self.playbackSlider.addTarget(self, action: #selector(playbackSliderValueChanged), for: .valueChanged)
     self.playButton.addTarget(self, action: #selector(self.playButtonDidTap), for: .touchUpInside)
   }
 
@@ -309,52 +302,33 @@ class SelectionViewController: UIViewController {
   func addAVPlayer(videoUrl: URL) {
     playerItem = AVPlayerItem(url: videoUrl)
     player = AVPlayer(playerItem: playerItem)
-    let duration: CMTime = self.playerItem!.asset.duration
-    let seconds: Float64 = CMTimeGetSeconds(duration)
-    self.playbackSlider.maximumValue = Float(seconds)
     self.playerLayer = AVPlayerLayer(player: player)
-    self.setConstraintOfPlayer()
+    DispatchQueue.main.async {
+      self.setConstraintOfPlayer()
+    }
+
   }
 
   func setConstraintOfPlayer() {
-    DispatchQueue.main.async {
-      self.imageView.layer.addSublayer(self.playerLayer!)
-      self.playerLayer!.frame = self.imageView.frame
-    }
-
+    self.imageView.layer.addSublayer(self.playerLayer!)
+    self.playerLayer!.frame = self.imageView.frame
     self.cropAreaView.addSubview(self.playButton)
     self.playButton.snp.makeConstraints { make in
       make.center.equalTo(self.cropAreaView)
       make.width.height.equalTo(50)
     }
-    self.cropAreaView.addSubview(self.playbackSlider)
-
-    self.playbackSlider.snp.makeConstraints { make in
-      make.bottom.left.right.equalTo(self.cropAreaView)
-    }
   }
 
   func playButtonDidTap() {
-    print("tap")
+
     if player?.rate == 0 {
       player!.play()
-      //playButton!.setImage(UIImage(named: "player_control_pause_50px.png"), forState: UIControlState.Normal)
+
       playButton.setTitle("Pause", for: UIControlState.normal)
     } else {
       player!.pause()
-      //playButton!.setImage(UIImage(named: "player_control_play_50px.png"), forState: UIControlState.Normal)
+
       playButton.setTitle("Play", for: UIControlState.normal)
-    }
-  }
-
-  func playbackSliderValueChanged() {
-    let seconds: Int64 = Int64(playbackSlider.value)
-    let targetTime: CMTime = CMTimeMake(seconds, 1)
-
-    player!.seek(to: targetTime)
-
-    if player!.rate == 0 {
-      player?.play()
     }
   }
 
@@ -436,7 +410,8 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
         }
       })
     } else {
-
+      self.playerLayer?.removeFromSuperlayer()
+      self.playButton.removeFromSuperview()
       self.urlAsset = nil
       let scale = UIScreen.main.scale
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
@@ -446,7 +421,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
         self.centerScrollView(animated: false)
-
+        print("collection photo")
       })
     }
 
@@ -556,8 +531,8 @@ extension SelectionViewController: UITableViewDataSource {
         let asset = fetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
-
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+          print("table all")
           cell.imageView?.image = image
 
         })
@@ -574,8 +549,8 @@ extension SelectionViewController: UITableViewDataSource {
         let asset = smartAlbumsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
-
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+          print("table smart")
           cell.imageView?.image = image
 
         })
@@ -595,8 +570,8 @@ extension SelectionViewController: UITableViewDataSource {
         let asset = userCollectionsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
-
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+          print("table user")
           cell.imageView?.image = image
 
         })
