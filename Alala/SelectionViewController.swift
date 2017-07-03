@@ -6,8 +6,9 @@ class SelectionViewController: UIViewController {
   var playerLayer: AVPlayerLayer?
   var player: AVPlayer?
   var playerItem: AVPlayerItem?
+  var imageArr = [UIImage]()
+  var urlAssetArr = [AVURLAsset]()
 
-  var urlAsset: AVURLAsset?
   var isZooming: Bool = false
   let photosLimit: Int = 500
 
@@ -78,6 +79,7 @@ class SelectionViewController: UIViewController {
     $0.backgroundColor = .white
     $0.alwaysBounceVertical = true
     $0.register(TileCell.self, forCellWithReuseIdentifier: "tileCell")
+    $0.allowsMultipleSelection = true
   }
   fileprivate let cropAreaView = UIView().then {
     $0.isUserInteractionEnabled = true
@@ -185,10 +187,41 @@ class SelectionViewController: UIViewController {
   }
 
   func doneButtonDidTap() {
-    let croppedImage = getCropImage()
-    let postEditorViewController = PostEditorViewController(image: croppedImage)
-    postEditorViewController.urlAsset = self.urlAsset
-    self.navigationController?.pushViewController(postEditorViewController, animated: true)
+    prepareMultiparts { _ in
+
+      let croppedImage = self.getCropImage()
+      let postEditorViewController = PostEditorViewController(image: croppedImage)
+      postEditorViewController.imageArr = self.imageArr
+      postEditorViewController.urlAssetArr = self.urlAssetArr
+      self.navigationController?.pushViewController(postEditorViewController, animated: true)
+    }
+  }
+
+  func prepareMultiparts(completion: @escaping (_ success: Bool) -> Void) {
+
+    if self.collectionView.indexPathsForSelectedItems?.count != 0 {
+
+      for index in self.collectionView.indexPathsForSelectedItems! {
+        let asset = self.fetchResult.object(at: index.item)
+
+        if asset.mediaType == .video {
+          self.imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
+            if let urlAsset = asset as? AVURLAsset {
+              self.urlAssetArr.append(urlAsset)
+
+            }
+          })
+        } else {
+          let scale = UIScreen.main.scale
+          let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+          self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
+            self.imageArr.append(image!)
+
+          })
+        }
+      }
+    }
+    completion(true)
   }
 
   func libraryButtonDidTap() {
@@ -345,6 +378,17 @@ extension SelectionViewController: UICollectionViewDelegate {
 
     }
   }
+
+  func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+    if let selectedItems = collectionView.indexPathsForSelectedItems {
+      if selectedItems.contains(indexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+
+        return false
+      }
+    }
+    return true
+  }
 }
 
 extension SelectionViewController: UICollectionViewDataSource {
@@ -370,6 +414,7 @@ extension SelectionViewController: UICollectionViewDataSource {
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
     return fetchResult.count
   }
+
 }
 
 extension SelectionViewController: UICollectionViewDelegateFlowLayout {
@@ -385,7 +430,9 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     return tileCellSpacing
   }
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
     let asset = fetchResult.object(at: indexPath.item)
+
     isZooming = false
 
     if asset.mediaType == .video {
@@ -393,7 +440,6 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
         if let urlAsset = asset as? AVURLAsset {
 
-          self.urlAsset = urlAsset
           let localVideoUrl: URL = urlAsset.url as URL
           let previewImage = self.previewImageFromVideo(videoUrl: localVideoUrl)
           self.scaleAspectFillSize(image: previewImage!, imageView: self.imageView)
@@ -413,7 +459,6 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     } else {
       self.playerLayer?.removeFromSuperlayer()
       self.playButton.removeFromSuperview()
-      self.urlAsset = nil
       let scale = UIScreen.main.scale
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
 
