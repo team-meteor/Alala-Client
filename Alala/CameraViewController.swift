@@ -296,6 +296,7 @@ class CameraViewController: UIViewController {
 
   func displayCapturPhoto() {
     capturedImageView.frame = self.camPreview.bounds
+    capturedImageView.contentMode = .scaleAspectFill
     self.camPreview.addSubview(capturedImageView)
   }
 
