@@ -25,6 +25,6 @@ class Comment: NSObject, Mappable {
     createdBy <- map["createdBy"]
     likedUsers <- map["likedUsers"]
     isLiked <- map["isLiked"]
-    createdAt <- (map["createdAt"], ISO8601DateTransform())
+    createdAt <- (map["createdAt"], DateTransform())
   }
 }

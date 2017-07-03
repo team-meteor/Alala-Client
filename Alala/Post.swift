@@ -28,7 +28,7 @@ class Post: NSObject, Mappable {
     postDescription <- map["description"]
     likedUsers <- map["likedUsers"]
     isLiked <- map["isLiked"]
-    createdAt <- (map["createdAt"], ISO8601DateTransform())
+    createdAt <- (map["createdAt"], DateTransform())
     comments <- map["comments"]
   }
 }
