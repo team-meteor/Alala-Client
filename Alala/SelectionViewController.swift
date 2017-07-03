@@ -5,6 +5,8 @@ import AVKit
 class SelectionViewController: UIViewController {
   var playerLayer: AVPlayerLayer?
   var player: AVPlayer?
+  var playerItem: AVPlayerItem?
+
   var urlAsset: AVURLAsset?
 
   let photosLimit: Int = 500
@@ -34,6 +36,17 @@ class SelectionViewController: UIViewController {
   let tileCellSpacing = CGFloat(1)
   let sectionLocalizedTitles = ["", NSLocalizedString("Smart Albums", comment: ""), NSLocalizedString("Albums", comment: "")]
 
+  let playbackSlider = UISlider().then {
+    $0.minimumValue = 0
+    $0.isContinuous = true
+    $0.tintColor = UIColor.green
+  }
+  let initialRequestOptions = PHImageRequestOptions().then {
+    $0.isSynchronous = true
+    $0.resizeMode = .fast
+    $0.deliveryMode = .fastFormat
+  }
+
   fileprivate let tableView = UITableView().then {
     $0.isScrollEnabled = true
     $0.register(GridViewCell.self, forCellReuseIdentifier: CellIdentifier.allPhotos.rawValue)
@@ -42,6 +55,10 @@ class SelectionViewController: UIViewController {
   fileprivate let libraryButton = UIButton().then {
     $0.backgroundColor = UIColor.red
     $0.setTitle("Library v", for: .normal)
+  }
+  fileprivate let playButton = UIButton().then {
+    $0.backgroundColor = UIColor.yellow
+    //$0.setTitle("Play", for: UIControlState.normal)
   }
   fileprivate let baseScrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
@@ -97,6 +114,7 @@ class SelectionViewController: UIViewController {
   }
   override func viewDidLoad() {
     super.viewDidLoad()
+
     getLimitedAlbumFromLibrary()
     NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying(note:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
 
@@ -125,6 +143,7 @@ class SelectionViewController: UIViewController {
       make.width.equalTo(100)
       make.center.equalTo((self.navigationController?.navigationBar)!)
     }
+
   }
   func centerScrollView(animated: Bool) {
     let targetContentOffset = CGPoint(
@@ -275,7 +294,8 @@ class SelectionViewController: UIViewController {
     self.scrollViewZoomButton.addTarget(self, action: #selector(scrollViewZoom), for: .touchUpInside)
 
     self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
-
+    self.playbackSlider.addTarget(self, action: #selector(playbackSliderValueChanged), for: .valueChanged)
+    self.playButton.addTarget(self, action: #selector(self.playButtonDidTap), for: .touchUpInside)
   }
 
   func scrollViewZoom() {
@@ -283,6 +303,58 @@ class SelectionViewController: UIViewController {
       scrollView.setZoomScale(1.0, animated: true)
     } else {
       scrollView.setZoomScale(0.7, animated: true)
+    }
+  }
+
+  func addAVPlayer(videoUrl: URL) {
+    playerItem = AVPlayerItem(url: videoUrl)
+    player = AVPlayer(playerItem: playerItem)
+    let duration: CMTime = self.playerItem!.asset.duration
+    let seconds: Float64 = CMTimeGetSeconds(duration)
+    self.playbackSlider.maximumValue = Float(seconds)
+    self.playerLayer = AVPlayerLayer(player: player)
+    self.setConstraintOfPlayer()
+  }
+
+  func setConstraintOfPlayer() {
+    DispatchQueue.main.async {
+      self.imageView.layer.addSublayer(self.playerLayer!)
+      self.playerLayer!.frame = self.imageView.frame
+    }
+
+    self.cropAreaView.addSubview(self.playButton)
+    self.playButton.snp.makeConstraints { make in
+      make.center.equalTo(self.cropAreaView)
+      make.width.height.equalTo(50)
+    }
+    self.cropAreaView.addSubview(self.playbackSlider)
+
+    self.playbackSlider.snp.makeConstraints { make in
+      make.bottom.left.right.equalTo(self.cropAreaView)
+    }
+  }
+
+  func playButtonDidTap() {
+    print("tap")
+    if player?.rate == 0 {
+      player!.play()
+      //playButton!.setImage(UIImage(named: "player_control_pause_50px.png"), forState: UIControlState.Normal)
+      playButton.setTitle("Pause", for: UIControlState.normal)
+    } else {
+      player!.pause()
+      //playButton!.setImage(UIImage(named: "player_control_play_50px.png"), forState: UIControlState.Normal)
+      playButton.setTitle("Play", for: UIControlState.normal)
+    }
+  }
+
+  func playbackSliderValueChanged() {
+    let seconds: Int64 = Int64(playbackSlider.value)
+    let targetTime: CMTime = CMTimeMake(seconds, 1)
+
+    player!.seek(to: targetTime)
+
+    if player!.rate == 0 {
+      player?.play()
     }
   }
 
@@ -308,7 +380,7 @@ extension SelectionViewController: UICollectionViewDataSource {
     cell.representedAssetIdentifier = asset.localIdentifier
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
         cell.configure(photo: image!)
       }
@@ -358,6 +430,9 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
           self.centerScrollView(animated: false)
           self.scrollView.zoomScale = 1.0
           self.addAVPlayer(videoUrl: localVideoUrl)
+
+          self.player?.play()
+          print("video play")
         }
       })
     } else {
@@ -365,8 +440,8 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
       self.urlAsset = nil
       let scale = UIScreen.main.scale
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-      imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
 
+      imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
         self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
@@ -393,19 +468,9 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     }
   }
 
-  func addAVPlayer(videoUrl: URL) {
-    self.player = AVPlayer(url: videoUrl)
-    self.playerLayer = AVPlayerLayer(player: player)
-    DispatchQueue.main.async {
-      self.playerLayer?.frame = self.imageView.frame
-      self.imageView.layer.addSublayer(self.playerLayer!)
-    }
-    self.player?.play()
-    print("video play")
-  }
-
   func playerDidFinishPlaying(note: NSNotification) {
     self.playerLayer?.removeFromSuperlayer()
+    self.playButton.removeFromSuperview()
     print("remove videoplayer")
   }
 }
@@ -491,7 +556,7 @@ extension SelectionViewController: UITableViewDataSource {
         let asset = fetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
 
           cell.imageView?.image = image
 
@@ -509,7 +574,7 @@ extension SelectionViewController: UITableViewDataSource {
         let asset = smartAlbumsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
 
           cell.imageView?.image = image
 
@@ -530,7 +595,7 @@ extension SelectionViewController: UITableViewDataSource {
         let asset = userCollectionsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
 
           cell.imageView?.image = image
 
