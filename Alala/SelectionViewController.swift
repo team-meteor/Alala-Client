@@ -4,8 +4,10 @@ import AVKit
 
 class SelectionViewController: UIViewController {
   var playerLayer: AVPlayerLayer?
+  var player: AVPlayer?
   var urlAsset: AVURLAsset?
-  let photosLimit: Int = 1000
+
+  let photosLimit: Int = 500
 
   enum Section: Int {
     case allPhotos = 0
@@ -96,6 +98,7 @@ class SelectionViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     getLimitedAlbumFromLibrary()
+    NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying(note:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
 
     self.collectionView.dataSource = self
     self.collectionView.delegate = self
@@ -137,22 +140,23 @@ class SelectionViewController: UIViewController {
 
   func getLimitedAlbumFromLibrary() {
     let limitedOptions = PHFetchOptions()
+    let sortOptions = PHFetchOptions()
     limitedOptions.fetchLimit = photosLimit
-    limitedOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-    allPhotos = PHAsset.fetchAssets(with: limitedOptions)
-    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
-    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
+    sortOptions.fetchLimit = photosLimit
+    sortOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+
+    allPhotos = PHAsset.fetchAssets(with: sortOptions)
+    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: limitedOptions)
+    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: limitedOptions)
     self.fetchResult = allPhotos
-    print("allcount = \(allPhotos.count)")
   }
 
-  func getAllAlbumsAndReload() {
+  func getAllAlbums() {
     let AllOptions = PHFetchOptions()
     AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
     allPhotos = PHAsset.fetchAssets(with: AllOptions)
     smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
     userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
-    self.collectionView.reloadData()
   }
 
   func getCropImage() -> UIImage {
@@ -175,6 +179,12 @@ class SelectionViewController: UIViewController {
 
   func libraryButtonDidTap() {
     if libraryButton.currentTitle == "Library v" {
+      if self.allPhotos.count == photosLimit {
+        getAllAlbums()
+
+        self.tableView.reloadData()
+
+      }
       self.libraryButton.setTitle("Library ^", for: .normal)
       UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: -self.tableView.frame.height)})
       NotificationCenter.default.post(name: Notification.Name("hideCustomTabBar"), object: nil)
@@ -280,8 +290,13 @@ class SelectionViewController: UIViewController {
 
 extension SelectionViewController: UICollectionViewDelegate {
   func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-    if self.allPhotos.count == photosLimit {
-      getAllAlbumsAndReload()
+
+    if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
+      getAllAlbums()
+      self.fetchResult = self.allPhotos
+
+      self.collectionView.reloadData()
+
     }
   }
 }
@@ -290,9 +305,7 @@ extension SelectionViewController: UICollectionViewDataSource {
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "tileCell", for: indexPath) as! TileCell
     let asset = self.fetchResult.object(at: indexPath.item)
-
     cell.representedAssetIdentifier = asset.localIdentifier
-    //메타데이터를 이미지로 변환
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
     imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
@@ -329,10 +342,18 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     let asset = fetchResult.object(at: indexPath.item)
 
     if asset.mediaType == .video {
+
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
         if let urlAsset = asset as? AVURLAsset {
+
           self.urlAsset = urlAsset
           let localVideoUrl: URL = urlAsset.url as URL
+          let previewImage = self.previewImageFromVideo(videoUrl: localVideoUrl)
+          self.scaleAspectFillSize(image: previewImage!, imageView: self.imageView)
+          self.scrollView.contentSize = self.imageView.frame.size
+          self.imageView.image = previewImage
+          self.centerScrollView(animated: false)
+
           self.imageView.image = self.previewImageFromVideo(videoUrl: localVideoUrl)
           self.centerScrollView(animated: false)
           self.scrollView.zoomScale = 1.0
@@ -340,7 +361,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
         }
       })
     } else {
-      self.playerLayer?.removeFromSuperlayer()
+
       self.urlAsset = nil
       let scale = UIScreen.main.scale
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
@@ -373,14 +394,19 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   }
 
   func addAVPlayer(videoUrl: URL) {
-    self.playerLayer?.removeFromSuperlayer()
-    let player = AVPlayer(url: videoUrl)
+    self.player = AVPlayer(url: videoUrl)
     self.playerLayer = AVPlayerLayer(player: player)
+    DispatchQueue.main.async {
+      self.playerLayer?.frame = self.imageView.frame
+      self.imageView.layer.addSublayer(self.playerLayer!)
+    }
+    self.player?.play()
+    print("video play")
+  }
 
-    self.playerLayer?.frame = self.imageView.frame
-    self.imageView.layer.addSublayer(self.playerLayer!)
-    player.play()
-
+  func playerDidFinishPlaying(note: NSNotification) {
+    self.playerLayer?.removeFromSuperlayer()
+    print("remove videoplayer")
   }
 }
 
@@ -390,8 +416,6 @@ extension SelectionViewController: UIScrollViewDelegate {
   }
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
     let page = self.baseScrollView.contentOffset.y
-    let screenWidth = self.view.bounds.width
-    let screenHeight = self.view.bounds.height
 
     if page >= 44 {
       self.navigationController?.navigationBar.frame.origin.y = -44
@@ -399,20 +423,6 @@ extension SelectionViewController: UIScrollViewDelegate {
     } else if page < 44 {
       self.navigationController?.navigationBar.frame.origin.y = -(page)
     }
-
-//    if  page < valueLevel {
-//      self.buttonBarView.backgroundColor = UIColor.clear
-//    } else if(page >= valueLevel && page < valueLevel * 2) {
-//      self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(0.1)
-//    } else if(page >= valueLevel * 2 && page < valueLevel * 3) {
-//      self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(0.2)
-//    } else if(page >= valueLevel * 3 && page < valueLevel * 4) {
-//      self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
-//    } else if(page >= valueLevel * 4 && page < valueLevel * 5) {
-//      self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
-//    } else {
-//      self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-//    }
     self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(page / 600)
   }
 
@@ -428,9 +438,11 @@ extension SelectionViewController: UITableViewDelegate {
     switch Section(rawValue: indexPath.section)! {
 
     case .allPhotos:
-      self.fetchResult = allPhotos
+
+      self.fetchResult = self.allPhotos
 
     case .smartAlbums:
+
       let collection: PHCollection
       collection = smartAlbums.object(at: indexPath.row)
       guard let assetCollection = collection as? PHAssetCollection
@@ -439,19 +451,21 @@ extension SelectionViewController: UITableViewDelegate {
       self.assetCollection = assetCollection
 
     case .userCollections:
+
       let collection: PHCollection
       collection = userCollections.object(at: indexPath.row)
       guard let assetCollection = collection as? PHAssetCollection
         else { fatalError("expected asset collection") }
       self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
       self.assetCollection = assetCollection
-
     }
 
     self.libraryButton.setTitle("Library v", for: .normal)
     UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)})
     NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
+
     self.collectionView.reloadData()
+
   }
 }
 
