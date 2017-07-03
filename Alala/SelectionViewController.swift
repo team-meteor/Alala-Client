@@ -78,6 +78,7 @@ class SelectionViewController: UIViewController {
     $0.backgroundColor = .white
     $0.alwaysBounceVertical = true
     $0.register(TileCell.self, forCellWithReuseIdentifier: "tileCell")
+    $0.allowsMultipleSelection = true
   }
   fileprivate let cropAreaView = UIView().then {
     $0.isUserInteractionEnabled = true
@@ -345,6 +346,16 @@ extension SelectionViewController: UICollectionViewDelegate {
 
     }
   }
+
+  func collectionView(collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+    if let selectedItems = collectionView.indexPathsForSelectedItems {
+      if selectedItems.contains(indexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        return false
+      }
+    }
+    return true
+  }
 }
 
 extension SelectionViewController: UICollectionViewDataSource {
@@ -370,6 +381,7 @@ extension SelectionViewController: UICollectionViewDataSource {
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
     return fetchResult.count
   }
+
 }
 
 extension SelectionViewController: UICollectionViewDelegateFlowLayout {
