@@ -379,7 +379,7 @@ extension SelectionViewController: UICollectionViewDelegate {
     }
   }
 
-  func collectionView(collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+  func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
     if let selectedItems = collectionView.indexPathsForSelectedItems {
       if selectedItems.contains(indexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)

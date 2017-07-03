@@ -45,7 +45,7 @@ class PostEditorViewController: UIViewController {
 
     //멀티셀렉션인 경우
     } else if imageArr.count != 0 || urlAssetArr.count != 0 {
-      if imageArr != nil {
+      if imageArr.count != 0 {
         print("imarr = \(imageArr)")
         for image in imageArr {
           MultipartService.uploadMultipart(image: image, videoData: nil, progress: nil) { imageId in
