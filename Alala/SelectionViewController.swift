@@ -8,7 +8,7 @@ class SelectionViewController: UIViewController {
   var playerItem: AVPlayerItem?
 
   var urlAsset: AVURLAsset?
-
+  var isZooming: Bool = false
   let photosLimit: Int = 500
 
   enum Section: Int {
@@ -292,7 +292,7 @@ class SelectionViewController: UIViewController {
   }
 
   func scrollViewZoom() {
-    if(scrollView.zoomScale <= 0.7) {
+    if(isZooming) {
       scrollView.setZoomScale(1.0, animated: true)
     } else {
       scrollView.setZoomScale(0.7, animated: true)
@@ -386,6 +386,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   }
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     let asset = fetchResult.object(at: indexPath.item)
+    isZooming = false
 
     if asset.mediaType == .video {
 
@@ -465,7 +466,13 @@ extension SelectionViewController: UIScrollViewDelegate {
     }
     self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(page / 600)
   }
-
+  func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+    if isZooming {
+      isZooming = false
+    } else {
+      isZooming = true
+    }
+  }
 }
 
 extension SelectionViewController: UITableViewDelegate {
