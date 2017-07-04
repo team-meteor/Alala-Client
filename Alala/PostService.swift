@@ -14,7 +14,7 @@ struct PostService {
   static let instance = PostService()
   let defaults = UserDefaults.standard
 
-  static func postWithSingleMultipart(multipartId: String, message: String?, progress: Progress?, completion: @escaping (DataResponse<Post>) -> Void) {
+  static func postWithSingleMultipart(idArr: [String], message: String?, progress: Progress?, completion: @escaping (DataResponse<Post>) -> Void) {
 
     guard let token = AuthService.instance.authToken else {
       return
@@ -26,9 +26,7 @@ struct PostService {
 
     let body: [String : Any] = [
       "description": message as Any,
-      "multiparts": [
-        multipartId
-      ]
+      "multiparts": idArr
     ]
 
     Alamofire.request(Constants.BASE_URL + "post/add", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)

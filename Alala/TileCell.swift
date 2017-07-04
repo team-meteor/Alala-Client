@@ -28,6 +28,13 @@ class TileCell: UICollectionViewCell {
     self.imageView.clipsToBounds = true
   }
 
+  override var isSelected: Bool {
+    didSet {
+      self.layer.borderWidth = 3.0
+      self.layer.borderColor = isSelected ? UIColor.blue.cgColor : UIColor.clear.cgColor
+    }
+  }
+
   // MARK: Size
   class func size(width: CGFloat) -> CGSize {
     return CGSize(width: width, height: width) // 정사각형
