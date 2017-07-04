@@ -54,7 +54,7 @@ class SelectionViewController: UIViewController {
   }
   fileprivate let playButton = UIButton().then {
     $0.backgroundColor = UIColor.blue
-    $0.setTitle("Play", for: UIControlState.normal)
+    $0.setTitle("Pause", for: UIControlState.normal)
   }
   fileprivate let baseScrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
@@ -82,7 +82,7 @@ class SelectionViewController: UIViewController {
     $0.allowsMultipleSelection = true
   }
   fileprivate let cropAreaView = UIView().then {
-    $0.isUserInteractionEnabled = true
+    $0.isUserInteractionEnabled = false
     $0.layer.borderColor = UIColor.lightGray.cgColor
     $0.layer.borderWidth = 1 / UIScreen.main.scale
   }
@@ -333,6 +333,7 @@ class SelectionViewController: UIViewController {
   }
 
   func addAVPlayer(videoUrl: URL) {
+    self.cropAreaView.isUserInteractionEnabled = true
     playerItem = AVPlayerItem(url: videoUrl)
     player = AVPlayer(playerItem: playerItem)
     self.playerLayer = AVPlayerLayer(player: player)
@@ -433,8 +434,6 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
 
     let asset = fetchResult.object(at: indexPath.item)
 
-    isZooming = false
-
     if asset.mediaType == .video {
 
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
@@ -459,6 +458,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     } else {
       self.playerLayer?.removeFromSuperlayer()
       self.playButton.removeFromSuperview()
+      self.cropAreaView.isUserInteractionEnabled = false
       let scale = UIScreen.main.scale
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
 
@@ -492,6 +492,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   func playerDidFinishPlaying(note: NSNotification) {
     self.playerLayer?.removeFromSuperlayer()
     self.playButton.removeFromSuperview()
+    self.cropAreaView.isUserInteractionEnabled = false
     print("remove videoplayer")
   }
 }
