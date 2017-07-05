@@ -10,49 +10,72 @@ import UIKit
 import Photos
 
 class LibraryViewController: UIViewController {
+  private var permissionGranted = false
+  private let sessionQueue = DispatchQueue(label: "library queue")
 
 	private lazy var selectionViewController: UINavigationController = {
-
 		var viewController = UINavigationController(rootViewController: SelectionViewController())
-
-		// Add View Controller as Child View Controller
-		self.add(asChildViewController: viewController)
-
+		//self.add(asChildViewController: viewController)
 		return viewController
 	}()
 
 	private lazy var rejectViewController: UINavigationController = {
-
 		var viewController = UINavigationController(rootViewController: RejectViewController())
-
-		// Add View Controller as Child View Controller
-		self.add(asChildViewController: viewController)
-
+		//self.add(asChildViewController: viewController)
 		return viewController
 	}()
 
+  init() {
+    super.init(nibName: nil, bundle: nil)
+    checkPermission()
+    sessionQueue.async { [unowned self] in
+      DispatchQueue.main.async {
+        self.add(asChildViewController: self.selectionViewController)
+        //self.remove(asChildViewController: self.rejectViewController)
+      }
+
+    }
+  }
+
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		setupView()
 	}
 
-	private func setupView() {
+  private func checkPermission() {
+    switch PHPhotoLibrary.authorizationStatus() {
+    case .authorized:
+      permissionGranted = true
+    case .notDetermined:
+      requestPermission()
+    default:
+      permissionGranted = false
+      DispatchQueue.main.async {
+        self.add(asChildViewController: self.rejectViewController)
+        //self.remove(asChildViewController: self.selectionViewController)
+      }
 
-		if PHPhotoLibrary.authorizationStatus() != .authorized {
-			PHPhotoLibrary.requestAuthorization({ status in
-				if status == .authorized {
-					//self.remove(asChildViewController: self.rejectViewController)
-					self.add(asChildViewController: self.selectionViewController)
-				} else {
-					//self.remove(asChildViewController: self.selectionViewController)
-					self.add(asChildViewController: self.rejectViewController)
-				}
-			})
-		} else {
-			//self.remove(asChildViewController: self.rejectViewController)
-			self.add(asChildViewController: self.selectionViewController)
-		}
-	}
+    }
+  }
+
+  private func requestPermission() {
+    sessionQueue.suspend()
+    PHPhotoLibrary.requestAuthorization({ status in
+      if status == .authorized {
+        self.permissionGranted = true
+        self.sessionQueue.resume()
+      } else {
+        DispatchQueue.main.async {
+          self.add(asChildViewController: self.rejectViewController)
+          //self.remove(asChildViewController: self.selectionViewController)
+        }
+
+      }
+    })
+  }
 
 	private func add(asChildViewController viewController: UIViewController) {
 		// Add Child View Controller
