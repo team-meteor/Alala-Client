@@ -407,7 +407,7 @@ extension SelectionViewController: UICollectionViewDataSource {
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
         cell.configure(photo: image!)
       }
-      if asset == self.fetchResult.object(at: 0) && image != nil {
+      if asset == self.fetchResult.object(at: 0) && self.imageView.image == nil {
         self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
