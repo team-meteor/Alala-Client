@@ -9,6 +9,7 @@ class SelectionViewController: UIViewController {
   var imageArr = [UIImage]()
   var urlAssetArr = [AVURLAsset]()
 
+  var zoomMode: Bool = false
   var isZooming: Bool = false
   let photosLimit: Int = 500
   var getImageView: UIImageView?
@@ -326,12 +327,25 @@ class SelectionViewController: UIViewController {
   }
 
   func scrollViewZoom() {
-    if(isZooming) {
-      aspectFillMode()
-      isZooming = false
+    if(zoomMode) {
+      if(isZooming) {
+        aspectFitMode()
+        zoomMode = true
+        isZooming = false
+      } else {
+        aspectFillMode()
+        zoomMode = false
+      }
     } else {
-      aspectFitMode()
-      isZooming = true
+      if(isZooming) {
+        aspectFillMode()
+        zoomMode = false
+        isZooming = false
+      } else {
+        aspectFitMode()
+        zoomMode = true
+      }
+
     }
 
   }
@@ -484,7 +498,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
         self.getImageView = self.imageView
         self.getImage = image
 
-        if(self.isZooming) {
+        if(self.zoomMode) {
           self.aspectFitMode()
         } else {
           self.aspectFillMode()
@@ -534,6 +548,9 @@ extension SelectionViewController: UIScrollViewDelegate {
       self.navigationController?.navigationBar.frame.origin.y = -(page)
     }
     self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(page / 600)
+  }
+  func scrollViewDidZoom(_ scrollView: UIScrollView) {
+    isZooming = true
   }
 }
 
