@@ -90,7 +90,7 @@ class PostEditorViewController: UIViewController {
           switch response.result {
           case .success(let post):
             print("업로드 성공 = \(post)")
-          //self.dismiss(animated: true, completion: nil)
+          self?.dismiss(animated: true, completion: nil)
           case .failure(let error):
             print(error)
 

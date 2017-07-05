@@ -244,7 +244,7 @@ class CameraViewController: UIViewController {
 
     do {
       let micInput = try AVCaptureDeviceInput(device: microphone)
-      if captureSession.canAddInput(micInput) {
+      if captureSession.canAddInput(micInput) && captureSession.inputs.isEmpty {
         captureSession.addInput(micInput)
       }
     } catch {
@@ -323,9 +323,12 @@ class CameraViewController: UIViewController {
   }
 
   func displayCapturPhoto() {
-    capturedImageView.frame = self.camPreview.bounds
-    capturedImageView.contentMode = .scaleAspectFill
-    self.camPreview.addSubview(capturedImageView)
+    DispatchQueue.main.async {
+      self.capturedImageView.frame = self.camPreview.bounds
+      self.capturedImageView.contentMode = .scaleAspectFill
+      self.camPreview.addSubview(self.capturedImageView)
+    }
+
   }
 
   func takePhotoButtonDidTap() {

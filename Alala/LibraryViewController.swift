@@ -15,13 +15,13 @@ class LibraryViewController: UIViewController {
 
 	private lazy var selectionViewController: UINavigationController = {
 		var viewController = UINavigationController(rootViewController: SelectionViewController())
-		self.add(asChildViewController: viewController)
+		//self.add(asChildViewController: viewController)
 		return viewController
 	}()
 
 	private lazy var rejectViewController: UINavigationController = {
 		var viewController = UINavigationController(rootViewController: RejectViewController())
-		self.add(asChildViewController: viewController)
+		//self.add(asChildViewController: viewController)
 		return viewController
 	}()
 
@@ -29,7 +29,11 @@ class LibraryViewController: UIViewController {
     super.init(nibName: nil, bundle: nil)
     checkPermission()
     sessionQueue.async { [unowned self] in
-      self.add(asChildViewController: self.selectionViewController)
+      DispatchQueue.main.async {
+        self.add(asChildViewController: self.selectionViewController)
+        //self.remove(asChildViewController: self.rejectViewController)
+      }
+
     }
   }
 
@@ -49,7 +53,11 @@ class LibraryViewController: UIViewController {
       requestPermission()
     default:
       permissionGranted = false
-      self.add(asChildViewController: self.rejectViewController)
+      DispatchQueue.main.async {
+        self.add(asChildViewController: self.rejectViewController)
+        //self.remove(asChildViewController: self.selectionViewController)
+      }
+
     }
   }
 
@@ -60,7 +68,11 @@ class LibraryViewController: UIViewController {
         self.permissionGranted = true
         self.sessionQueue.resume()
       } else {
-        self.add(asChildViewController: self.rejectViewController)
+        DispatchQueue.main.async {
+          self.add(asChildViewController: self.rejectViewController)
+          //self.remove(asChildViewController: self.selectionViewController)
+        }
+
       }
     })
   }

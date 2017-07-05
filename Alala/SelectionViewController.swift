@@ -372,11 +372,15 @@ extension SelectionViewController: UICollectionViewDelegate {
   func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
 
     if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
-      getAllAlbums()
-      self.fetchResult = self.allPhotos
+      DispatchQueue.global().async {
+        self.getAllAlbums()
 
-      self.collectionView.reloadData()
-
+        print("fetch")
+        DispatchQueue.main.async {
+          self.fetchResult = self.allPhotos
+          self.collectionView.reloadData()
+        }
+      }
     }
   }
 
@@ -399,7 +403,7 @@ extension SelectionViewController: UICollectionViewDataSource {
     cell.representedAssetIdentifier = asset.localIdentifier
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
+    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
         cell.configure(photo: image!)
       }
@@ -445,14 +449,8 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
           self.scrollView.contentSize = self.imageView.frame.size
           self.imageView.image = previewImage
           self.centerScrollView(animated: false)
-
-          self.imageView.image = self.previewImageFromVideo(videoUrl: localVideoUrl)
-          self.centerScrollView(animated: false)
-          self.scrollView.zoomScale = 1.0
           self.addAVPlayer(videoUrl: localVideoUrl)
-
           self.player?.play()
-          print("video play")
         }
       })
     } else {
@@ -467,7 +465,6 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
         self.centerScrollView(animated: false)
-        print("collection photo")
       })
     }
 
@@ -493,7 +490,6 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     self.playerLayer?.removeFromSuperlayer()
     self.playButton.removeFromSuperview()
     self.cropAreaView.isUserInteractionEnabled = false
-    print("remove videoplayer")
   }
 }
 
@@ -585,9 +581,7 @@ extension SelectionViewController: UITableViewDataSource {
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
-          print("table all")
           cell.imageView?.image = image
-
         })
       }
 
@@ -603,7 +597,6 @@ extension SelectionViewController: UITableViewDataSource {
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
-          print("table smart")
           cell.imageView?.image = image
 
         })
@@ -624,7 +617,6 @@ extension SelectionViewController: UITableViewDataSource {
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
-          print("table user")
           cell.imageView?.image = image
 
         })
