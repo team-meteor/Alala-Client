@@ -86,7 +86,7 @@ class PostEditorViewController: UIViewController {
         guard let `self` = self else { return }
         self.progressView.progress = Float(progress.completedUnitCount) / Float(progress.totalUnitCount)
         }, completion: { [weak self] response in
-          guard let `self` = self else { return }
+          guard self != nil else { return }
           switch response.result {
           case .success(let post):
             print("업로드 성공 = \(post)")
