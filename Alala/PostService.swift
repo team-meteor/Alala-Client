@@ -14,7 +14,7 @@ struct PostService {
   static let instance = PostService()
   let defaults = UserDefaults.standard
 
-  static func postWithSingleMultipart(idArr: [String], message: String?, progress: Progress?, completion: @escaping (DataResponse<Post>) -> Void) {
+  static func postWithSingleMultipart(idArr: [String], message: String?, progress: @escaping (Progress) -> Void, completion: @escaping (DataResponse<Post>) -> Void) {
 
     guard let token = AuthService.instance.authToken else {
       return

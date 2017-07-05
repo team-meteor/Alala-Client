@@ -19,6 +19,7 @@ class PostEditorViewController: UIViewController {
   var urlAssetArr = [AVURLAsset]()
   var imageArr = [UIImage]()
   var multipartsIdArr = [String]()
+  fileprivate let progressView = UIProgressView()
 
   fileprivate let tableView = UITableView().then {
     $0.isScrollEnabled = false
@@ -43,7 +44,7 @@ class PostEditorViewController: UIViewController {
         self.multipartsIdArr.append(videoId)
       }
 
-    //멀티셀렉션인 경우
+      //멀티셀렉션인 경우
     } else if imageArr.count != 0 || urlAssetArr.count != 0 {
       if imageArr.count != 0 {
         print("imarr = \(imageArr)")
@@ -69,7 +70,7 @@ class PostEditorViewController: UIViewController {
           }
         }
       }
-    //사진촬영인 경우
+      //사진촬영인 경우
     } else {
       MultipartService.uploadMultipart(image: self.image, videoData: nil, progress: nil) { imageId in
         self.multipartsIdArr.append(imageId)
@@ -79,41 +80,49 @@ class PostEditorViewController: UIViewController {
   }
 
   func shareButtonDidTap() {
-    print("ima = \(image)")
-    print("assetarr = \(urlAssetArr)")
-    print("video = \(videoData)")
-    print("imarr = \(imageArr)")
+
     getMultipartsIdArr { idArr in
-      //메시지와 함께 포스팅
-      print("arr = \(idArr)")
-      PostService.postWithSingleMultipart(idArr: idArr, message: self.message, progress: nil) { [weak self] response in
+      PostService.postWithSingleMultipart(idArr: idArr, message: self.message, progress: { [weak self] progress in
         guard let `self` = self else { return }
-        switch response.result {
-        case .success(let post):
-          print("업로드 성공 = \(post)")
-          self.dismiss(animated: true, completion: nil)
-        case .failure(let error):
-          print(error)
+        self.progressView.progress = Float(progress.completedUnitCount) / Float(progress.totalUnitCount)
+        }, completion: { [weak self] response in
+          guard self != nil else { return }
+          switch response.result {
+          case .success(let post):
+            print("업로드 성공 = \(post)")
+          //self.dismiss(animated: true, completion: nil)
+          case .failure(let error):
+            print(error)
+
+          }
         }
-      }
+
+      )
     }
   }
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    //self.progressView.isHidden = true
 
     self.tableView.dataSource = self
     self.tableView.delegate = self
 
     self.view.addSubview(self.tableView)
+    self.view.addSubview(self.progressView)
   }
 
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     self.tableView.snp.makeConstraints { make in
-      make.edges.equalTo(self.view)
+      make.left.top.right.equalTo(self.view)
+      make.height.equalTo(300)
     }
 
+    self.progressView.snp.makeConstraints { make in
+      make.top.equalTo(self.tableView.snp.bottom)
+      make.left.right.equalToSuperview()
+    }
   }
 
   override func didMove(toParentViewController parent: UIViewController?) {
