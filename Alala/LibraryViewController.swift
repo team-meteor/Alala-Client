@@ -12,23 +12,16 @@ import Photos
 class LibraryViewController: UIViewController {
   private var permissionGranted = false
   private let sessionQueue = DispatchQueue(label: "library queue")
+
 	private lazy var selectionViewController: UINavigationController = {
-
 		var viewController = UINavigationController(rootViewController: SelectionViewController())
-
-		// Add View Controller as Child View Controller
 		self.add(asChildViewController: viewController)
-
 		return viewController
 	}()
 
 	private lazy var rejectViewController: UINavigationController = {
-
 		var viewController = UINavigationController(rootViewController: RejectViewController())
-
-		// Add View Controller as Child View Controller
 		self.add(asChildViewController: viewController)
-
 		return viewController
 	}()
 
@@ -56,6 +49,7 @@ class LibraryViewController: UIViewController {
       requestPermission()
     default:
       permissionGranted = false
+      self.add(asChildViewController: self.rejectViewController)
     }
   }
 
