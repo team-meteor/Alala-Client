@@ -9,8 +9,11 @@ class SelectionViewController: UIViewController {
   var imageArr = [UIImage]()
   var urlAssetArr = [AVURLAsset]()
 
+  var zoomMode: Bool = false
   var isZooming: Bool = false
   let photosLimit: Int = 500
+  var getImageView: UIImageView?
+  var getImage: UIImage?
 
   enum Section: Int {
     case allPhotos = 0
@@ -258,8 +261,7 @@ class SelectionViewController: UIViewController {
       imageHeight = imageHeight * imageViewWidth / imageWidth
       imageWidth = imageViewWidth
     }
-    imageView.frame.size = CGSize(width: imageWidth, height: imageHeight)
-
+    self.imageView.frame.size = CGSize(width: imageWidth, height: imageHeight)
   }
 
   func configureView() {
@@ -325,11 +327,39 @@ class SelectionViewController: UIViewController {
   }
 
   func scrollViewZoom() {
-    if(isZooming) {
-      scrollView.setZoomScale(1.0, animated: true)
+    if(zoomMode) {
+      if(isZooming) {
+        aspectFitMode()
+        zoomMode = true
+        isZooming = false
+      } else {
+        aspectFillMode()
+        zoomMode = false
+      }
     } else {
-      scrollView.setZoomScale(0.7, animated: true)
+      if(isZooming) {
+        aspectFillMode()
+        zoomMode = false
+        isZooming = false
+      } else {
+        aspectFitMode()
+        zoomMode = true
+      }
+
     }
+
+  }
+
+  func aspectFillMode() {
+    scaleAspectFillSize(image: getImage!, imageView: getImageView!)
+    self.scrollView.contentSize = self.imageView.frame.size
+    self.centerScrollView(animated: false)
+  }
+  func aspectFitMode() {
+    imageView.frame.size = cropAreaView.frame.size
+    self.scrollView.contentSize = self.imageView.frame.size
+    imageView.contentMode = .scaleAspectFit
+    self.centerScrollView(animated: false)
   }
 
   func addAVPlayer(videoUrl: URL) {
@@ -407,7 +437,10 @@ extension SelectionViewController: UICollectionViewDataSource {
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
         cell.configure(photo: image!)
       }
+
       if asset == self.fetchResult.object(at: 0) && self.imageView.image == nil {
+        self.getImageView = self.imageView
+        self.getImage = image
         self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
@@ -445,6 +478,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
 
           let localVideoUrl: URL = urlAsset.url as URL
           let previewImage = self.previewImageFromVideo(videoUrl: localVideoUrl)
+
           self.scaleAspectFillSize(image: previewImage!, imageView: self.imageView)
           self.scrollView.contentSize = self.imageView.frame.size
           self.imageView.image = previewImage
@@ -461,7 +495,14 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
 
       imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
-        self.scaleAspectFillSize(image: image!, imageView: self.imageView)
+        self.getImageView = self.imageView
+        self.getImage = image
+
+        if(self.zoomMode) {
+          self.aspectFitMode()
+        } else {
+          self.aspectFillMode()
+        }
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
         self.centerScrollView(animated: false)
@@ -508,12 +549,8 @@ extension SelectionViewController: UIScrollViewDelegate {
     }
     self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(page / 600)
   }
-  func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-    if isZooming {
-      isZooming = false
-    } else {
-      isZooming = true
-    }
+  func scrollViewDidZoom(_ scrollView: UIScrollView) {
+    isZooming = true
   }
 }
 
