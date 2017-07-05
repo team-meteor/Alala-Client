@@ -403,11 +403,11 @@ extension SelectionViewController: UICollectionViewDataSource {
     cell.representedAssetIdentifier = asset.localIdentifier
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
         cell.configure(photo: image!)
       }
-      if asset == self.fetchResult.object(at: 0) && self.imageView.image == nil {
+      if asset == self.fetchResult.object(at: 0) && self.imageView.image == nil && image != nil {
         self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
