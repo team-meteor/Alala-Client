@@ -54,7 +54,7 @@ class SelectionViewController: UIViewController {
   }
   fileprivate let playButton = UIButton().then {
     $0.backgroundColor = UIColor.blue
-    $0.setTitle("Play", for: UIControlState.normal)
+    $0.setTitle("Pause", for: UIControlState.normal)
   }
   fileprivate let baseScrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
@@ -82,7 +82,7 @@ class SelectionViewController: UIViewController {
     $0.allowsMultipleSelection = true
   }
   fileprivate let cropAreaView = UIView().then {
-    $0.isUserInteractionEnabled = true
+    $0.isUserInteractionEnabled = false
     $0.layer.borderColor = UIColor.lightGray.cgColor
     $0.layer.borderWidth = 1 / UIScreen.main.scale
   }
@@ -333,6 +333,7 @@ class SelectionViewController: UIViewController {
   }
 
   func addAVPlayer(videoUrl: URL) {
+    self.cropAreaView.isUserInteractionEnabled = true
     playerItem = AVPlayerItem(url: videoUrl)
     player = AVPlayer(playerItem: playerItem)
     self.playerLayer = AVPlayerLayer(player: player)
@@ -371,11 +372,15 @@ extension SelectionViewController: UICollectionViewDelegate {
   func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
 
     if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
-      getAllAlbums()
-      self.fetchResult = self.allPhotos
+      DispatchQueue.global().async {
+        self.getAllAlbums()
 
-      self.collectionView.reloadData()
-
+        print("fetch")
+        DispatchQueue.main.async {
+          self.fetchResult = self.allPhotos
+          self.collectionView.reloadData()
+        }
+      }
     }
   }
 
@@ -398,11 +403,11 @@ extension SelectionViewController: UICollectionViewDataSource {
     cell.representedAssetIdentifier = asset.localIdentifier
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
+    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
         cell.configure(photo: image!)
       }
-      if asset == self.fetchResult.object(at: 0) && image != nil {
+      if asset == self.fetchResult.object(at: 0) && self.imageView.image == nil {
         self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
@@ -433,8 +438,6 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
 
     let asset = fetchResult.object(at: indexPath.item)
 
-    isZooming = false
-
     if asset.mediaType == .video {
 
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
@@ -446,19 +449,14 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
           self.scrollView.contentSize = self.imageView.frame.size
           self.imageView.image = previewImage
           self.centerScrollView(animated: false)
-
-          self.imageView.image = self.previewImageFromVideo(videoUrl: localVideoUrl)
-          self.centerScrollView(animated: false)
-          self.scrollView.zoomScale = 1.0
           self.addAVPlayer(videoUrl: localVideoUrl)
-
           self.player?.play()
-          print("video play")
         }
       })
     } else {
       self.playerLayer?.removeFromSuperlayer()
       self.playButton.removeFromSuperview()
+      self.cropAreaView.isUserInteractionEnabled = false
       let scale = UIScreen.main.scale
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
 
@@ -467,7 +465,6 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
         self.centerScrollView(animated: false)
-        print("collection photo")
       })
     }
 
@@ -492,7 +489,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   func playerDidFinishPlaying(note: NSNotification) {
     self.playerLayer?.removeFromSuperlayer()
     self.playButton.removeFromSuperview()
-    print("remove videoplayer")
+    self.cropAreaView.isUserInteractionEnabled = false
   }
 }
 
@@ -584,9 +581,7 @@ extension SelectionViewController: UITableViewDataSource {
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
-          print("table all")
           cell.imageView?.image = image
-
         })
       }
 
@@ -602,7 +597,6 @@ extension SelectionViewController: UITableViewDataSource {
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
-          print("table smart")
           cell.imageView?.image = image
 
         })
@@ -623,7 +617,6 @@ extension SelectionViewController: UITableViewDataSource {
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
-          print("table user")
           cell.imageView?.image = image
 
         })

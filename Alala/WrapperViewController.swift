@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 class WrapperViewController: UIViewController {
 
@@ -43,15 +44,17 @@ class WrapperViewController: UIViewController {
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
+
 		NotificationCenter.default.addObserver(self, selector: #selector(photoModeOnTabBar), name: Notification.Name("photoModeOnTabBar"), object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(videoButtonDidTap), name: Notification.Name("videoModeOnTabBar"), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(showCustomTabBar), name: Notification.Name("showCustomTabBar"), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(hideCustomTabBar), name: Notification.Name("hideCustomTabBar"), object: nil)
+
+    self.addChildViewController(self.cameraViewController)
+    self.scrollView.addSubview(self.cameraViewController.view)
 		self.scrollView.delegate = self
 		self.addChildViewController(libraryViewController)
-		self.addChildViewController(cameraViewController)
 		self.scrollView.addSubview(libraryViewController.view)
-		self.scrollView.addSubview(cameraViewController.view)
 		self.view.addSubview(scrollView)
 		self.customTabBar.addSubview(libraryButton)
 		self.customTabBar.addSubview(photoButton)
