@@ -9,7 +9,9 @@
 import UIKit
 
 /**
- * 내 프로필 편집 화면
+ * # 내 프로필 편집 화면
+ *
+ * **[PATH]** 내 프로필 화면 > '프로필 수정' 버튼 탭
  */
 class EditProfileViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
