@@ -61,6 +61,9 @@
 		6FFC06C21EE3D49000E542BC /* AlalaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06C11EE3D49000E542BC /* AlalaTests.swift */; };
 		6FFC06CD1EE3D49000E542BC /* AlalaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06CC1EE3D49000E542BC /* AlalaUITests.swift */; };
 		6FFC06DC1EE3D78A00E542BC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */; };
+		9921706B1F0A33ED00D03E01 /* PhotosForYouViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9921706A1F0A33ED00D03E01 /* PhotosForYouViewController.swift */; };
+		9921706D1F0A374500D03E01 /* SavedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9921706C1F0A374500D03E01 /* SavedViewController.swift */; };
+		992170921F0CA55A00D03E01 /* PostGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 992170911F0CA55900D03E01 /* PostGridCell.swift */; };
 		99C654E01F0159F30005AD3E /* ArchiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654DF1F0159F30005AD3E /* ArchiveViewController.swift */; };
 		99C654E21F015A310005AD3E /* DiscoverPeopleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654E11F015A310005AD3E /* DiscoverPeopleViewController.swift */; };
 		99C654E81F015AEC0005AD3E /* FollowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654E71F015AEC0005AD3E /* FollowViewController.swift */; };
@@ -71,6 +74,7 @@
 		99C654F41F03F50A0005AD3E /* OptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654F31F03F50A0005AD3E /* OptionsViewController.swift */; };
 		99C654F61F041E930005AD3E /* EditProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654F51F041E930005AD3E /* EditProfileTableViewCell.swift */; };
 		99C654FA1F0773CD0005AD3E /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654F91F0773CD0005AD3E /* UIColor.swift */; };
+		99C654FC1F0784170005AD3E /* RoundCornerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654FB1F0784170005AD3E /* RoundCornerButton.swift */; };
 		9B39112F1F077094008325E4 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B39112E1F077094008325E4 /* Button.swift */; };
 /* End PBXBuildFile section */
 
@@ -154,6 +158,9 @@
 		6FFC06CC1EE3D49000E542BC /* AlalaUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlalaUITests.swift; sourceTree = "<group>"; };
 		6FFC06CE1EE3D49000E542BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
+		9921706A1F0A33ED00D03E01 /* PhotosForYouViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosForYouViewController.swift; sourceTree = "<group>"; };
+		9921706C1F0A374500D03E01 /* SavedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedViewController.swift; sourceTree = "<group>"; };
+		992170911F0CA55900D03E01 /* PostGridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostGridCell.swift; sourceTree = "<group>"; };
 		99C654DF1F0159F30005AD3E /* ArchiveViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveViewController.swift; sourceTree = "<group>"; };
 		99C654E11F015A310005AD3E /* DiscoverPeopleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscoverPeopleViewController.swift; sourceTree = "<group>"; };
 		99C654E71F015AEC0005AD3E /* FollowViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FollowViewController.swift; sourceTree = "<group>"; };
@@ -164,6 +171,7 @@
 		99C654F31F03F50A0005AD3E /* OptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsViewController.swift; sourceTree = "<group>"; };
 		99C654F51F041E930005AD3E /* EditProfileTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditProfileTableViewCell.swift; sourceTree = "<group>"; };
 		99C654F91F0773CD0005AD3E /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
+		99C654FB1F0784170005AD3E /* RoundCornerButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundCornerButton.swift; sourceTree = "<group>"; };
 		9B39112E1F077094008325E4 /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -262,6 +270,8 @@
 				99C654E71F015AEC0005AD3E /* FollowViewController.swift */,
 				99C654F11F03EE5D0005AD3E /* EditProfileViewController.swift */,
 				99C654F31F03F50A0005AD3E /* OptionsViewController.swift */,
+				9921706A1F0A33ED00D03E01 /* PhotosForYouViewController.swift */,
+				9921706C1F0A374500D03E01 /* SavedViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -284,6 +294,8 @@
 				99C654F51F041E930005AD3E /* EditProfileTableViewCell.swift */,
 				6F8887A71F07832200CE9A04 /* LikeCountCell.swift */,
 				6F8887A91F0791DC00CE9A04 /* CommentContainerCell.swift */,
+				99C654FB1F0784170005AD3E /* RoundCornerButton.swift */,
+				992170911F0CA55900D03E01 /* PostGridCell.swift */,
 				6F8887AB1F0A02DE00CE9A04 /* CommentCell.swift */,
 			);
 			name = Views;
@@ -610,15 +622,19 @@
 				6F01C2991EF7984000552782 /* UIImage.swift in Sources */,
 				6F01C2971EF797C400552782 /* UIImageView.swift in Sources */,
 				6F5B85491EE52101009285DD /* FeedViewController.swift in Sources */,
+				9921706D1F0A374500D03E01 /* SavedViewController.swift in Sources */,
 				6FBD85541F04D0E10097B82A /* UserCell.swift in Sources */,
+				9921706B1F0A33ED00D03E01 /* PhotosForYouViewController.swift in Sources */,
 				6F5B85591EE540F9009285DD /* Feed.swift in Sources */,
 				6F09C9021EF241F100BCFFEF /* SplashViewController.swift in Sources */,
+				992170921F0CA55A00D03E01 /* PostGridCell.swift in Sources */,
 				99C654F41F03F50A0005AD3E /* OptionsViewController.swift in Sources */,
 				6F09C8E01EF1058200BCFFEF /* DataResponse+MapResults.swift in Sources */,
 				6F01C29D1EF7999000552782 /* PostCardCell.swift in Sources */,
 				6F5B854F1EE52B3B009285DD /* DiscoverViewController.swift in Sources */,
 				487394021EFE467300B3E1D0 /* CameraViewController.swift in Sources */,
 				6F5B85551EE52BB9009285DD /* SelectionViewController.swift in Sources */,
+				99C654FC1F0784170005AD3E /* RoundCornerButton.swift in Sources */,
 				99C654E01F0159F30005AD3E /* ArchiveViewController.swift in Sources */,
 				6F09C8E21EF127C900BCFFEF /* AfterRegisterViewController.swift in Sources */,
 				485ABFAB1EF3735500949456 /* PostEditorViewController.swift in Sources */,
