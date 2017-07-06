@@ -13,6 +13,7 @@ import UIKit
  */
 class EditProfileTableViewCell: UITableViewCell {
 
+  static let cellReuseIdentifier = "editProfileCell"
   static let cellSeparatorInsets = UIEdgeInsets(top: 0, left: 50, bottom: 0, right: 0)
 
   var rightButtonWidthConstraint: NSLayoutConstraint?
@@ -55,7 +56,7 @@ class EditProfileTableViewCell: UITableViewCell {
 
     rightButton.snp.makeConstraints { (make) in
       make.centerY.equalTo(self)
-      make.right.equalTo(self).offset(10)
+      make.right.equalTo(self).offset(-5)
       make.top.equalTo(self).offset(5)
       make.bottom.equalTo(self).offset(-5)
     }

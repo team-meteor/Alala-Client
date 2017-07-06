@@ -92,6 +92,7 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
       $0.text = "User ID"
       $0.sizeToFit()
     }
+    self.navigationController?.navigationBar.topItem?.title = ""
 
     self.view.addSubview(scrollView)
     scrollView.snp.makeConstraints { (make) in
