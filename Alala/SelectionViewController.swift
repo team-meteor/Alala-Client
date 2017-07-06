@@ -70,6 +70,8 @@ class SelectionViewController: UIViewController {
     $0.showsVerticalScrollIndicator = false
     $0.maximumZoomScale = 3
     $0.minimumZoomScale = 0.7
+    $0.zoomScale = 1.0
+    $0.bouncesZoom = true
     $0.alwaysBounceVertical = true
     $0.alwaysBounceHorizontal = true
     $0.isUserInteractionEnabled = true
@@ -328,26 +330,36 @@ class SelectionViewController: UIViewController {
 
   func scrollViewZoom() {
     if(zoomMode) {
+      print(collectionView.frame.width)
       if(isZooming) {
-        aspectFitMode()
+        UIView.animate(withDuration: 0.2, animations: {
+          self.aspectFitMode()
+        })
         zoomMode = true
         isZooming = false
       } else {
-        aspectFillMode()
+        UIView.animate(withDuration: 0.2, animations: {
+          self.aspectFillMode()
+        })
+
         zoomMode = false
       }
     } else {
+      print(collectionView.frame.width)
       if(isZooming) {
-        aspectFillMode()
+        UIView.animate(withDuration: 0.2, animations: {
+          self.aspectFillMode()
+        })
         zoomMode = false
         isZooming = false
       } else {
-        aspectFitMode()
+        UIView.animate(withDuration: 0.2, animations: {
+          self.aspectFitMode()
+        })
         zoomMode = true
+
       }
-
     }
-
   }
 
   func aspectFillMode() {
@@ -458,8 +470,13 @@ extension SelectionViewController: UICollectionViewDataSource {
 extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
     let collectionViewWidth = collectionView.frame.width
-    let cellWidth = round((collectionViewWidth - 2 * tileCellSpacing) / 4)
-    return TileCell.size(width: cellWidth)
+    let cellWidth: CGFloat?
+    if(collectionViewWidth >= 375) {
+      cellWidth = round((collectionViewWidth - 2 * tileCellSpacing) / 4)
+    } else {
+      cellWidth = round((collectionViewWidth - 2 * tileCellSpacing) / 3)
+    }
+    return TileCell.size(width: cellWidth!)
   }
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
     return tileCellSpacing
@@ -551,6 +568,15 @@ extension SelectionViewController: UIScrollViewDelegate {
   }
   func scrollViewDidZoom(_ scrollView: UIScrollView) {
     isZooming = true
+
+    let imageViewSize = imageView.frame.size
+    let scrollViewSize = scrollView.bounds.size
+
+    let verticalPadding = imageViewSize.height <= scrollViewSize.height ? (scrollViewSize.height - imageViewSize.height) / 2 : 0
+    let horizontalPadding = imageViewSize.width <= scrollViewSize.width ? (scrollViewSize.width - imageViewSize.width) / 2 : 0
+
+    scrollView.contentInset = UIEdgeInsets(top: verticalPadding, left: horizontalPadding, bottom: verticalPadding, right: horizontalPadding)
+    print(scrollView.zoomScale)
   }
 }
 
@@ -587,7 +613,9 @@ extension SelectionViewController: UITableViewDelegate {
     }
 
     self.libraryButton.setTitle("Library v", for: .normal)
-    UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)})
+    UIView.animate(withDuration: 0.5, animations: {
+      self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)
+    })
     NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
 
     self.collectionView.reloadData()
