@@ -8,7 +8,6 @@
 
 import UIKit
 import IGListKit
-//import ImageIO
 
 class PostSectionController: ListSectionController {
   var post: Post!
@@ -18,7 +17,7 @@ class PostSectionController: ListSectionController {
     inset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
   }
   override func numberOfItems() -> Int {
-    return 4
+    return 5
   }
   override func sizeForItem(at index: Int) -> CGSize {
     let width = collectionContext!.containerSize.width
@@ -36,6 +35,8 @@ class PostSectionController: ListSectionController {
       } else {
         return CGSize()
       }
+    case 4: // comment cell
+      return CGSize(width: width, height: 50)
     default:
       return CGSize()
     }
@@ -56,6 +57,8 @@ class PostSectionController: ListSectionController {
       cellClass = ButtonGroupCell.self
     case 3:
       cellClass = LikeCountCell.self
+    case 4:
+      cellClass = CommentContainerCell.self
     default:
       cellClass = UICollectionViewCell.self
     }
