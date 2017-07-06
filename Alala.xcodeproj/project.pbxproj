@@ -74,6 +74,7 @@
 		99C654F61F041E930005AD3E /* EditProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654F51F041E930005AD3E /* EditProfileTableViewCell.swift */; };
 		99C654FA1F0773CD0005AD3E /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654F91F0773CD0005AD3E /* UIColor.swift */; };
 		99C654FC1F0784170005AD3E /* RoundCornerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654FB1F0784170005AD3E /* RoundCornerButton.swift */; };
+		9B39112F1F077094008325E4 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B39112E1F077094008325E4 /* Button.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -169,6 +170,7 @@
 		99C654F51F041E930005AD3E /* EditProfileTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditProfileTableViewCell.swift; sourceTree = "<group>"; };
 		99C654F91F0773CD0005AD3E /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		99C654FB1F0784170005AD3E /* RoundCornerButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundCornerButton.swift; sourceTree = "<group>"; };
+		9B39112E1F077094008325E4 /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -288,6 +290,8 @@
 				99C654EB1F017D380005AD3E /* PersonalInfoView.swift */,
 				99C654EF1F0247A10005AD3E /* UIBorderView.swift */,
 				99C654F51F041E930005AD3E /* EditProfileTableViewCell.swift */,
+				6F8887A71F07832200CE9A04 /* LikeCountCell.swift */,
+				6F8887A91F0791DC00CE9A04 /* CommentCell.swift */,
 				99C654FB1F0784170005AD3E /* RoundCornerButton.swift */,
 				992170911F0CA55900D03E01 /* PostGridCell.swift */,
 			);
