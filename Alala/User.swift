@@ -23,7 +23,7 @@ class User: NSObject, Mappable {
   func mapping(map: Map) {
     id <- map["_id"]
     email <- map["username"]
-    createdAt <- (map["createdAt"], ISO8601DateTransform())
+    createdAt <- (map["createdAt"], DateTransform())
     profileName <- map["profileName"]
     profilePhotoId <- map["multipartId"]
     following <- map["following"]

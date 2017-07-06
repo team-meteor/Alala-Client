@@ -10,10 +10,11 @@ import AVFoundation
 import Photos
 
 class CameraViewController: UIViewController {
+  private var permissionGranted = false
   var videoData: Data?
   let CaptureModePhoto = 0
   let CaptureModeMovie = 1
-
+  private let sessionQueue = DispatchQueue(label: "camera queue")
   let capturedImageView = UIImageView()
   let captureSession = AVCaptureSession()
   var previewLayer: AVCaptureVideoPreviewLayer!
@@ -62,6 +63,33 @@ class CameraViewController: UIViewController {
       action: #selector(cancelButtonDidTap)
     )
     captureMode = CaptureModePhoto
+
+    checkPermission()
+    sessionQueue.async { [unowned self] in
+      if self.setupSession() {
+        self.setupPreview()
+        self.setupCaptureMode(self.CaptureModePhoto)
+      }
+    }
+  }
+
+  private func checkPermission() {
+    switch AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) {
+    case .authorized:
+      permissionGranted = true
+    case .notDetermined:
+      requestPermission()
+    default:
+      permissionGranted = false
+    }
+  }
+
+  private func requestPermission() {
+    sessionQueue.suspend()
+    AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo) { [unowned self] granted in
+      self.permissionGranted = granted
+      self.sessionQueue.resume()
+    }
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -84,7 +112,7 @@ class CameraViewController: UIViewController {
   func videoDoneButtonDidTap() {
     stopSession()
     let postEditorViewController = PostEditorViewController(image: self.capturedImageView.image!)
-    postEditorViewController.videoData = self.videoData
+    postEditorViewController.videoData = self.videoData!
     self.navigationController?.pushViewController(postEditorViewController, animated: true)
     self.capturedImageView.removeFromSuperview()
     self.navigationItem.rightBarButtonItem = nil
@@ -216,7 +244,7 @@ class CameraViewController: UIViewController {
 
     do {
       let micInput = try AVCaptureDeviceInput(device: microphone)
-      if captureSession.canAddInput(micInput) {
+      if captureSession.canAddInput(micInput) && captureSession.inputs.isEmpty {
         captureSession.addInput(micInput)
       }
     } catch {
@@ -295,8 +323,12 @@ class CameraViewController: UIViewController {
   }
 
   func displayCapturPhoto() {
-    capturedImageView.frame = self.camPreview.bounds
-    self.camPreview.addSubview(capturedImageView)
+    DispatchQueue.main.async {
+      self.capturedImageView.frame = self.camPreview.bounds
+      self.capturedImageView.contentMode = .scaleAspectFill
+      self.camPreview.addSubview(self.capturedImageView)
+    }
+
   }
 
   func takePhotoButtonDidTap() {

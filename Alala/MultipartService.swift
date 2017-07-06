@@ -13,7 +13,7 @@ struct MultipartService {
   static func uploadMultipart(image: UIImage?, videoData: Data?, progress: Progress?, completion: @escaping (_ multipartId: String) -> Void) {
     let headers = [
       "Content-Type": "multipart/form-data; charset=utf-8; boundary=__X_PAW_BOUNDARY__"
-      ]
+    ]
     Alamofire.upload(multipartFormData: { multipartFormData in
       if videoData != nil {
         multipartFormData.append(videoData!, withName: "multipart", fileName: "\(UUID().uuidString).mp4", mimeType: "video/mp4")
@@ -28,7 +28,6 @@ struct MultipartService {
         upload.responseJSON { response in
           switch response.result {
           case .success(let multipartId):
-//            completion(String(describing: multipartId))
             print("multipart it", multipartId)
             completion(multipartId as! String)
           case .failure(let error):

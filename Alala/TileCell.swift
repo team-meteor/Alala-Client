@@ -23,9 +23,18 @@ class TileCell: UICollectionViewCell {
 
   // MARK: Configuring
   func configure(photo: UIImage) {
+
     self.imageView.image = photo
     self.imageView.contentMode = .scaleAspectFill
     self.imageView.clipsToBounds = true
+
+  }
+
+  override var isSelected: Bool {
+    didSet {
+      self.layer.borderWidth = 3.0
+      self.layer.borderColor = isSelected ? UIColor.blue.cgColor : UIColor.clear.cgColor
+    }
   }
 
   // MARK: Size

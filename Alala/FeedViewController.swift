@@ -20,7 +20,7 @@ class FeedViewController: UIViewController {
   )
 
   fileprivate let messageButton = UIBarButtonItem(
-    image: UIImage(named: "message")?.resizeImage(scaledTolength: 25),
+    image: UIImage(named: "send")?.resizeImage(scaledTolength: 25),
     style: .plain,
     target: nil,
     action: nil

@@ -11,10 +11,15 @@ import Photos
 
 class PostEditorViewController: UIViewController {
 
+  //캡쳐사진
   fileprivate let image: UIImage
   fileprivate var message: String?
-  var videoData: Data?
-  var urlAsset: AVURLAsset?
+  //비디오촬영
+  var videoData = Data()
+  var urlAssetArr = [AVURLAsset]()
+  var imageArr = [UIImage]()
+  var multipartsIdArr = [String]()
+  fileprivate let progressView = UIProgressView()
 
   fileprivate let tableView = UITableView().then {
     $0.isScrollEnabled = false
@@ -32,58 +37,92 @@ class PostEditorViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
-  func shareButtonDidTap() {
-    if urlAsset != nil {
-      let videoUrl = urlAsset?.url
-      var movieData: Data?
-      do {
-        movieData = try Data(contentsOf: videoUrl!)
-      } catch _ {
-        movieData = nil
-        return
+  func getMultipartsIdArr(completion: @escaping (_ idArr: [String]) -> Void) {
+    //비디오 촬영인 경우
+    if videoData.count != 0 {
+      MultipartService.uploadMultipart(image: nil, videoData: videoData, progress: nil) { videoId in
+        self.multipartsIdArr.append(videoId)
       }
-      MultipartService.uploadMultipart(image: self.image, videoData: movieData!, progress: nil) { multipartId in
-        PostService.postWithSingleMultipart(multipartId: multipartId, message: self.message, progress: nil) { response in
 
-          switch response.result {
-          case .success(let post):
-            print(post)
-          case .failure(let error):
-            print(error)
+      //멀티셀렉션인 경우
+    } else if imageArr.count != 0 || urlAssetArr.count != 0 {
+      if imageArr.count != 0 {
+        print("imarr = \(imageArr)")
+        for image in imageArr {
+          MultipartService.uploadMultipart(image: image, videoData: nil, progress: nil) { imageId in
+            self.multipartsIdArr.append(imageId)
           }
         }
       }
+      if urlAssetArr.count != 0 {
+        print("assetarr = \(urlAssetArr)")
+        for asset in urlAssetArr {
+          let videoUrl = asset.url
+          var movieData: Data?
+          do {
+            movieData = try Data(contentsOf: videoUrl)
+          } catch _ {
+            movieData = nil
+            return
+          }
+          MultipartService.uploadMultipart(image: nil, videoData: movieData, progress: nil) { movieId in
+            self.multipartsIdArr.append(movieId)
+          }
+        }
+      }
+      //사진촬영인 경우
     } else {
-      MultipartService.uploadMultipart(image: self.image, videoData: self.videoData, progress: nil) { multipartId in
-        PostService.postWithSingleMultipart(multipartId: multipartId, message: self.message, progress: nil) { response in
-
-          switch response.result {
-          case .success(let post):
-            print(post)
-          case .failure(let error):
-            print(error)
-          }
-        }
+      MultipartService.uploadMultipart(image: self.image, videoData: nil, progress: nil) { imageId in
+        self.multipartsIdArr.append(imageId)
       }
     }
+    completion(multipartsIdArr)
+  }
 
+  func shareButtonDidTap() {
+
+    getMultipartsIdArr { idArr in
+      PostService.postWithSingleMultipart(idArr: idArr, message: self.message, progress: { [weak self] progress in
+        guard let `self` = self else { return }
+        self.progressView.progress = Float(progress.completedUnitCount) / Float(progress.totalUnitCount)
+        }, completion: { [weak self] response in
+          guard self != nil else { return }
+          switch response.result {
+          case .success(let post):
+            print("업로드 성공 = \(post)")
+          self?.dismiss(animated: true, completion: nil)
+          case .failure(let error):
+            print(error)
+
+          }
+        }
+
+      )
+    }
   }
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    //self.progressView.isHidden = true
 
     self.tableView.dataSource = self
     self.tableView.delegate = self
 
     self.view.addSubview(self.tableView)
+    self.view.addSubview(self.progressView)
   }
 
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     self.tableView.snp.makeConstraints { make in
-      make.edges.equalTo(self.view)
+      make.left.top.right.equalTo(self.view)
+      make.height.equalTo(300)
     }
 
+    self.progressView.snp.makeConstraints { make in
+      make.top.equalTo(self.tableView.snp.bottom)
+      make.left.right.equalToSuperview()
+    }
   }
 
   override func didMove(toParentViewController parent: UIViewController?) {
