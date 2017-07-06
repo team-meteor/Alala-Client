@@ -8,6 +8,9 @@
 
 import UIKit
 
+/**
+ * 내 프로필 편집 화면에서 출력하는 테이블뷰 셀
+ */
 class EditProfileTableViewCell: UITableViewCell {
 
   static let cellSeparatorInsets = UIEdgeInsets(top: 0, left: 50, bottom: 0, right: 0)

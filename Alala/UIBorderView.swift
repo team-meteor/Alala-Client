@@ -8,6 +8,11 @@
 
 import UIKit
 
+/**
+ * border를 상단/하단 특정side에만 설정해주는 커스텀 UIView
+ *
+ * topBorderLine, bottomBorderLine의 isHidden속성을 변경하여 설정 *(default:hidden)*
+ */
 class UIBorderView: UIView {
   let topBorderLine = UIView().then {
     $0.backgroundColor = UIColor.lightGray

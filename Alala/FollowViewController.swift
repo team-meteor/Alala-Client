@@ -8,6 +8,15 @@
 
 import UIKit
 
+/**
+ * # 팔로워/팔로잉 목록 화면
+ *
+ * **[PATH]** 프로필 화면 > 팔로워/팔로잉 텍스트 터치 시 진입
+ *
+ * * 팔로워/팔로잉 두 화면의 UI가 동일하므로 FollowViewController에서 공통으로 지원하되
+ * ViewController생성시 'FollowType'을 지정하여 구분하도록 한다.
+ *
+ */
 class FollowViewController: UIViewController {
 
   enum FollowType: String {
