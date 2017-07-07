@@ -8,6 +8,11 @@
 
 import UIKit
 
+/**
+ * # 옵션 목록 화면
+ *
+ * **[PATH]** 내 프로필 화면 > '설정' 아이콘 탭
+ */
 class OptionsViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
