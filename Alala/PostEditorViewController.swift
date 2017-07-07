@@ -90,7 +90,9 @@ class PostEditorViewController: UIViewController {
           switch response.result {
           case .success(let post):
             print("업로드 성공 = \(post)")
-          self?.dismiss(animated: true, completion: nil)
+            let postDic: [String:Post] = ["newPost": post]
+            NotificationCenter.default.post(name: Notification.Name("newPost"), object: nil, userInfo: postDic)
+            NotificationCenter.default.post(name: Notification.Name("dismissWrapperVC"), object: nil)
           case .failure(let error):
             print(error)
 
@@ -99,6 +101,10 @@ class PostEditorViewController: UIViewController {
 
       )
     }
+  }
+
+  deinit {
+    NotificationCenter.default.removeObserver(self)
   }
 
   override func viewDidLoad() {

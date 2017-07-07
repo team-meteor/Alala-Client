@@ -59,6 +59,7 @@ class FeedViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    NotificationCenter.default.addObserver(self, selector: #selector(fetchLocalPosts(notification:)), name: Notification.Name("newPost"), object: nil)
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "IowanOldStyle-BoldItalic", size: 20)
       $0.text = "Alala"
@@ -105,6 +106,17 @@ class FeedViewController: UIViewController {
         print(error)
       }
     }
+  }
+
+  func fetchLocalPosts(notification: Notification) {
+    if let userInfo = notification.userInfo {
+      let newPost = userInfo["newPost"] as! Post
+      print("newPost = \(newPost)")
+      self.posts.insert(newPost, at: 0)
+      print(self.posts)
+      //adapter.performUpdates(animated: true)
+    }
+
   }
 }
 

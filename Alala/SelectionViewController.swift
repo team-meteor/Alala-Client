@@ -3,6 +3,7 @@ import Photos
 import AVKit
 
 class SelectionViewController: UIViewController {
+
   var playerLayer: AVPlayerLayer?
   var player: AVPlayer?
   var playerItem: AVPlayerItem?
@@ -81,6 +82,7 @@ class SelectionViewController: UIViewController {
     $0.register(TileCell.self, forCellWithReuseIdentifier: "tileCell")
     $0.allowsMultipleSelection = true
   }
+
   fileprivate let cropAreaView = UIView().then {
     $0.isUserInteractionEnabled = false
     $0.layer.borderColor = UIColor.lightGray.cgColor
@@ -151,7 +153,8 @@ class SelectionViewController: UIViewController {
   }
 
   func cancelButtonDidTap() {
-    self.dismiss(animated: true, completion: nil)
+    //self.dismiss(animated: true, completion: nil)
+    NotificationCenter.default.post(name: Notification.Name("dismissWrapperVC"), object: nil)
   }
 
   func getLimitedAlbumFromLibrary() {
@@ -365,23 +368,26 @@ class SelectionViewController: UIViewController {
       playButton.setTitle("Play", for: UIControlState.normal)
     }
   }
-
+  deinit {
+    NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
+    print("selection deinit")
+  }
 }
 
 extension SelectionViewController: UICollectionViewDelegate {
   func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
 
     if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
-      DispatchQueue.global().async {
-        self.getAllAlbums()
 
-        print("fetch")
-        DispatchQueue.main.async {
-          self.fetchResult = self.allPhotos
-          self.collectionView.reloadData()
-        }
-      }
+      self.getAllAlbums()
+
+      print("fetch")
+
+      self.fetchResult = self.allPhotos
+      self.collectionView.reloadData()
+
     }
+
   }
 
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
@@ -402,7 +408,8 @@ extension SelectionViewController: UICollectionViewDataSource {
     let asset = self.fetchResult.object(at: indexPath.item)
     cell.representedAssetIdentifier = asset.localIdentifier
     let scale = UIScreen.main.scale
-    let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+    let targetSize = CGSize(width:  100 * scale, height: 100 * scale)
+
     imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
         cell.configure(photo: image!)
@@ -454,9 +461,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
         }
       })
     } else {
-      self.playerLayer?.removeFromSuperlayer()
-      self.playButton.removeFromSuperview()
-      self.cropAreaView.isUserInteractionEnabled = false
+      setPlayerFinishMode()
       let scale = UIScreen.main.scale
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
 
@@ -487,6 +492,10 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   }
 
   func playerDidFinishPlaying(note: NSNotification) {
+    setPlayerFinishMode()
+  }
+
+  func setPlayerFinishMode() {
     self.playerLayer?.removeFromSuperlayer()
     self.playButton.removeFromSuperview()
     self.cropAreaView.isUserInteractionEnabled = false
@@ -579,7 +588,7 @@ extension SelectionViewController: UITableViewDataSource {
       if fetchResult.count != 0 {
         let asset = fetchResult.object(at: 0)
         let scale = UIScreen.main.scale
-        let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+        let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
           cell.imageView?.image = image
         })
@@ -595,7 +604,7 @@ extension SelectionViewController: UITableViewDataSource {
       if smartAlbumsFetchResult.count != 0 {
         let asset = smartAlbumsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
-        let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+        let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
           cell.imageView?.image = image
 
@@ -615,7 +624,7 @@ extension SelectionViewController: UITableViewDataSource {
       if userCollectionsFetchResult.count != 0 {
         let asset = userCollectionsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
-        let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+        let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
           cell.imageView?.image = image
 

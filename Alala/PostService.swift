@@ -31,7 +31,6 @@ struct PostService {
 
     Alamofire.request(Constants.BASE_URL + "post/add", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
-
       .responseJSON { (response) in
         if let post = Mapper<Post>().map(JSONObject: response.result.value) {
 

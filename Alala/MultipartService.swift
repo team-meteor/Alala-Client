@@ -25,6 +25,7 @@ struct MultipartService {
     }, to: Constants.BASE_URL + "/multipart", method: .post, headers: headers, encodingCompletion: { result in
       switch result {
       case .success(let upload, _, _):
+
         upload.responseJSON { response in
           switch response.result {
           case .success(let multipartId):
