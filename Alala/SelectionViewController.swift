@@ -275,8 +275,6 @@ class SelectionViewController: UIViewController {
     } else {
       minumumSize = cropAreaView.frame.height / imageView.frame.height
     }
-    print("minimumSize :", minumumSize!)
-    print("imageView :", imageView.frame.size)
 
     return minumumSize!
 
@@ -503,8 +501,6 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
         self.imageView.image = image
         self.centerScrollView(animated: false)
         let zoomValue = self.setMinimumSize(image: self.getImage!)
-
-        print("zoomMode", self.zoomMode)
 
         if self.zoomMode {
           self.scrollView.zoomScale = zoomValue
