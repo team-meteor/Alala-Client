@@ -16,6 +16,10 @@ import ObjectMapper
 class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoContentsViewDelegate, UICollectionViewDataSource {
 
   // MARK: - UI Objects
+  fileprivate var posts: [Post] = []
+  fileprivate var nextPage: Int?
+  fileprivate var isLoading: Bool = false
+
   let discoverPeopleButton = UIBarButtonItem(
     image: UIImage(named: "add_user")?.resizeImage(scaledTolength: 25),
     style: .plain,
@@ -41,14 +45,6 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
 
   let noContentsGuideView = NoContentsView()
 
-//  let postGridCollectionView = UICollectionView().then {
-//    $0.showsHorizontalScrollIndicator = false
-//    $0.showsVerticalScrollIndicator = false
-//    $0.backgroundColor = .white
-//    $0.alwaysBounceVertical = true
-//    $0.register(PostGridCell.self, forCellWithReuseIdentifier: "gridCell")
-//  }
-
   let postGridCollectionView: UICollectionView = {
     let columnLayout = ColumnFlowLayout(
       cellsPerRow: 3,
@@ -63,6 +59,7 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     view.backgroundColor = UIColor.white
     return view
   }()
+
   //let postCollectionView = UICollectionView()
 
 //  var myUserInfo = User()
@@ -89,7 +86,7 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
 
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = "User ID"
+      $0.text = AuthService.instance.currentUser?.email
       $0.sizeToFit()
     }
     self.navigationController?.navigationBar.topItem?.title = ""
@@ -119,7 +116,7 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
 
     //-- Section 3 : personal post list or no contents view (one of both)
 
-    if(false) { // TODO
+    if false {
       scrollView.addSubview(noContentsGuideView)
       noContentsGuideView.snp.makeConstraints { (make) in
         make.top.equalTo(personalInfoView.snp.bottom)
@@ -141,6 +138,72 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
       postGridCollectionView.isScrollEnabled = false
     }
     personalInfoView.setupUserInfo(userInfo: AuthService.instance.currentUser!)
+
+    self.fetchFeed(paging: .refresh)
+  }
+
+  func setupNoContents() {
+//    if postGridCollectionView != nil {
+//      postGridCollectionView.removeFromSuperview()
+//      postGridCollectionView = nil
+//    }
+
+    scrollView.addSubview(noContentsGuideView)
+    noContentsGuideView.snp.makeConstraints { (make) in
+      make.top.equalTo(personalInfoView.snp.bottom)
+      make.left.equalTo(scrollView)
+      make.right.equalTo(scrollView)
+      //make.bottom.equalTo(scrollView)
+      make.bottom.equalTo(self.view.snp.bottom)
+    }
+    noContentsGuideView.delegate = self
+  }
+
+  func setupPostGrid() {
+//    if noContentsGuideView != nil {
+//      noContentsGuideView.removeFromSuperview()
+//      noContentsGuideView = nil
+//    }
+
+    scrollView.addSubview(postGridCollectionView)
+    postGridCollectionView.snp.makeConstraints { (make) in
+      make.top.equalTo(personalInfoView.snp.bottom)
+      make.left.equalTo(scrollView)
+      make.right.equalTo(scrollView)
+      make.bottom.equalTo(self.view.snp.bottom)
+    }
+    postGridCollectionView.dataSource = self
+    postGridCollectionView.isScrollEnabled = false
+  }
+
+  fileprivate func fetchFeed(paging: Paging) {
+    guard !self.isLoading else { return }
+    self.isLoading = true
+    FeedService.feedMine(paging: paging) { [weak self] response in
+      guard let `self` = self else { return }
+      //self.refreshControl.endRefreshing()
+      self.isLoading = false
+
+      switch response.result {
+      case .success(let feed):
+        let newPosts = feed.posts ?? []
+        switch paging {
+        case .refresh:
+          self.posts = newPosts
+        case .next:
+          self.posts.append(contentsOf: newPosts)
+        }
+        self.nextPage = feed.nextPage
+        print("fetchFeed : ", self.posts)
+        DispatchQueue.main.async {
+          //self.adapter.performUpdates(animated: true, completion: nil)
+          self.personalInfoView.postsCountLabel.text = self.posts.count.description
+          self.postGridCollectionView.reloadData()
+        }
+      case .failure(let error):
+        print(error)
+      }
+    }
   }
 
   override func viewWillAppear(_ animated: Bool) {
@@ -208,12 +271,20 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     let size = CGSize(width: scrollView.frame.size.width, height: scrollView.bounds.size.height)
     scrollView.contentSize = size
 
-    return 10
+    return posts.count
   }
 
   public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell: PostGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as! PostGridCell
-    cell.backgroundColor = UIColor.red
+    let post = posts[indexPath.row] as Post
+    cell.thumbnailImageView.setImage(with: post.multipartIds[0], size: .thumbnail)
+
+    let filename = post.multipartIds[0] as String
+    if filename.isVideoPathExtension {
+      cell.isVideo = true
+    } else {
+      cell.isMultiPhotos = post.multipartIds.count > 1 ? true : false
+    }
     return cell
   }
 
