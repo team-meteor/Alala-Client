@@ -59,7 +59,7 @@ class FeedViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    NotificationCenter.default.addObserver(self, selector: #selector(fetchLocalPosts(notification:)), name: Notification.Name("newPost"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: NSNotification.Name(rawValue: "postDidCreate"), object: nil)
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "IowanOldStyle-BoldItalic", size: 20)
       $0.text = "Alala"
@@ -83,6 +83,7 @@ class FeedViewController: UIViewController {
   fileprivate func fetchFeed(paging: Paging) {
     guard !self.isLoading else { return }
     self.isLoading = true
+    print("fetch")
     FeedService.feed(paging: paging) { [weak self] response in
       guard let `self` = self else { return }
       self.refreshControl.endRefreshing()
@@ -108,14 +109,11 @@ class FeedViewController: UIViewController {
     }
   }
 
-  func fetchLocalPosts(notification: Notification) {
-    if let userInfo = notification.userInfo {
-      let newPost = userInfo["newPost"] as! Post
-      print("newPost = \(newPost)")
-      self.posts.insert(newPost, at: 0)
-      print(self.posts)
-      //adapter.performUpdates(animated: true)
-    }
+  func postDidCreate(_ notification: Notification) {
+    guard let post = notification.userInfo?["post"] as? Post else { return }
+    self.posts.insert(post, at: 0)
+    print("create post", post.multipartIds)
+      self.adapter.performUpdates(animated: true, completion: nil)
 
   }
 }

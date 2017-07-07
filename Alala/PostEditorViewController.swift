@@ -82,6 +82,7 @@ class PostEditorViewController: UIViewController {
   func shareButtonDidTap() {
 
     getMultipartsIdArr { idArr in
+      print("id", idArr)
       PostService.postWithSingleMultipart(idArr: idArr, message: self.message, progress: { [weak self] progress in
         guard let `self` = self else { return }
         self.progressView.progress = Float(progress.completedUnitCount) / Float(progress.totalUnitCount)
@@ -89,10 +90,15 @@ class PostEditorViewController: UIViewController {
           guard self != nil else { return }
           switch response.result {
           case .success(let post):
-            print("업로드 성공 = \(post)")
-            let postDic: [String:Post] = ["newPost": post]
-            NotificationCenter.default.post(name: Notification.Name("newPost"), object: nil, userInfo: postDic)
-            NotificationCenter.default.post(name: Notification.Name("dismissWrapperVC"), object: nil)
+            //NotificationCenter.default.post(name: Notification.Name("dismissWrapperVC"), object: nil)
+            print("업로드 성공 = \(post.multipartIds!)")
+            self?.dismiss(animated: true) { _ in
+              NotificationCenter.default.post(
+                name: NSNotification.Name(rawValue: "postDidCreate"),
+                object: self,
+                userInfo: ["post": post]
+              )
+            }
           case .failure(let error):
             print(error)
 

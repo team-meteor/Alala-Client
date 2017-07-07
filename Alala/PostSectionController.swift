@@ -22,7 +22,10 @@ class PostSectionController: ListSectionController {
   }
   override func sizeForItem(at index: Int) -> CGSize {
     let width = collectionContext!.containerSize.width
+
+    print("ratio", post.multipartIds)
     let multimediaCellRatio = Float(post.multipartIds[0].components(separatedBy: "_")[0])
+
     switch index {
     case 0: // usercell
       return CGSize(width: width, height: 56)
@@ -42,6 +45,7 @@ class PostSectionController: ListSectionController {
   }
 
   override func didUpdate(to object: Any) {
+    print("didupdate")
     post = object as? Post
   }
 
@@ -64,6 +68,7 @@ class PostSectionController: ListSectionController {
       cell.profilePhoto.setImage(with: post.createdBy.profilePhotoId, size: .thumbnail)
       cell.profileNameLabel.text = post.createdBy.profileName
     } else if let cell = cell as? MultimediaCell {
+      print("multi", post.multipartIds[0])
       cell.multimediaImageView.setImage(with: post.multipartIds[0], size: .hd)
     } else if let cell = cell as? LikeCountCell, post.isLiked == true {
       cell.likeCount.text = String(describing: post.likedUsers!.count)
