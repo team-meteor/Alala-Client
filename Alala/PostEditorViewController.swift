@@ -42,20 +42,24 @@ class PostEditorViewController: UIViewController {
     if videoData.count != 0 {
       MultipartService.uploadMultipart(image: nil, videoData: videoData, progress: nil) { videoId in
         self.multipartsIdArr.append(videoId)
+        completion(self.multipartsIdArr)
       }
 
       //멀티셀렉션인 경우
     } else if imageArr.count != 0 || urlAssetArr.count != 0 {
       if imageArr.count != 0 {
-        print("imarr = \(imageArr)")
+
         for image in imageArr {
           MultipartService.uploadMultipart(image: image, videoData: nil, progress: nil) { imageId in
             self.multipartsIdArr.append(imageId)
+            if self.multipartsIdArr.count == self.imageArr.count + self.urlAssetArr.count {
+              completion(self.multipartsIdArr)
+            }
           }
         }
       }
       if urlAssetArr.count != 0 {
-        print("assetarr = \(urlAssetArr)")
+
         for asset in urlAssetArr {
           let videoUrl = asset.url
           var movieData: Data?
@@ -67,6 +71,9 @@ class PostEditorViewController: UIViewController {
           }
           MultipartService.uploadMultipart(image: nil, videoData: movieData, progress: nil) { movieId in
             self.multipartsIdArr.append(movieId)
+            if self.multipartsIdArr.count == self.imageArr.count + self.urlAssetArr.count {
+              completion(self.multipartsIdArr)
+            }
           }
         }
       }
@@ -74,15 +81,15 @@ class PostEditorViewController: UIViewController {
     } else {
       MultipartService.uploadMultipart(image: self.image, videoData: nil, progress: nil) { imageId in
         self.multipartsIdArr.append(imageId)
+        completion(self.multipartsIdArr)
       }
     }
-    completion(multipartsIdArr)
   }
 
   func shareButtonDidTap() {
 
     getMultipartsIdArr { idArr in
-      print("id", idArr)
+
       PostService.postWithSingleMultipart(idArr: idArr, message: self.message, progress: { [weak self] progress in
         guard let `self` = self else { return }
         self.progressView.progress = Float(progress.completedUnitCount) / Float(progress.totalUnitCount)
@@ -90,8 +97,7 @@ class PostEditorViewController: UIViewController {
           guard self != nil else { return }
           switch response.result {
           case .success(let post):
-            //NotificationCenter.default.post(name: Notification.Name("dismissWrapperVC"), object: nil)
-            print("업로드 성공 = \(post.multipartIds!)")
+
             self?.dismiss(animated: true) { _ in
               NotificationCenter.default.post(
                 name: NSNotification.Name(rawValue: "postDidCreate"),
@@ -116,7 +122,6 @@ class PostEditorViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     //self.progressView.isHidden = true
-
     self.tableView.dataSource = self
     self.tableView.delegate = self
 
