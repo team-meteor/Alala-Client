@@ -68,8 +68,7 @@ class SelectionViewController: UIViewController {
   fileprivate let scrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = false
-    $0.maximumZoomScale = 3
-    $0.minimumZoomScale = 0.7
+    $0.maximumZoomScale = 3.0
     $0.zoomScale = 1.0
     $0.bouncesZoom = true
     $0.alwaysBounceVertical = true
@@ -116,7 +115,6 @@ class SelectionViewController: UIViewController {
   }
   override func viewDidLoad() {
     super.viewDidLoad()
-
     getLimitedAlbumFromLibrary()
     NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying(note:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
 
@@ -131,6 +129,7 @@ class SelectionViewController: UIViewController {
   }
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
+    scrollView.minimumZoomScale = self.setMinimumSize(image: self.getImage!)
     let bounds = self.navigationController!.navigationBar.bounds
     self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
   }
@@ -259,11 +258,28 @@ class SelectionViewController: UIViewController {
     if imageWidth >= imageHeight {
       imageWidth = imageWidth * imageViewHeight / imageHeight
       imageHeight = imageViewHeight
-    } else if imageWidth < imageHeight {
+    } else {
       imageHeight = imageHeight * imageViewWidth / imageWidth
       imageWidth = imageViewWidth
     }
     self.imageView.frame.size = CGSize(width: imageWidth, height: imageHeight)
+  }
+
+  func setMinimumSize(image: UIImage) -> CGFloat {
+    let imageWidth = image.size.width
+    let imageHeight = image.size.height
+    var minumumSize: CGFloat?
+
+    if imageWidth >= imageHeight {
+      minumumSize = cropAreaView.frame.width / imageView.frame.width
+    } else {
+      minumumSize = cropAreaView.frame.height / imageView.frame.height
+    }
+    print("minimumSize :", minumumSize!)
+    print("imageView :", imageView.frame.size)
+
+    return minumumSize!
+
   }
 
   func configureView() {
@@ -329,51 +345,18 @@ class SelectionViewController: UIViewController {
   }
 
   func scrollViewZoom() {
-    if(zoomMode) {
-      print(collectionView.frame.width)
-      if(isZooming) {
-        UIView.animate(withDuration: 0.2, animations: {
-          self.aspectFitMode()
-        })
-        zoomMode = true
-        isZooming = false
-      } else {
-        UIView.animate(withDuration: 0.2, animations: {
-          self.aspectFillMode()
-        })
 
-        zoomMode = false
-      }
+    let zoomValue = self.setMinimumSize(image: self.getImage!)
+
+    if scrollView.zoomScale >= 1.0 {
+      scrollView.setZoomScale(zoomValue, animated: true)
+      zoomMode = true
     } else {
-      print(collectionView.frame.width)
-      if(isZooming) {
-        UIView.animate(withDuration: 0.2, animations: {
-          self.aspectFillMode()
-        })
-        zoomMode = false
-        isZooming = false
-      } else {
-        UIView.animate(withDuration: 0.2, animations: {
-          self.aspectFitMode()
-        })
-        zoomMode = true
-
-      }
+      scrollView.setZoomScale(1.0, animated: true)
+      zoomMode = false
     }
-  }
 
-  func aspectFillMode() {
-    scaleAspectFillSize(image: getImage!, imageView: getImageView!)
-    self.scrollView.contentSize = self.imageView.frame.size
-    self.centerScrollView(animated: false)
   }
-  func aspectFitMode() {
-    imageView.frame.size = cropAreaView.frame.size
-    self.scrollView.contentSize = self.imageView.frame.size
-    imageView.contentMode = .scaleAspectFit
-    self.centerScrollView(animated: false)
-  }
-
   func addAVPlayer(videoUrl: URL) {
     self.cropAreaView.isUserInteractionEnabled = true
     playerItem = AVPlayerItem(url: videoUrl)
@@ -451,8 +434,8 @@ extension SelectionViewController: UICollectionViewDataSource {
       }
 
       if asset == self.fetchResult.object(at: 0) && self.imageView.image == nil {
-        self.getImageView = self.imageView
         self.getImage = image
+        self.scrollView.zoomScale = 1.0
         self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
@@ -472,7 +455,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     let collectionViewWidth = collectionView.frame.width
     let cellWidth: CGFloat?
     if(collectionViewWidth >= 375) {
-      cellWidth = round((collectionViewWidth - 2 * tileCellSpacing) / 4)
+      cellWidth = round((collectionViewWidth - 3 * tileCellSpacing) / 4)
     } else {
       cellWidth = round((collectionViewWidth - 2 * tileCellSpacing) / 3)
     }
@@ -512,17 +495,22 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
 
       imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
-        self.getImageView = self.imageView
         self.getImage = image
+        self.scrollView.zoomScale = 1.0
 
-        if(self.zoomMode) {
-          self.aspectFitMode()
-        } else {
-          self.aspectFillMode()
-        }
+        self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
         self.centerScrollView(animated: false)
+        let zoomValue = self.setMinimumSize(image: self.getImage!)
+
+        print("zoomMode", self.zoomMode)
+
+        if self.zoomMode {
+          self.scrollView.zoomScale = zoomValue
+        } else {
+          self.scrollView.zoomScale = 1.0
+        }
       })
     }
 
@@ -566,17 +554,18 @@ extension SelectionViewController: UIScrollViewDelegate {
     }
     self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(page / 600)
   }
+  //이해 필요
   func scrollViewDidZoom(_ scrollView: UIScrollView) {
     isZooming = true
 
     let imageViewSize = imageView.frame.size
     let scrollViewSize = scrollView.bounds.size
 
-    let verticalPadding = imageViewSize.height <= scrollViewSize.height ? (scrollViewSize.height - imageViewSize.height) / 2 : 0
+    let verticalPadding = imageViewSize.height <= scrollViewSize.height ?  (scrollViewSize.height - imageViewSize.height) / 2 : 0
     let horizontalPadding = imageViewSize.width <= scrollViewSize.width ? (scrollViewSize.width - imageViewSize.width) / 2 : 0
 
     scrollView.contentInset = UIEdgeInsets(top: verticalPadding, left: horizontalPadding, bottom: verticalPadding, right: horizontalPadding)
-    print(scrollView.zoomScale)
+
   }
 }
 
