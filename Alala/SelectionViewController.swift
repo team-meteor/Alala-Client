@@ -10,8 +10,10 @@ class SelectionViewController: UIViewController {
   var imageArr = [UIImage]()
   var urlAssetArr = [AVURLAsset]()
 
-  var isZooming: Bool = false
+  var zoomMode: Bool = false
   let photosLimit: Int = 500
+  var getImageView: UIImageView?
+  var getImage: UIImage?
 
   enum Section: Int {
     case allPhotos = 0
@@ -66,8 +68,9 @@ class SelectionViewController: UIViewController {
   fileprivate let scrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = false
-    $0.maximumZoomScale = 3
-    $0.minimumZoomScale = 0.7
+    $0.maximumZoomScale = 3.0
+    $0.zoomScale = 1.0
+    $0.bouncesZoom = true
     $0.alwaysBounceVertical = true
     $0.alwaysBounceHorizontal = true
     $0.isUserInteractionEnabled = true
@@ -113,7 +116,6 @@ class SelectionViewController: UIViewController {
   }
   override func viewDidLoad() {
     super.viewDidLoad()
-
     getLimitedAlbumFromLibrary()
     NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying(note:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
 
@@ -128,6 +130,7 @@ class SelectionViewController: UIViewController {
   }
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
+    scrollView.minimumZoomScale = self.setMinimumSize(image: self.getImage!)
     let bounds = self.navigationController!.navigationBar.bounds
     self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
   }
@@ -257,11 +260,25 @@ class SelectionViewController: UIViewController {
     if imageWidth >= imageHeight {
       imageWidth = imageWidth * imageViewHeight / imageHeight
       imageHeight = imageViewHeight
-    } else if imageWidth < imageHeight {
+    } else {
       imageHeight = imageHeight * imageViewWidth / imageWidth
       imageWidth = imageViewWidth
     }
-    imageView.frame.size = CGSize(width: imageWidth, height: imageHeight)
+    self.imageView.frame.size = CGSize(width: imageWidth, height: imageHeight)
+  }
+
+  func setMinimumSize(image: UIImage) -> CGFloat {
+    let imageWidth = image.size.width
+    let imageHeight = image.size.height
+    var minumumSize: CGFloat?
+
+    if imageWidth >= imageHeight {
+      minumumSize = cropAreaView.frame.width / imageView.frame.width
+    } else {
+      minumumSize = cropAreaView.frame.height / imageView.frame.height
+    }
+
+    return minumumSize!
 
   }
 
@@ -328,13 +345,18 @@ class SelectionViewController: UIViewController {
   }
 
   func scrollViewZoom() {
-    if(isZooming) {
-      scrollView.setZoomScale(1.0, animated: true)
-    } else {
-      scrollView.setZoomScale(0.7, animated: true)
-    }
-  }
 
+    let zoomValue = self.setMinimumSize(image: self.getImage!)
+
+    if scrollView.zoomScale >= 1.0 {
+      scrollView.setZoomScale(zoomValue, animated: true)
+      zoomMode = true
+    } else {
+      scrollView.setZoomScale(1.0, animated: true)
+      zoomMode = false
+    }
+
+  }
   func addAVPlayer(videoUrl: URL) {
     self.cropAreaView.isUserInteractionEnabled = true
     playerItem = AVPlayerItem(url: videoUrl)
@@ -414,7 +436,11 @@ extension SelectionViewController: UICollectionViewDataSource {
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
         cell.configure(photo: image!)
       }
+
       if asset == self.fetchResult.object(at: 0) && self.imageView.image == nil && image != nil {
+
+        self.getImage = image
+        self.scrollView.zoomScale = 1.0
         self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
@@ -432,8 +458,13 @@ extension SelectionViewController: UICollectionViewDataSource {
 extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
     let collectionViewWidth = collectionView.frame.width
-    let cellWidth = round((collectionViewWidth - 2 * tileCellSpacing) / 4)
-    return TileCell.size(width: cellWidth)
+    let cellWidth: CGFloat?
+    if(collectionViewWidth >= 375) {
+      cellWidth = round((collectionViewWidth - 3 * tileCellSpacing) / 4)
+    } else {
+      cellWidth = round((collectionViewWidth - 2 * tileCellSpacing) / 3)
+    }
+    return TileCell.size(width: cellWidth!)
   }
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
     return tileCellSpacing
@@ -452,6 +483,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
 
           let localVideoUrl: URL = urlAsset.url as URL
           let previewImage = self.previewImageFromVideo(videoUrl: localVideoUrl)
+
           self.scaleAspectFillSize(image: previewImage!, imageView: self.imageView)
           self.scrollView.contentSize = self.imageView.frame.size
           self.imageView.image = previewImage
@@ -466,10 +498,20 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
 
       imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
+        self.getImage = image
+        self.scrollView.zoomScale = 1.0
+
         self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
         self.centerScrollView(animated: false)
+        let zoomValue = self.setMinimumSize(image: self.getImage!)
+
+        if self.zoomMode {
+          self.scrollView.zoomScale = zoomValue
+        } else {
+          self.scrollView.zoomScale = 1.0
+        }
       })
     }
 
@@ -517,12 +559,16 @@ extension SelectionViewController: UIScrollViewDelegate {
     }
     self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(page / 600)
   }
-  func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-    if isZooming {
-      isZooming = false
-    } else {
-      isZooming = true
-    }
+  func scrollViewDidZoom(_ scrollView: UIScrollView) {
+
+    let imageViewSize = imageView.frame.size
+    let scrollViewSize = scrollView.bounds.size
+
+    let verticalPadding = imageViewSize.height < scrollViewSize.height ?  (scrollViewSize.height - imageViewSize.height) / 2 : 0
+    let horizontalPadding = imageViewSize.width < scrollViewSize.width ? (scrollViewSize.width - imageViewSize.width) / 2 : 0
+
+    scrollView.contentInset = UIEdgeInsets(top: verticalPadding, left: horizontalPadding, bottom: verticalPadding, right: horizontalPadding)
+
   }
 }
 
@@ -559,7 +605,9 @@ extension SelectionViewController: UITableViewDelegate {
     }
 
     self.libraryButton.setTitle("Library v", for: .normal)
-    UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)})
+    UIView.animate(withDuration: 0.5, animations: {
+      self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)
+    })
     NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
 
     self.collectionView.reloadData()

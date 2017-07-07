@@ -15,6 +15,11 @@ protocol PersonalInfoViewDelegate: class {
 
   func editProfileButtonTap(sender: UIButton)
   func optionsButtonTap(sender: UIButton)
+
+  func gridPostMenuButtonTap(sender: UIButton)
+  func listPostMenuButtonTap(sender: UIButton)
+  func photosForYouMenuButtonTap(sender: UIButton)
+  func savedMenuButtonTap(sender: UIButton)
 }
 
 // MARK: -
@@ -94,22 +99,14 @@ class PersonalInfoView: UIView {
     $0.sizeToFit()
   }
 
-  let editProfileButton = UIButton().then {
-    $0.layer.cornerRadius = 5
-    $0.layer.borderWidth = 1
-    $0.layer.borderColor = UIColor.lightGray.cgColor
-    $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
+  let editProfileButton = RoundCornerButton(type: .buttonColorTypeWhite).then {
     $0.setTitle("Edit Profile", for: .normal)
-    $0.setTitleColor(UIColor.black, for: .normal)
     $0.addTarget(self, action: #selector(editProfileButtonTap(sender:)), for: .touchUpInside)
   }
 
-  let optionsButton = UIButton().then {
-    $0.layer.cornerRadius = 5
-    $0.layer.borderWidth = 1
-    $0.layer.borderColor = UIColor.lightGray.cgColor
-    $0.setImage(UIImage(named: "heart"), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "heart-selected"), for: UIControlState.highlighted)
+  let optionsButton = RoundCornerButton(type: .buttonColorTypeWhite).then {
+    $0.setImage(UIImage(named: "settings"), for: UIControlState.normal)
+    $0.setImage(UIImage(named: "settings"), for: UIControlState.highlighted)
     $0.imageView?.contentMode = UIViewContentMode.scaleAspectFit
     $0.addTarget(self, action: #selector(optionsButtonTap(sender:)), for: .touchUpInside)
   }
@@ -120,23 +117,27 @@ class PersonalInfoView: UIView {
   }
 
   let gridPostMenuButton = UIButton().then {
-    $0.setImage(UIImage(named: "heart"), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "heart-selected"), for: UIControlState.highlighted)
+    $0.setImage(UIImage(named: "grid")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
+    $0.setImage(UIImage(named: "grid")?.resizeImage(scaledTolength: 25), for: UIControlState.highlighted)
+    $0.addTarget(self, action: #selector(gridPostMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
   let listPostMenuButton = UIButton().then {
-    $0.setImage(UIImage(named: "heart"), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "heart-selected"), for: UIControlState.highlighted)
+    $0.setImage(UIImage(named: "list")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
+    $0.setImage(UIImage(named: "list")?.resizeImage(scaledTolength: 25), for: UIControlState.highlighted)
+    $0.addTarget(self, action: #selector(listPostMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
   let photosForYouMenuButton = UIButton().then {
-    $0.setImage(UIImage(named: "heart"), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "heart-selected"), for: UIControlState.highlighted)
+    $0.setImage(UIImage(named: "my_photo")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
+    $0.setImage(UIImage(named: "my_photo")?.resizeImage(scaledTolength: 25), for: UIControlState.highlighted)
+    $0.addTarget(self, action: #selector(photosForYouMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
   let savedMenuButton = UIButton().then {
-    $0.setImage(UIImage(named: "heart"), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "heart-selected"), for: UIControlState.highlighted)
+    $0.setImage(UIImage(named: "tag")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
+    $0.setImage(UIImage(named: "tag")?.resizeImage(scaledTolength: 25), for: UIControlState.highlighted)
+    $0.addTarget(self, action: #selector(savedMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
   // MARK: - Initialize
@@ -311,6 +312,11 @@ class PersonalInfoView: UIView {
     }
   }
 
+  func setupUserInfo(userInfo: User) {
+    profileNameLabel.text = userInfo.email
+    profileImageView.setImage(with: userInfo.profilePhotoId, size: .small)
+  }
+
   // MARK: - User Action
   func postsButtonTap(sender: UIButton) {
     delegate?.postsAreaTap()
@@ -330,5 +336,21 @@ class PersonalInfoView: UIView {
 
   func optionsButtonTap(sender: UIButton) {
     delegate?.optionsButtonTap(sender: sender)
+  }
+
+  func gridPostMenuButtonTap(sender: UIButton) {
+    delegate?.gridPostMenuButtonTap(sender: sender)
+  }
+
+  func listPostMenuButtonTap(sender: UIButton) {
+    delegate?.listPostMenuButtonTap(sender: sender)
+  }
+
+  func photosForYouMenuButtonTap(sender: UIButton) {
+    delegate?.photosForYouMenuButtonTap(sender: sender)
+  }
+
+  func savedMenuButtonTap(sender: UIButton) {
+    delegate?.savedMenuButtonTap(sender: sender)
   }
 }
