@@ -33,8 +33,14 @@ class RejectViewController: UIViewController {
 	}
 
 	func cancelButtonDidTap() {
-		self.dismiss(animated: true, completion: nil)
+		//self.dismiss(animated: true, completion: nil)
+    NotificationCenter.default.post(name: Notification.Name("dismissWrapperVC"), object: nil)
 	}
+
+  deinit {
+    NotificationCenter.default.removeObserver(self)
+    print("reject deinit")
+  }
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
