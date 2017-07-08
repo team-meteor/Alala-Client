@@ -148,7 +148,7 @@ class EditProfileViewController: UIViewController, UITableViewDataSource, UITabl
   }
 
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-    if(section == 0) {
+    if section == 0 {
       let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 0.5))
       view.backgroundColor = UIColor(rgb: 0xeeeeee)
       return view

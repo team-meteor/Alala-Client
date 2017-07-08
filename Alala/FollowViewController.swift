@@ -20,8 +20,8 @@ import UIKit
 class FollowViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
 
   enum FollowType: String {
-    case follower  = "follower"
-    case following = "following"
+    case follower
+    case following
   }
 
   var currentType: String
@@ -56,7 +56,7 @@ class FollowViewController: UIViewController, UITableViewDelegate, UITableViewDa
 
     self.edgesForExtendedLayout = []
 
-    if(FollowType.follower.rawValue==currentType) {
+    if FollowType.follower.rawValue==currentType {
       setupUIForFollowerType()
     } else {
       setupUIForFollowingType()
@@ -117,7 +117,7 @@ class FollowViewController: UIViewController, UITableViewDelegate, UITableViewDa
   }
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    if(section == 0) {
+    if section == 0 {
       return 1
     } else {
       //    if shouldShowSearchResults {
@@ -131,7 +131,7 @@ class FollowViewController: UIViewController, UITableViewDelegate, UITableViewDa
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-    if(indexPath.section == 0) {
+    if indexPath.section == 0 {
       let cell: EditProfileTableViewCell = tableView.dequeueReusableCell(withIdentifier: EditProfileTableViewCell.cellReuseIdentifier) as! EditProfileTableViewCell
       cell.textView.text = "Facebook친구"
       cell.textView.isEditable = false
@@ -172,7 +172,7 @@ class FollowViewController: UIViewController, UITableViewDelegate, UITableViewDa
       make.height.equalTo(18)
     }
 
-    if(section == 0) {
+    if section == 0 {
       label.text = "초대"
     } else {
       label.text = "팔로잉"
