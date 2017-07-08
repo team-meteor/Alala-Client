@@ -3,6 +3,7 @@ import Photos
 import AVKit
 
 class SelectionViewController: UIViewController {
+
   var playerLayer: AVPlayerLayer?
   var player: AVPlayer?
   var playerItem: AVPlayerItem?
@@ -31,7 +32,12 @@ class SelectionViewController: UIViewController {
   var allPhotos: PHFetchResult<PHAsset>!
   var smartAlbums: PHFetchResult<PHAssetCollection>!
   var userCollections: PHFetchResult<PHCollection>!
-  var fetchResult: PHFetchResult<PHAsset>!
+  var fetchResult: PHFetchResult<PHAsset>! {
+    didSet {
+      print("changed")
+      updateFirstImageView()
+    }
+  }
   var smartAlbumsFetchResult: PHFetchResult<PHAsset>!
   var userCollectionsFetchResult: PHFetchResult<PHAsset>!
   var assetCollection: PHAssetCollection?
@@ -84,6 +90,7 @@ class SelectionViewController: UIViewController {
     $0.register(TileCell.self, forCellWithReuseIdentifier: "tileCell")
     $0.allowsMultipleSelection = true
   }
+
   fileprivate let cropAreaView = UIView().then {
     $0.isUserInteractionEnabled = false
     $0.layer.borderColor = UIColor.lightGray.cgColor
@@ -114,7 +121,7 @@ class SelectionViewController: UIViewController {
   }
   override func viewDidLoad() {
     super.viewDidLoad()
-    getLimitedAlbumFromLibrary()
+
     NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying(note:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
 
     self.collectionView.dataSource = self
@@ -125,6 +132,7 @@ class SelectionViewController: UIViewController {
     self.tableView.dataSource = self
 
     self.configureView()
+    getLimitedAlbumFromLibrary()
   }
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
@@ -145,6 +153,7 @@ class SelectionViewController: UIViewController {
     }
 
   }
+
   func centerScrollView(animated: Bool) {
     let targetContentOffset = CGPoint(
       x: (self.scrollView.contentSize.width - self.scrollView.bounds.width) / 2,
@@ -154,7 +163,8 @@ class SelectionViewController: UIViewController {
   }
 
   func cancelButtonDidTap() {
-    self.dismiss(animated: true, completion: nil)
+    //self.dismiss(animated: true, completion: nil)
+    NotificationCenter.default.post(name: Notification.Name("dismissWrapperVC"), object: nil)
   }
 
   func getLimitedAlbumFromLibrary() {
@@ -227,6 +237,28 @@ class SelectionViewController: UIViewController {
     completion(true)
   }
 
+  func updateFirstImageView() {
+
+    let asset = self.fetchResult.object(at: 0)
+    let scale = UIScreen.main.scale
+    let targetSize = CGSize(width:  600 * scale, height: 600 * scale)
+    scrollView.frame.size = CGSize(width: 375.0, height: 398.0)
+    self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
+
+      if image != nil {
+        self.getImage = image!
+        self.scrollView.zoomScale = 1.0
+        print("size", self.imageView.frame)
+        self.scaleAspectFillSize(image: image!, imageView: self.imageView)
+        print("size", self.imageView.frame)
+        self.scrollView.contentSize = self.imageView.frame.size
+        self.imageView.image = image
+        self.centerScrollView(animated: false)
+      }
+    })
+
+  }
+
   func libraryButtonDidTap() {
     if libraryButton.currentTitle == "Library v" {
       if self.allPhotos.count == photosLimit {
@@ -246,11 +278,13 @@ class SelectionViewController: UIViewController {
   }
 
   func scaleAspectFillSize(image: UIImage, imageView: UIImageView) {
+
     var imageWidth = image.size.width
     var imageHeight = image.size.height
+    print("width", imageWidth, imageHeight)
 
     imageView.frame.size = scrollView.frame.size
-
+    print("scroll", scrollView.frame)
     let imageViewWidth = imageView.frame.size.width
     let imageViewHeight = imageView.frame.size.height
 
@@ -387,23 +421,26 @@ class SelectionViewController: UIViewController {
       playButton.setTitle("Play", for: UIControlState.normal)
     }
   }
-
+  deinit {
+    NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
+    print("selection deinit")
+  }
 }
 
 extension SelectionViewController: UICollectionViewDelegate {
   func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
 
     if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
-      DispatchQueue.global().async {
-        self.getAllAlbums()
 
-        print("fetch")
-        DispatchQueue.main.async {
-          self.fetchResult = self.allPhotos
-          self.collectionView.reloadData()
-        }
-      }
+      self.getAllAlbums()
+
+      print("fetch")
+
+      self.fetchResult = self.allPhotos
+      self.collectionView.reloadData()
+
     }
+
   }
 
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
@@ -424,20 +461,13 @@ extension SelectionViewController: UICollectionViewDataSource {
     let asset = self.fetchResult.object(at: indexPath.item)
     cell.representedAssetIdentifier = asset.localIdentifier
     let scale = UIScreen.main.scale
-    let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+    let targetSize = CGSize(width:  100 * scale, height: 100 * scale)
+
+    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
         cell.configure(photo: image!)
       }
 
-      if asset == self.fetchResult.object(at: 0) && self.imageView.image == nil {
-        self.getImage = image
-        self.scrollView.zoomScale = 1.0
-        self.scaleAspectFillSize(image: image!, imageView: self.imageView)
-        self.scrollView.contentSize = self.imageView.frame.size
-        self.imageView.image = image
-        self.centerScrollView(animated: false)
-      }
     })
     return cell
   }
@@ -485,9 +515,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
         }
       })
     } else {
-      self.playerLayer?.removeFromSuperlayer()
-      self.playButton.removeFromSuperview()
-      self.cropAreaView.isUserInteractionEnabled = false
+      setPlayerFinishMode()
       let scale = UIScreen.main.scale
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
 
@@ -528,10 +556,15 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   }
 
   func playerDidFinishPlaying(note: NSNotification) {
+    setPlayerFinishMode()
+  }
+
+  func setPlayerFinishMode() {
     self.playerLayer?.removeFromSuperlayer()
     self.playButton.removeFromSuperview()
     self.cropAreaView.isUserInteractionEnabled = false
   }
+
 }
 
 extension SelectionViewController: UIScrollViewDelegate {
@@ -624,11 +657,12 @@ extension SelectionViewController: UITableViewDataSource {
       let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.allPhotos.rawValue, for: indexPath)
       cell.textLabel!.text = NSLocalizedString("All Photos", comment: "")
       if fetchResult.count != 0 {
-        let asset = fetchResult.object(at: 0)
+        let asset = fetchResult.object(at: indexPath[0])
         let scale = UIScreen.main.scale
-        let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+        let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
           cell.imageView?.image = image
+
         })
       }
 
@@ -642,7 +676,7 @@ extension SelectionViewController: UITableViewDataSource {
       if smartAlbumsFetchResult.count != 0 {
         let asset = smartAlbumsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
-        let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+        let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
           cell.imageView?.image = image
 
@@ -662,7 +696,7 @@ extension SelectionViewController: UITableViewDataSource {
       if userCollectionsFetchResult.count != 0 {
         let asset = userCollectionsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
-        let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+        let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
           cell.imageView?.image = image
 

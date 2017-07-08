@@ -49,6 +49,7 @@ class WrapperViewController: UIViewController {
 		NotificationCenter.default.addObserver(self, selector: #selector(videoButtonDidTap), name: Notification.Name("videoModeOnTabBar"), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(showCustomTabBar), name: Notification.Name("showCustomTabBar"), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(hideCustomTabBar), name: Notification.Name("hideCustomTabBar"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(dismissWrapperVC), name: Notification.Name("dismissWrapperVC"), object: nil)
 
     self.addChildViewController(self.cameraViewController)
     self.scrollView.addSubview(self.cameraViewController.view)
@@ -110,6 +111,19 @@ class WrapperViewController: UIViewController {
 			self.scrollView.contentSize = CGSize(width: self.libraryViewController.view.frame.size.width * 2, height: self.libraryViewController.view.frame.size.height)
 		}
 	}
+
+  func dismissWrapperVC() {
+    self.dismiss(animated: true, completion: nil)
+  }
+
+  deinit {
+    NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "photoModeOnTabBar"), object: nil)
+    NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "videoModeOnTabBar"), object: nil)
+    NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "showCustomTabBar"), object: nil)
+    NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "hideCustomTabBar"), object: nil)
+    NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "dismissWrapperVC"), object: nil)
+    print("wrapper deinit")
+  }
 
   func showCustomTabBar() {
     UIView.animate(withDuration: 0.5, animations: {self.customTabBar.transform = CGAffineTransform.identity})
