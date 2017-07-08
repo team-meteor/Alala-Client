@@ -24,7 +24,7 @@ protocol PersonalInfoViewDelegate: class {
 
 // MARK: -
 class PersonalInfoView: UIView {
-  var delegate: PersonalInfoViewDelegate?
+  weak var delegate: PersonalInfoViewDelegate?
 
   //var userInfo : User
 
@@ -37,6 +37,8 @@ class PersonalInfoView: UIView {
     $0.layer.borderColor = UIColor.lightGray.cgColor
     $0.clipsToBounds = true
     $0.isUserInteractionEnabled = true
+    $0.image = UIImage(named: "default_user")
+    $0.contentMode = .scaleAspectFill
   }
 
   let profileNameLabel = UILabel().then {
@@ -105,8 +107,8 @@ class PersonalInfoView: UIView {
   }
 
   let optionsButton = RoundCornerButton(type: .buttonColorTypeWhite).then {
-    $0.setImage(UIImage(named: "settings"), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "settings"), for: UIControlState.highlighted)
+    $0.setImage(UIImage(named: "settings")?.resizeImage(scaledTolength: 15), for: UIControlState.normal)
+    $0.setImage(UIImage(named: "settings")?.resizeImage(scaledTolength: 15), for: UIControlState.highlighted)
     $0.imageView?.contentMode = UIViewContentMode.scaleAspectFit
     $0.addTarget(self, action: #selector(optionsButtonTap(sender:)), for: .touchUpInside)
   }
@@ -209,7 +211,7 @@ class PersonalInfoView: UIView {
     }
     postsCountLabel.snp.makeConstraints { (make) in
       make.top.equalTo(postsButton)
-      make.left.equalTo(postsButton).offset(10)
+      make.left.equalTo(postsButton)
       make.right.equalTo(postsButton)
       make.height.equalTo(15)
     }
@@ -314,7 +316,9 @@ class PersonalInfoView: UIView {
 
   func setupUserInfo(userInfo: User) {
     profileNameLabel.text = userInfo.email
-    profileImageView.setImage(with: userInfo.profilePhotoId, size: .small)
+    if userInfo.profilePhotoId != nil {
+      profileImageView.setImage(with: userInfo.profilePhotoId, size: .small)
+    }
   }
 
   // MARK: - User Action

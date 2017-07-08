@@ -3,6 +3,7 @@ import Photos
 import AVKit
 
 class SelectionViewController: UIViewController {
+
   var playerLayer: AVPlayerLayer?
   var player: AVPlayer?
   var playerItem: AVPlayerItem?
@@ -10,7 +11,6 @@ class SelectionViewController: UIViewController {
   var urlAssetArr = [AVURLAsset]()
 
   var zoomMode: Bool = false
-  var isZooming: Bool = false
   let photosLimit: Int = 500
   var getImageView: UIImageView?
   var getImage: UIImage?
@@ -32,7 +32,12 @@ class SelectionViewController: UIViewController {
   var allPhotos: PHFetchResult<PHAsset>!
   var smartAlbums: PHFetchResult<PHAssetCollection>!
   var userCollections: PHFetchResult<PHCollection>!
-  var fetchResult: PHFetchResult<PHAsset>!
+  var fetchResult: PHFetchResult<PHAsset>! {
+    didSet {
+      print("changed")
+      updateFirstImageView()
+    }
+  }
   var smartAlbumsFetchResult: PHFetchResult<PHAsset>!
   var userCollectionsFetchResult: PHFetchResult<PHAsset>!
   var assetCollection: PHAssetCollection?
@@ -68,8 +73,7 @@ class SelectionViewController: UIViewController {
   fileprivate let scrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = false
-    $0.maximumZoomScale = 3
-    $0.minimumZoomScale = 0.7
+    $0.maximumZoomScale = 3.0
     $0.zoomScale = 1.0
     $0.bouncesZoom = true
     $0.alwaysBounceVertical = true
@@ -86,6 +90,7 @@ class SelectionViewController: UIViewController {
     $0.register(TileCell.self, forCellWithReuseIdentifier: "tileCell")
     $0.allowsMultipleSelection = true
   }
+
   fileprivate let cropAreaView = UIView().then {
     $0.isUserInteractionEnabled = false
     $0.layer.borderColor = UIColor.lightGray.cgColor
@@ -117,7 +122,6 @@ class SelectionViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    getLimitedAlbumFromLibrary()
     NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying(note:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
 
     self.collectionView.dataSource = self
@@ -128,9 +132,11 @@ class SelectionViewController: UIViewController {
     self.tableView.dataSource = self
 
     self.configureView()
+    getLimitedAlbumFromLibrary()
   }
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
+    scrollView.minimumZoomScale = self.setMinimumSize(image: self.getImage!)
     let bounds = self.navigationController!.navigationBar.bounds
     self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
   }
@@ -147,6 +153,7 @@ class SelectionViewController: UIViewController {
     }
 
   }
+
   func centerScrollView(animated: Bool) {
     let targetContentOffset = CGPoint(
       x: (self.scrollView.contentSize.width - self.scrollView.bounds.width) / 2,
@@ -156,7 +163,8 @@ class SelectionViewController: UIViewController {
   }
 
   func cancelButtonDidTap() {
-    self.dismiss(animated: true, completion: nil)
+    //self.dismiss(animated: true, completion: nil)
+    NotificationCenter.default.post(name: Notification.Name("dismissWrapperVC"), object: nil)
   }
 
   func getLimitedAlbumFromLibrary() {
@@ -229,6 +237,28 @@ class SelectionViewController: UIViewController {
     completion(true)
   }
 
+  func updateFirstImageView() {
+
+    let asset = self.fetchResult.object(at: 0)
+    let scale = UIScreen.main.scale
+    let targetSize = CGSize(width:  600 * scale, height: 600 * scale)
+    scrollView.frame.size = CGSize(width: 375.0, height: 398.0)
+    self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
+
+      if image != nil {
+        self.getImage = image!
+        self.scrollView.zoomScale = 1.0
+        print("size", self.imageView.frame)
+        self.scaleAspectFillSize(image: image!, imageView: self.imageView)
+        print("size", self.imageView.frame)
+        self.scrollView.contentSize = self.imageView.frame.size
+        self.imageView.image = image
+        self.centerScrollView(animated: false)
+      }
+    })
+
+  }
+
   func libraryButtonDidTap() {
     if libraryButton.currentTitle == "Library v" {
       if self.allPhotos.count == photosLimit {
@@ -248,22 +278,39 @@ class SelectionViewController: UIViewController {
   }
 
   func scaleAspectFillSize(image: UIImage, imageView: UIImageView) {
+
     var imageWidth = image.size.width
     var imageHeight = image.size.height
+    print("width", imageWidth, imageHeight)
 
     imageView.frame.size = scrollView.frame.size
-
+    print("scroll", scrollView.frame)
     let imageViewWidth = imageView.frame.size.width
     let imageViewHeight = imageView.frame.size.height
 
     if imageWidth >= imageHeight {
       imageWidth = imageWidth * imageViewHeight / imageHeight
       imageHeight = imageViewHeight
-    } else if imageWidth < imageHeight {
+    } else {
       imageHeight = imageHeight * imageViewWidth / imageWidth
       imageWidth = imageViewWidth
     }
     self.imageView.frame.size = CGSize(width: imageWidth, height: imageHeight)
+  }
+
+  func setMinimumSize(image: UIImage) -> CGFloat {
+    let imageWidth = image.size.width
+    let imageHeight = image.size.height
+    var minumumSize: CGFloat?
+
+    if imageWidth >= imageHeight {
+      minumumSize = cropAreaView.frame.width / imageView.frame.width
+    } else {
+      minumumSize = cropAreaView.frame.height / imageView.frame.height
+    }
+
+    return minumumSize!
+
   }
 
   func configureView() {
@@ -329,51 +376,18 @@ class SelectionViewController: UIViewController {
   }
 
   func scrollViewZoom() {
-    if(zoomMode) {
-      print(collectionView.frame.width)
-      if(isZooming) {
-        UIView.animate(withDuration: 0.2, animations: {
-          self.aspectFitMode()
-        })
-        zoomMode = true
-        isZooming = false
-      } else {
-        UIView.animate(withDuration: 0.2, animations: {
-          self.aspectFillMode()
-        })
 
-        zoomMode = false
-      }
+    let zoomValue = self.setMinimumSize(image: self.getImage!)
+
+    if scrollView.zoomScale >= 1.0 {
+      scrollView.setZoomScale(zoomValue, animated: true)
+      zoomMode = true
     } else {
-      print(collectionView.frame.width)
-      if(isZooming) {
-        UIView.animate(withDuration: 0.2, animations: {
-          self.aspectFillMode()
-        })
-        zoomMode = false
-        isZooming = false
-      } else {
-        UIView.animate(withDuration: 0.2, animations: {
-          self.aspectFitMode()
-        })
-        zoomMode = true
-
-      }
+      scrollView.setZoomScale(1.0, animated: true)
+      zoomMode = false
     }
-  }
 
-  func aspectFillMode() {
-    scaleAspectFillSize(image: getImage!, imageView: getImageView!)
-    self.scrollView.contentSize = self.imageView.frame.size
-    self.centerScrollView(animated: false)
   }
-  func aspectFitMode() {
-    imageView.frame.size = cropAreaView.frame.size
-    self.scrollView.contentSize = self.imageView.frame.size
-    imageView.contentMode = .scaleAspectFit
-    self.centerScrollView(animated: false)
-  }
-
   func addAVPlayer(videoUrl: URL) {
     self.cropAreaView.isUserInteractionEnabled = true
     playerItem = AVPlayerItem(url: videoUrl)
@@ -407,23 +421,26 @@ class SelectionViewController: UIViewController {
       playButton.setTitle("Play", for: UIControlState.normal)
     }
   }
-
+  deinit {
+    NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
+    print("selection deinit")
+  }
 }
 
 extension SelectionViewController: UICollectionViewDelegate {
   func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
 
     if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
-      DispatchQueue.global().async {
-        self.getAllAlbums()
 
-        print("fetch")
-        DispatchQueue.main.async {
-          self.fetchResult = self.allPhotos
-          self.collectionView.reloadData()
-        }
-      }
+      self.getAllAlbums()
+
+      print("fetch")
+
+      self.fetchResult = self.allPhotos
+      self.collectionView.reloadData()
+
     }
+
   }
 
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
@@ -444,20 +461,13 @@ extension SelectionViewController: UICollectionViewDataSource {
     let asset = self.fetchResult.object(at: indexPath.item)
     cell.representedAssetIdentifier = asset.localIdentifier
     let scale = UIScreen.main.scale
-    let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+    let targetSize = CGSize(width:  100 * scale, height: 100 * scale)
+
+    imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
         cell.configure(photo: image!)
       }
 
-      if asset == self.fetchResult.object(at: 0) && self.imageView.image == nil {
-        self.getImageView = self.imageView
-        self.getImage = image
-        self.scaleAspectFillSize(image: image!, imageView: self.imageView)
-        self.scrollView.contentSize = self.imageView.frame.size
-        self.imageView.image = image
-        self.centerScrollView(animated: false)
-      }
     })
     return cell
   }
@@ -472,7 +482,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     let collectionViewWidth = collectionView.frame.width
     let cellWidth: CGFloat?
     if(collectionViewWidth >= 375) {
-      cellWidth = round((collectionViewWidth - 2 * tileCellSpacing) / 4)
+      cellWidth = round((collectionViewWidth - 3 * tileCellSpacing) / 4)
     } else {
       cellWidth = round((collectionViewWidth - 2 * tileCellSpacing) / 3)
     }
@@ -505,24 +515,25 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
         }
       })
     } else {
-      self.playerLayer?.removeFromSuperlayer()
-      self.playButton.removeFromSuperview()
-      self.cropAreaView.isUserInteractionEnabled = false
+      setPlayerFinishMode()
       let scale = UIScreen.main.scale
       let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
 
       imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
-        self.getImageView = self.imageView
         self.getImage = image
+        self.scrollView.zoomScale = 1.0
 
-        if(self.zoomMode) {
-          self.aspectFitMode()
-        } else {
-          self.aspectFillMode()
-        }
+        self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
         self.centerScrollView(animated: false)
+        let zoomValue = self.setMinimumSize(image: self.getImage!)
+
+        if self.zoomMode {
+          self.scrollView.zoomScale = zoomValue
+        } else {
+          self.scrollView.zoomScale = 1.0
+        }
       })
     }
 
@@ -545,10 +556,15 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   }
 
   func playerDidFinishPlaying(note: NSNotification) {
+    setPlayerFinishMode()
+  }
+
+  func setPlayerFinishMode() {
     self.playerLayer?.removeFromSuperlayer()
     self.playButton.removeFromSuperview()
     self.cropAreaView.isUserInteractionEnabled = false
   }
+
 }
 
 extension SelectionViewController: UIScrollViewDelegate {
@@ -567,16 +583,15 @@ extension SelectionViewController: UIScrollViewDelegate {
     self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(page / 600)
   }
   func scrollViewDidZoom(_ scrollView: UIScrollView) {
-    isZooming = true
 
     let imageViewSize = imageView.frame.size
     let scrollViewSize = scrollView.bounds.size
 
-    let verticalPadding = imageViewSize.height <= scrollViewSize.height ? (scrollViewSize.height - imageViewSize.height) / 2 : 0
-    let horizontalPadding = imageViewSize.width <= scrollViewSize.width ? (scrollViewSize.width - imageViewSize.width) / 2 : 0
+    let verticalPadding = imageViewSize.height < scrollViewSize.height ?  (scrollViewSize.height - imageViewSize.height) / 2 : 0
+    let horizontalPadding = imageViewSize.width < scrollViewSize.width ? (scrollViewSize.width - imageViewSize.width) / 2 : 0
 
     scrollView.contentInset = UIEdgeInsets(top: verticalPadding, left: horizontalPadding, bottom: verticalPadding, right: horizontalPadding)
-    print(scrollView.zoomScale)
+
   }
 }
 
@@ -642,11 +657,12 @@ extension SelectionViewController: UITableViewDataSource {
       let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.allPhotos.rawValue, for: indexPath)
       cell.textLabel!.text = NSLocalizedString("All Photos", comment: "")
       if fetchResult.count != 0 {
-        let asset = fetchResult.object(at: 0)
+        let asset = fetchResult.object(at: indexPath[0])
         let scale = UIScreen.main.scale
-        let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+        let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
           cell.imageView?.image = image
+
         })
       }
 
@@ -660,7 +676,7 @@ extension SelectionViewController: UITableViewDataSource {
       if smartAlbumsFetchResult.count != 0 {
         let asset = smartAlbumsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
-        let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+        let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
           cell.imageView?.image = image
 
@@ -680,7 +696,7 @@ extension SelectionViewController: UITableViewDataSource {
       if userCollectionsFetchResult.count != 0 {
         let asset = userCollectionsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
-        let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+        let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
           cell.imageView?.image = image
 
