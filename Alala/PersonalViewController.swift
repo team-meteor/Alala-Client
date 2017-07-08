@@ -11,7 +11,10 @@ import Alamofire
 import ObjectMapper
 
 /**
-
+ * '내 프로필 & 포스트' 화면
+ *
+ * **[PATH]** 하단 Main Tap Bar > 가장 우측의 Personal 아이콘 선택
+ * - Note : '프로필'View는 PersonalInfoView 클래스에 구현되어있고 이곳에서는 유저의 액션을 받아 delegate만 처리
  */
 class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoContentsViewDelegate, UICollectionViewDataSource {
 
@@ -43,6 +46,8 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
 
   let personalInfoView = PersonalInfoView()
 
+  let contentsView = UIView()
+
   let noContentsGuideView = NoContentsView()
 
   let postGridCollectionView: UICollectionView = {
@@ -59,10 +64,6 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     view.backgroundColor = UIColor.white
     return view
   }()
-
-  //let postCollectionView = UICollectionView()
-
-//  var myUserInfo = User()
 
   // MARK: - Initialize
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -113,70 +114,48 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
       make.width.equalTo(scrollView)
     }
     personalInfoView.delegate = self
+    personalInfoView.setupUserInfo(userInfo: AuthService.instance.currentUser!)
 
     //-- Section 3 : personal post list or no contents view (one of both)
+    scrollView.addSubview(contentsView)
+    contentsView.snp.makeConstraints { (make) in
+      make.top.equalTo(personalInfoView.snp.bottom)
+      make.left.equalTo(scrollView)
+      make.right.equalTo(scrollView)
+      make.bottom.equalTo(self.view.snp.bottom)
+    }
 
-    if false {
-      scrollView.addSubview(noContentsGuideView)
+    self.fetchFeedMine(paging: .refresh)
+  }
+
+  func setupNoContents() {
+    if noContentsGuideView.superview == nil {
+      contentsView.addSubview(noContentsGuideView)
       noContentsGuideView.snp.makeConstraints { (make) in
-        make.top.equalTo(personalInfoView.snp.bottom)
-        make.left.equalTo(scrollView)
-        make.right.equalTo(scrollView)
-        //make.bottom.equalTo(scrollView)
-        make.bottom.equalTo(self.view.snp.bottom)
+        make.top.equalTo(contentsView)
+        make.left.equalTo(contentsView)
+        make.right.equalTo(contentsView)
+        make.bottom.equalTo(contentsView)
       }
       noContentsGuideView.delegate = self
-    } else {
-      scrollView.addSubview(postGridCollectionView)
+    }
+  }
+
+  func setupPostGrid() {
+    if postGridCollectionView.superview == nil {
+      contentsView.addSubview(postGridCollectionView)
       postGridCollectionView.snp.makeConstraints { (make) in
-        make.top.equalTo(personalInfoView.snp.bottom)
-        make.left.equalTo(scrollView)
-        make.right.equalTo(scrollView)
-        make.bottom.equalTo(self.view.snp.bottom)
+        make.top.equalTo(contentsView)
+        make.left.equalTo(contentsView)
+        make.right.equalTo(contentsView)
+        make.bottom.equalTo(contentsView)
       }
       postGridCollectionView.dataSource = self
       postGridCollectionView.isScrollEnabled = false
     }
-    personalInfoView.setupUserInfo(userInfo: AuthService.instance.currentUser!)
-
-    self.fetchFeed(paging: .refresh)
   }
 
-  func setupNoContents() {
-//    if postGridCollectionView != nil {
-//      postGridCollectionView.removeFromSuperview()
-//      postGridCollectionView = nil
-//    }
-
-    scrollView.addSubview(noContentsGuideView)
-    noContentsGuideView.snp.makeConstraints { (make) in
-      make.top.equalTo(personalInfoView.snp.bottom)
-      make.left.equalTo(scrollView)
-      make.right.equalTo(scrollView)
-      //make.bottom.equalTo(scrollView)
-      make.bottom.equalTo(self.view.snp.bottom)
-    }
-    noContentsGuideView.delegate = self
-  }
-
-  func setupPostGrid() {
-//    if noContentsGuideView != nil {
-//      noContentsGuideView.removeFromSuperview()
-//      noContentsGuideView = nil
-//    }
-
-    scrollView.addSubview(postGridCollectionView)
-    postGridCollectionView.snp.makeConstraints { (make) in
-      make.top.equalTo(personalInfoView.snp.bottom)
-      make.left.equalTo(scrollView)
-      make.right.equalTo(scrollView)
-      make.bottom.equalTo(self.view.snp.bottom)
-    }
-    postGridCollectionView.dataSource = self
-    postGridCollectionView.isScrollEnabled = false
-  }
-
-  fileprivate func fetchFeed(paging: Paging) {
+  fileprivate func fetchFeedMine(paging: Paging) {
     guard !self.isLoading else { return }
     self.isLoading = true
     FeedService.feedMine(paging: paging) { [weak self] response in
@@ -198,7 +177,12 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
         DispatchQueue.main.async {
           //self.adapter.performUpdates(animated: true, completion: nil)
           self.personalInfoView.postsCountLabel.text = self.posts.count.description
-          self.postGridCollectionView.reloadData()
+          if self.posts.count == 0 {
+            self.setupNoContents()
+          } else {
+            self.setupPostGrid()
+            self.postGridCollectionView.reloadData()
+          }
         }
       case .failure(let error):
         print(error)
@@ -218,8 +202,6 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
   }
 
   func postsAreaTap() {
-//    let size = CGSize(width: scrollView.frame.size.width, height: scrollView.bounds.size.height)
-//    scrollView.contentSize = size
     var moveRect = scrollView.frame
     moveRect.origin.y = personalInfoView.frame.size.height + 64
 
@@ -311,6 +293,7 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
  */
 }
 
+// MARK: -
 class ColumnFlowLayout: UICollectionViewFlowLayout {
 
   let cellsPerRow: Int
