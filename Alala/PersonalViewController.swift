@@ -138,6 +138,8 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     }
 
     self.fetchFeedMine(paging: .refresh)
+
+    NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: NSNotification.Name(rawValue: "postDidCreate"), object: nil)
   }
 
   func setupNoContents() {
