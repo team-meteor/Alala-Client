@@ -23,7 +23,7 @@ class CameraViewController: UIViewController {
   weak var activeInput: AVCaptureDeviceInput!
   fileprivate var imageOutput = AVCapturePhotoOutput()
   var captureMode = Int()
-  weak var movieOutput = AVCaptureMovieFileOutput()
+  fileprivate var movieOutput = AVCaptureMovieFileOutput()
 
   let switchButton = UIButton().then {
     $0.setImage(UIImage(named: "Camera_Icon")!, for: .normal)
@@ -302,7 +302,7 @@ class CameraViewController: UIViewController {
   }
 
   func switchButtonDidTap() {
-    if movieOutput?.isRecording == false {
+    if movieOutput.isRecording == false {
       let deviceDiscoverySession = AVCaptureDeviceDiscoverySession(deviceTypes: [AVCaptureDeviceType.builtInDualCamera, AVCaptureDeviceType.builtInTelephotoCamera, AVCaptureDeviceType.builtInWideAngleCamera], mediaType: AVMediaTypeVideo, position: AVCaptureDevicePosition.unspecified)
       if (deviceDiscoverySession?.devices.count)! > 1 {
         var newPosition: AVCaptureDevicePosition!
@@ -355,8 +355,8 @@ class CameraViewController: UIViewController {
   }
 
   func takeVideoButtonDidTap() {
-    if movieOutput?.isRecording == false {
-      let connection = movieOutput?.connection(withMediaType: AVMediaTypeVideo)
+    if movieOutput.isRecording == false {
+      let connection = movieOutput.connection(withMediaType: AVMediaTypeVideo)
       if (connection?.isVideoOrientationSupported)! {
         connection?.videoOrientation = currentVideoOrientation()
       }
@@ -376,7 +376,7 @@ class CameraViewController: UIViewController {
         }
       }
       let outputURL = tempURL()
-      movieOutput?.startRecording(toOutputFileURL: outputURL, recordingDelegate: self)
+      movieOutput.startRecording(toOutputFileURL: outputURL, recordingDelegate: self)
     } else {
       stopRecording()
     }
@@ -410,8 +410,8 @@ class CameraViewController: UIViewController {
   }
 
   func stopRecording() {
-    if movieOutput?.isRecording == true {
-      movieOutput?.stopRecording()
+    if movieOutput.isRecording == true {
+      movieOutput.stopRecording()
     }
   }
 
