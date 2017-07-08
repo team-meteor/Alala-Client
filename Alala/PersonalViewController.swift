@@ -9,6 +9,7 @@
 import UIKit
 import Alamofire
 import ObjectMapper
+import IGListKit
 
 /**
  * '내 프로필 & 포스트' 화면
@@ -63,6 +64,17 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     view.showsVerticalScrollIndicator = false
     view.backgroundColor = UIColor.white
     return view
+  }()
+
+  let postListCollectionView: UICollectionView = {
+    let flowLayout = UICollectionViewFlowLayout()
+    let view = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+    view.backgroundColor = UIColor.white
+    return view
+  }()
+
+  lazy var adapter: ListAdapter = {
+    return ListAdapter(updater: ListAdapterUpdater(), viewController: self)
   }()
 
   // MARK: - Initialize
@@ -153,6 +165,26 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
       postGridCollectionView.dataSource = self
       postGridCollectionView.isScrollEnabled = false
     }
+
+    postGridCollectionView.isHidden = false
+    postListCollectionView.isHidden = true
+  }
+
+  func setupPostList() {
+    if postListCollectionView.superview == nil {
+      adapter.collectionView = postListCollectionView
+      adapter.dataSource = self
+      contentsView.addSubview(postListCollectionView)
+      postListCollectionView.snp.makeConstraints { (make) in
+        make.top.equalTo(contentsView)
+        make.left.equalTo(contentsView)
+        make.right.equalTo(contentsView)
+        make.bottom.equalTo(contentsView)
+      }
+    }
+
+    postGridCollectionView.isHidden = true
+    postListCollectionView.isHidden = false
   }
 
   fileprivate func fetchFeedMine(paging: Paging) {
@@ -180,8 +212,13 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
           if self.posts.count == 0 {
             self.setupNoContents()
           } else {
-            self.setupPostGrid()
-            self.postGridCollectionView.reloadData()
+            if self.personalInfoView.isGridMode {
+              self.setupPostGrid()
+              self.postGridCollectionView.reloadData()
+            } else {
+              self.setupPostList()
+              self.adapter.performUpdates(animated: true, completion: nil)
+            }
           }
         }
       case .failure(let error):
@@ -229,11 +266,14 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
   }
 
   func gridPostMenuButtonTap(sender: UIButton) {
-
+    self.setupPostGrid()
+    self.postGridCollectionView.reloadData()
   }
 
   func listPostMenuButtonTap(sender: UIButton) {
 
+    self.setupPostList()
+    self.adapter.performUpdates(animated: true, completion: nil)
   }
 
   func photosForYouMenuButtonTap(sender: UIButton) {
@@ -259,9 +299,12 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
   public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell: PostGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as! PostGridCell
     let post = posts[indexPath.row] as Post
-    cell.thumbnailImageView.setImage(with: post.multipartIds[0], size: .thumbnail)
-
     let filename = post.multipartIds[0] as String
+
+    if filename.characters.count > 0 {
+      cell.thumbnailImageView.setImage(with: post.multipartIds[0], size: .thumbnail)
+    }
+
     if filename.isVideoPathExtension {
       cell.isVideo = true
     } else {
@@ -278,6 +321,17 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let tabBarVC = appDelegate.window?.rootViewController as! MainTabBarController
     tabBarVC.presentWrapperViewController()
+  }
+
+  func postDidCreate(_ notification: Notification) {
+    guard let post = notification.userInfo?["post"] as? Post else { return }
+    self.posts.insert(post, at: 0)
+    print("create post", post.multipartIds)
+    if self.personalInfoView.isGridMode {
+      self.postGridCollectionView.reloadData()
+    } else {
+      self.adapter.performUpdates(animated: true, completion: nil)
+    }
   }
 
   /*
@@ -326,5 +380,23 @@ class ColumnFlowLayout: UICollectionViewFlowLayout {
     let context = super.invalidationContext(forBoundsChange: newBounds) as! UICollectionViewFlowLayoutInvalidationContext
     context.invalidateFlowLayoutDelegateMetrics = newBounds != collectionView?.bounds
     return context
+  }
+}
+
+extension PersonalViewController: ListAdapterDataSource {
+  func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
+    let items: [ListDiffable] = self.posts
+    print("in objects", items)
+    return items
+  }
+  func listAdapter(_ listAdapter: ListAdapter, sectionControllerFor object: Any) -> ListSectionController {
+    if object is Post {
+      return PostSectionController()
+    } else {
+      return ListSectionController()
+    }
+  }
+  func emptyView(for listAdapter: ListAdapter) -> UIView? {
+    return nil
   }
 }
