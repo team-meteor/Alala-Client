@@ -23,7 +23,11 @@ class PostSectionController: ListSectionController {
   override func sizeForItem(at index: Int) -> CGSize {
     let width = collectionContext!.containerSize.width
 
-    let multimediaCellRatio = Float(post.multipartIds[0].components(separatedBy: "_")[0])
+    var multimediaCellRatio = Float(post.multipartIds[0].components(separatedBy: "_")[0])
+
+    if multimediaCellRatio == nil {
+      multimediaCellRatio = 1
+    }
 
     switch index {
     case 0: // usercell

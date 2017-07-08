@@ -33,9 +33,9 @@ class EditProfileViewController: UIViewController, UITableViewDataSource, UITabl
   let contentTableView = UITableView()
   let cellReuseIdentifier = "cell"
 
-  var allProfileItemArray: Array<Array<ProfileItem>> = []
-  var publicItemArray: Array<ProfileItem> = []
-  var privateItemArray: Array<ProfileItem> = []
+  var allProfileItemArray = [[ProfileItem]]()
+  var publicItemArray = [ProfileItem]()
+  var privateItemArray = [ProfileItem]()
 
   override func viewDidLoad() {
     super.viewDidLoad()
