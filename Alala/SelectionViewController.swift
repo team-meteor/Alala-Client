@@ -168,12 +168,12 @@ class SelectionViewController: UIViewController {
   }
 
   func getLimitedAlbumFromLibrary() {
+
     let limitedOptions = PHFetchOptions()
     let sortOptions = PHFetchOptions()
     limitedOptions.fetchLimit = photosLimit
     sortOptions.fetchLimit = photosLimit
     sortOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-
     allPhotos = PHAsset.fetchAssets(with: sortOptions)
     smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: limitedOptions)
     userCollections = PHCollectionList.fetchTopLevelUserCollections(with: limitedOptions)
@@ -182,9 +182,11 @@ class SelectionViewController: UIViewController {
 
   func getAllAlbums() {
     let AllOptions = PHFetchOptions()
+    let sortOptions = PHFetchOptions()
+    sortOptions.predicate = NSPredicate(format: "estimatedAssetCount > 0")
     AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
     allPhotos = PHAsset.fetchAssets(with: AllOptions)
-    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
+    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: sortOptions)
     userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
   }
 
@@ -260,6 +262,7 @@ class SelectionViewController: UIViewController {
   }
 
   func libraryButtonDidTap() {
+    print(self.smartAlbums)
     if libraryButton.currentTitle == "Library v" {
       if self.allPhotos.count == photosLimit {
         getAllAlbums()
@@ -655,8 +658,9 @@ extension SelectionViewController: UITableViewDataSource {
     switch Section(rawValue: indexPath.section)! {
     case .allPhotos:
       let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.allPhotos.rawValue, for: indexPath)
-      cell.textLabel!.text = NSLocalizedString("All Photos", comment: "")
+
       if fetchResult.count != 0 {
+        cell.textLabel!.text = NSLocalizedString("All Photos", comment: "")
         let asset = fetchResult.object(at: indexPath[0])
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
@@ -664,16 +668,17 @@ extension SelectionViewController: UITableViewDataSource {
           cell.imageView?.image = image
 
         })
+        return cell
       }
-
       return cell
 
     case .smartAlbums:
       let collection = smartAlbums.object(at: indexPath.row)
       self.smartAlbumsFetchResult = PHAsset.fetchAssets(in: collection, options: nil)
       let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath)
-      cell.textLabel!.text = collection.localizedTitle
+
       if smartAlbumsFetchResult.count != 0 {
+        cell.textLabel!.text = collection.localizedTitle
         let asset = smartAlbumsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
@@ -681,6 +686,7 @@ extension SelectionViewController: UITableViewDataSource {
           cell.imageView?.image = image
 
         })
+        return cell
       }
       return cell
 
@@ -691,9 +697,9 @@ extension SelectionViewController: UITableViewDataSource {
       self.userCollectionsFetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
 
       let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath)
-      cell.textLabel!.text = collection.localizedTitle
 
       if userCollectionsFetchResult.count != 0 {
+        cell.textLabel!.text = collection.localizedTitle
         let asset = userCollectionsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
@@ -701,9 +707,11 @@ extension SelectionViewController: UITableViewDataSource {
           cell.imageView?.image = image
 
         })
+        return cell
       }
       return cell
     }
+
   }
 
   func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
