@@ -34,6 +34,7 @@ class TileCell: UICollectionViewCell {
     didSet {
       self.layer.borderWidth = 3.0
       self.layer.borderColor = isSelected ? UIColor.blue.cgColor : UIColor.clear.cgColor
+      self.backgroundColor = UIColor.white.withAlphaComponent(50)
     }
   }
 

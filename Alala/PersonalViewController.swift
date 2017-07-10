@@ -9,13 +9,21 @@
 import UIKit
 import Alamofire
 import ObjectMapper
+import IGListKit
 
 /**
-
+ * '내 프로필 & 포스트' 화면
+ *
+ * **[PATH]** 하단 Main Tap Bar > 가장 우측의 Personal 아이콘 선택
+ * - Note : '프로필'View는 PersonalInfoView 클래스에 구현되어있고 이곳에서는 유저의 액션을 받아 delegate만 처리
  */
 class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoContentsViewDelegate, UICollectionViewDataSource {
 
   // MARK: - UI Objects
+  fileprivate var posts: [Post] = []
+  fileprivate var nextPage: Int?
+  fileprivate var isLoading: Bool = false
+
   let discoverPeopleButton = UIBarButtonItem(
     image: UIImage(named: "add_user")?.resizeImage(scaledTolength: 25),
     style: .plain,
@@ -39,15 +47,9 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
 
   let personalInfoView = PersonalInfoView()
 
-  let noContentsGuideView = NoContentsView()
+  let contentsView = UIView()
 
-//  let postGridCollectionView = UICollectionView().then {
-//    $0.showsHorizontalScrollIndicator = false
-//    $0.showsVerticalScrollIndicator = false
-//    $0.backgroundColor = .white
-//    $0.alwaysBounceVertical = true
-//    $0.register(PostGridCell.self, forCellWithReuseIdentifier: "gridCell")
-//  }
+  let noContentsGuideView = NoContentsView()
 
   let postGridCollectionView: UICollectionView = {
     let columnLayout = ColumnFlowLayout(
@@ -63,9 +65,17 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     view.backgroundColor = UIColor.white
     return view
   }()
-  //let postCollectionView = UICollectionView()
 
-//  var myUserInfo = User()
+  let postListCollectionView: UICollectionView = {
+    let flowLayout = UICollectionViewFlowLayout()
+    let view = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+    view.backgroundColor = UIColor.white
+    return view
+  }()
+
+  lazy var adapter: ListAdapter = {
+    return ListAdapter(updater: ListAdapterUpdater(), viewController: self)
+  }()
 
   // MARK: - Initialize
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -89,7 +99,7 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
 
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = "User ID"
+      $0.text = AuthService.instance.currentUser?.email
       $0.sizeToFit()
     }
     self.navigationController?.navigationBar.topItem?.title = ""
@@ -116,31 +126,107 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
       make.width.equalTo(scrollView)
     }
     personalInfoView.delegate = self
+    personalInfoView.setupUserInfo(userInfo: AuthService.instance.currentUser!)
 
     //-- Section 3 : personal post list or no contents view (one of both)
+    scrollView.addSubview(contentsView)
+    contentsView.snp.makeConstraints { (make) in
+      make.top.equalTo(personalInfoView.snp.bottom)
+      make.left.equalTo(scrollView)
+      make.right.equalTo(scrollView)
+      make.bottom.equalTo(self.view.snp.bottom)
+    }
 
-    if(false) { // TODO
-      scrollView.addSubview(noContentsGuideView)
+    self.fetchFeedMine(paging: .refresh)
+
+    NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: NSNotification.Name(rawValue: "postDidCreate"), object: nil)
+  }
+
+  func setupNoContents() {
+    if noContentsGuideView.superview == nil {
+      contentsView.addSubview(noContentsGuideView)
       noContentsGuideView.snp.makeConstraints { (make) in
-        make.top.equalTo(personalInfoView.snp.bottom)
-        make.left.equalTo(scrollView)
-        make.right.equalTo(scrollView)
-        //make.bottom.equalTo(scrollView)
-        make.bottom.equalTo(self.view.snp.bottom)
+        make.top.equalTo(contentsView)
+        make.left.equalTo(contentsView)
+        make.right.equalTo(contentsView)
+        make.bottom.equalTo(contentsView)
       }
       noContentsGuideView.delegate = self
-    } else {
-      scrollView.addSubview(postGridCollectionView)
+    }
+  }
+
+  func setupPostGrid() {
+    if postGridCollectionView.superview == nil {
+      contentsView.addSubview(postGridCollectionView)
       postGridCollectionView.snp.makeConstraints { (make) in
-        make.top.equalTo(personalInfoView.snp.bottom)
-        make.left.equalTo(scrollView)
-        make.right.equalTo(scrollView)
-        make.bottom.equalTo(self.view.snp.bottom)
+        make.top.equalTo(contentsView)
+        make.left.equalTo(contentsView)
+        make.right.equalTo(contentsView)
+        make.bottom.equalTo(contentsView)
       }
       postGridCollectionView.dataSource = self
       postGridCollectionView.isScrollEnabled = false
     }
-    personalInfoView.setupUserInfo(userInfo: AuthService.instance.currentUser!)
+
+    postGridCollectionView.isHidden = false
+    postListCollectionView.isHidden = true
+  }
+
+  func setupPostList() {
+    if postListCollectionView.superview == nil {
+      adapter.collectionView = postListCollectionView
+      adapter.dataSource = self
+      contentsView.addSubview(postListCollectionView)
+      postListCollectionView.snp.makeConstraints { (make) in
+        make.top.equalTo(contentsView)
+        make.left.equalTo(contentsView)
+        make.right.equalTo(contentsView)
+        make.bottom.equalTo(contentsView)
+      }
+    }
+
+    postGridCollectionView.isHidden = true
+    postListCollectionView.isHidden = false
+  }
+
+  fileprivate func fetchFeedMine(paging: Paging) {
+    guard !self.isLoading else { return }
+    self.isLoading = true
+    FeedService.feedMine(paging: paging) { [weak self] response in
+      guard let `self` = self else { return }
+      //self.refreshControl.endRefreshing()
+      self.isLoading = false
+
+      switch response.result {
+      case .success(let feed):
+        let newPosts = feed.posts ?? []
+        switch paging {
+        case .refresh:
+          self.posts = newPosts
+        case .next:
+          self.posts.append(contentsOf: newPosts)
+        }
+        self.nextPage = feed.nextPage
+        print("fetchFeed : ", self.posts)
+        DispatchQueue.main.async {
+          //self.adapter.performUpdates(animated: true, completion: nil)
+          self.personalInfoView.postsCountLabel.text = self.posts.count.description
+          if self.posts.count == 0 {
+            self.setupNoContents()
+          } else {
+            if self.personalInfoView.isGridMode {
+              self.setupPostGrid()
+              self.postGridCollectionView.reloadData()
+            } else {
+              self.setupPostList()
+              self.adapter.performUpdates(animated: true, completion: nil)
+            }
+          }
+        }
+      case .failure(let error):
+        print(error)
+      }
+    }
   }
 
   override func viewWillAppear(_ animated: Bool) {
@@ -155,8 +241,6 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
   }
 
   func postsAreaTap() {
-//    let size = CGSize(width: scrollView.frame.size.width, height: scrollView.bounds.size.height)
-//    scrollView.contentSize = size
     var moveRect = scrollView.frame
     moveRect.origin.y = personalInfoView.frame.size.height + 64
 
@@ -184,11 +268,14 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
   }
 
   func gridPostMenuButtonTap(sender: UIButton) {
-
+    self.setupPostGrid()
+    self.postGridCollectionView.reloadData()
   }
 
   func listPostMenuButtonTap(sender: UIButton) {
 
+    self.setupPostList()
+    self.adapter.performUpdates(animated: true, completion: nil)
   }
 
   func photosForYouMenuButtonTap(sender: UIButton) {
@@ -208,12 +295,23 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     let size = CGSize(width: scrollView.frame.size.width, height: scrollView.bounds.size.height)
     scrollView.contentSize = size
 
-    return 10
+    return posts.count
   }
 
   public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell: PostGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as! PostGridCell
-    cell.backgroundColor = UIColor.red
+    let post = posts[indexPath.row] as Post
+    let filename = post.multipartIds[0] as String
+
+    if filename.characters.count > 0 {
+      cell.thumbnailImageView.setImage(with: post.multipartIds[0], size: .thumbnail)
+    }
+
+    if filename.isVideoPathExtension {
+      cell.isVideo = true
+    } else {
+      cell.isMultiPhotos = post.multipartIds.count > 1 ? true : false
+    }
     return cell
   }
 
@@ -225,6 +323,17 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let tabBarVC = appDelegate.window?.rootViewController as! MainTabBarController
     tabBarVC.presentWrapperViewController()
+  }
+
+  func postDidCreate(_ notification: Notification) {
+    guard let post = notification.userInfo?["post"] as? Post else { return }
+    self.posts.insert(post, at: 0)
+    print("create post", post.multipartIds)
+    if self.personalInfoView.isGridMode {
+      self.postGridCollectionView.reloadData()
+    } else {
+      self.adapter.performUpdates(animated: true, completion: nil)
+    }
   }
 
   /*
@@ -240,6 +349,7 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
  */
 }
 
+// MARK: -
 class ColumnFlowLayout: UICollectionViewFlowLayout {
 
   let cellsPerRow: Int
@@ -272,5 +382,23 @@ class ColumnFlowLayout: UICollectionViewFlowLayout {
     let context = super.invalidationContext(forBoundsChange: newBounds) as! UICollectionViewFlowLayoutInvalidationContext
     context.invalidateFlowLayoutDelegateMetrics = newBounds != collectionView?.bounds
     return context
+  }
+}
+
+extension PersonalViewController: ListAdapterDataSource {
+  func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
+    let items: [ListDiffable] = self.posts
+    print("in objects", items)
+    return items
+  }
+  func listAdapter(_ listAdapter: ListAdapter, sectionControllerFor object: Any) -> ListSectionController {
+    if object is Post {
+      return PostSectionController()
+    } else {
+      return ListSectionController()
+    }
+  }
+  func emptyView(for listAdapter: ListAdapter) -> UIView? {
+    return nil
   }
 }

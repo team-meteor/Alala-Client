@@ -24,7 +24,9 @@ protocol PersonalInfoViewDelegate: class {
 
 // MARK: -
 class PersonalInfoView: UIView {
-  var delegate: PersonalInfoViewDelegate?
+  weak var delegate: PersonalInfoViewDelegate?
+
+  var isGridMode = true
 
   //var userInfo : User
 
@@ -37,6 +39,8 @@ class PersonalInfoView: UIView {
     $0.layer.borderColor = UIColor.lightGray.cgColor
     $0.clipsToBounds = true
     $0.isUserInteractionEnabled = true
+    $0.image = UIImage(named: "default_user")
+    $0.contentMode = .scaleAspectFill
   }
 
   let profileNameLabel = UILabel().then {
@@ -105,8 +109,8 @@ class PersonalInfoView: UIView {
   }
 
   let optionsButton = RoundCornerButton(type: .buttonColorTypeWhite).then {
-    $0.setImage(UIImage(named: "settings"), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "settings"), for: UIControlState.highlighted)
+    $0.setImage(UIImage(named: "settings")?.resizeImage(scaledTolength: 15), for: UIControlState.normal)
+    $0.setImage(UIImage(named: "settings")?.resizeImage(scaledTolength: 15), for: UIControlState.highlighted)
     $0.imageView?.contentMode = UIViewContentMode.scaleAspectFit
     $0.addTarget(self, action: #selector(optionsButtonTap(sender:)), for: .touchUpInside)
   }
@@ -117,26 +121,24 @@ class PersonalInfoView: UIView {
   }
 
   let gridPostMenuButton = UIButton().then {
-    $0.setImage(UIImage(named: "grid")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "grid")?.resizeImage(scaledTolength: 25), for: UIControlState.highlighted)
+    $0.setImage(UIImage(named: "grid")?.resizeImage(scaledTolength: 20), for: UIControlState.normal)
+    $0.setImage(UIImage(named: "grid_selected")?.resizeImage(scaledTolength: 20), for: UIControlState.selected)
     $0.addTarget(self, action: #selector(gridPostMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
   let listPostMenuButton = UIButton().then {
-    $0.setImage(UIImage(named: "list")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "list")?.resizeImage(scaledTolength: 25), for: UIControlState.highlighted)
+    $0.setImage(UIImage(named: "list")?.resizeImage(scaledTolength: 20), for: UIControlState.normal)
+    $0.setImage(UIImage(named: "list_selected")?.resizeImage(scaledTolength: 20), for: UIControlState.selected)
     $0.addTarget(self, action: #selector(listPostMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
   let photosForYouMenuButton = UIButton().then {
     $0.setImage(UIImage(named: "my_photo")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "my_photo")?.resizeImage(scaledTolength: 25), for: UIControlState.highlighted)
     $0.addTarget(self, action: #selector(photosForYouMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
   let savedMenuButton = UIButton().then {
     $0.setImage(UIImage(named: "tag")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "tag")?.resizeImage(scaledTolength: 25), for: UIControlState.highlighted)
     $0.addTarget(self, action: #selector(savedMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
@@ -209,7 +211,7 @@ class PersonalInfoView: UIView {
     }
     postsCountLabel.snp.makeConstraints { (make) in
       make.top.equalTo(postsButton)
-      make.left.equalTo(postsButton).offset(10)
+      make.left.equalTo(postsButton)
       make.right.equalTo(postsButton)
       make.height.equalTo(15)
     }
@@ -310,11 +312,31 @@ class PersonalInfoView: UIView {
       make.bottom.equalTo(subMenuBar)
       make.width.equalTo(gridPostMenuButton)
     }
+
+    gridPostMenuButton.isSelected = true
   }
 
   func setupUserInfo(userInfo: User) {
     profileNameLabel.text = userInfo.email
-    profileImageView.setImage(with: userInfo.profilePhotoId, size: .small)
+    if userInfo.profilePhotoId != nil {
+      profileImageView.setImage(with: userInfo.profilePhotoId, size: .small)
+    }
+  }
+
+  /**
+   * 컨텐츠 유무에 따른 개인프로필 뷰의 서브메뉴바 아이콘 세팅
+   * @param hasContents - 해당 유저가 작성한 Post가 있는지의 유무
+   *
+   * - Post가 없으면 grid/list 아이콘이 비활성화
+   * - Post가 있으면 grid/list 아이콘 중 기본값 혹은 마지막 선택값이 활성화
+   */
+  func setupNoContentsMode(hasContents: Bool) {
+    gridPostMenuButton.isEnabled = hasContents
+    listPostMenuButton.isEnabled = hasContents
+
+    if hasContents == true {
+      gridPostMenuButton.isSelected = true
+    }
   }
 
   // MARK: - User Action
@@ -339,10 +361,18 @@ class PersonalInfoView: UIView {
   }
 
   func gridPostMenuButtonTap(sender: UIButton) {
+    isGridMode = true
+    gridPostMenuButton.isSelected = isGridMode
+    listPostMenuButton.isSelected = !isGridMode
+
     delegate?.gridPostMenuButtonTap(sender: sender)
   }
 
   func listPostMenuButtonTap(sender: UIButton) {
+    isGridMode = false
+    gridPostMenuButton.isSelected = isGridMode
+    listPostMenuButton.isSelected = !isGridMode
+
     delegate?.listPostMenuButtonTap(sender: sender)
   }
 

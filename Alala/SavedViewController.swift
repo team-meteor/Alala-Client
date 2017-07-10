@@ -78,7 +78,6 @@ class SavedViewController: UIViewController {
       make.width.equalTo(allTabView)
     }
 
-    // TODO:
 //    let isNoContents = true
 //
 //    if(isNoContents) {

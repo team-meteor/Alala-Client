@@ -21,10 +21,10 @@ class PhotosForYouViewController: UIViewController {
       $0.sizeToFit()
     }
 
-    // TODO:
+    // todo:
     let isNoContents = true
 
-    if(isNoContents) {
+    if isNoContents {
       self.view.addSubview(noContentsGuideView)
       noContentsGuideView.snp.makeConstraints { (make) in
         make.top.equalTo(self.view)

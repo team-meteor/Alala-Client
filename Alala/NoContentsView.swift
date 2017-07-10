@@ -16,7 +16,7 @@ protocol NoContentsViewDelegate: class {
 class NoContentsView: UIView {
 
   let GUIDE_ICON_SIZE = 80
-  var delegate: NoContentsViewDelegate?
+  weak var delegate: NoContentsViewDelegate?
 
   // MARK: - UI Objets
   let innerView = UIView()
