@@ -23,17 +23,16 @@ class PostSectionController: ListSectionController {
   override func sizeForItem(at index: Int) -> CGSize {
     let width = collectionContext!.containerSize.width
 
-    var multimediaCellRatio = Float(post.multipartIds[0].components(separatedBy: "_")[0])
-
-    if multimediaCellRatio == nil {
-      multimediaCellRatio = 1
+    var multimediaCellRatio: Float = 1.0
+    if post.multipartIds.count > 0 {
+      multimediaCellRatio = Float(post.multipartIds[0].components(separatedBy: "_")[0])!
     }
 
     switch index {
     case 0: // usercell
       return CGSize(width: width, height: 56)
     case 1: // multimediaCell
-      return CGSize(width: width, height: width * CGFloat(multimediaCellRatio!))
+      return CGSize(width: width, height: width * CGFloat(multimediaCellRatio))
     case 2: // buttonGroupcell
       return CGSize(width: width, height: 50)
     case 3: // likeCountCell

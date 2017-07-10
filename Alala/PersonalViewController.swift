@@ -9,7 +9,6 @@
 import UIKit
 import Alamofire
 import ObjectMapper
-import IGListKit
 
 /**
  * '내 프로필 & 포스트' 화면
@@ -17,7 +16,7 @@ import IGListKit
  * **[PATH]** 하단 Main Tap Bar > 가장 우측의 Personal 아이콘 선택
  * - Note : '프로필'View는 PersonalInfoView 클래스에 구현되어있고 이곳에서는 유저의 액션을 받아 delegate만 처리
  */
-class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoContentsViewDelegate, UICollectionViewDataSource {
+class PersonalViewController: UIViewController {
 
   // MARK: - UI Objects
   fileprivate var posts: [Post] = []
@@ -66,16 +65,8 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     return view
   }()
 
-  let postListCollectionView: UICollectionView = {
-    let flowLayout = UICollectionViewFlowLayout()
-    let view = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
-    view.backgroundColor = UIColor.white
-    return view
-  }()
-
-  lazy var adapter: ListAdapter = {
-    return ListAdapter(updater: ListAdapterUpdater(), viewController: self)
-  }()
+  var postViewController: PostViewController!
+  var postListCollectionView: UICollectionView!
 
   // MARK: - Initialize
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -165,28 +156,34 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
         make.bottom.equalTo(contentsView)
       }
       postGridCollectionView.dataSource = self
+      postGridCollectionView.delegate = self
       postGridCollectionView.isScrollEnabled = false
     }
 
     postGridCollectionView.isHidden = false
-    postListCollectionView.isHidden = true
+    if postViewController != nil {
+      postViewController.view.isHidden = true
+    }
   }
 
   func setupPostList() {
-    if postListCollectionView.superview == nil {
-      adapter.collectionView = postListCollectionView
-      adapter.dataSource = self
-      contentsView.addSubview(postListCollectionView)
-      postListCollectionView.snp.makeConstraints { (make) in
+    if postViewController == nil {
+      postViewController = PostViewController(posts)
+
+      self.addChildViewController(postViewController)
+      postListCollectionView = postViewController.collectionView
+
+      contentsView.addSubview(postViewController.view)
+      postViewController.view.snp.makeConstraints { (make) in
         make.top.equalTo(contentsView)
         make.left.equalTo(contentsView)
         make.right.equalTo(contentsView)
-        make.bottom.equalTo(contentsView)
+        make.bottom.equalTo(contentsView).offset(-44)
       }
     }
 
     postGridCollectionView.isHidden = true
-    postListCollectionView.isHidden = false
+    postViewController.view.isHidden = false
   }
 
   fileprivate func fetchFeedMine(paging: Paging) {
@@ -209,7 +206,6 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
         self.nextPage = feed.nextPage
         print("fetchFeed : ", self.posts)
         DispatchQueue.main.async {
-          //self.adapter.performUpdates(animated: true, completion: nil)
           self.personalInfoView.postsCountLabel.text = self.posts.count.description
           if self.posts.count == 0 {
             self.setupNoContents()
@@ -219,7 +215,7 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
               self.postGridCollectionView.reloadData()
             } else {
               self.setupPostList()
-              self.adapter.performUpdates(animated: true, completion: nil)
+              self.postViewController.updateNewPost(self.posts)
             }
           }
         }
@@ -233,8 +229,9 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     super.viewWillAppear(animated)
     self.navigationController?.isNavigationBarHidden = false
   }
+}
 
-  // MARK: - PersonalInfoViewDelegate
+extension PersonalViewController: PersonalInfoViewDelegate {
   func discoverPeopleButtonTap() {
     let sampleVC = DiscoverPeopleViewController()
     self.navigationController?.pushViewController(sampleVC, animated: true)
@@ -275,7 +272,7 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
   func listPostMenuButtonTap(sender: UIButton) {
 
     self.setupPostList()
-    self.adapter.performUpdates(animated: true, completion: nil)
+    self.postViewController.updateNewPost(self.posts)
   }
 
   func photosForYouMenuButtonTap(sender: UIButton) {
@@ -287,7 +284,35 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     let savedVC = SavedViewController()
     self.navigationController?.pushViewController(savedVC, animated: true)
   }
+}
 
+/**
+ * 내가 작성한 포스트가 없을 경우 노출되는 NoContentsView에서 'Share your first photo or video' 버튼을 선택했을 때 발생하는 delegate
+ */
+extension PersonalViewController: NoContentsViewDelegate {
+  func addContentButtonTap(sender: UIButton) {
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let tabBarVC = appDelegate.window?.rootViewController as! MainTabBarController
+    tabBarVC.presentWrapperViewController()
+  }
+
+  func postDidCreate(_ notification: Notification) {
+    guard let post = notification.userInfo?["post"] as? Post else { return }
+    self.posts.insert(post, at: 0)
+
+    if noContentsGuideView.superview != nil {
+      noContentsGuideView.removeFromSuperview()
+    }
+
+    if self.personalInfoView.isGridMode {
+      self.postGridCollectionView.reloadData()
+    } else {
+      postViewController.adapter.performUpdates(animated: true, completion: nil)
+    }
+  }
+}
+
+extension PersonalViewController: UICollectionViewDataSource {
   public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 
     //personalInfoView.bounds.size.height
@@ -301,6 +326,11 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
   public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell: PostGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as! PostGridCell
     let post = posts[indexPath.row] as Post
+
+    guard post.multipartIds.count > 0 else {
+      return cell
+    }
+
     let filename = post.multipartIds[0] as String
 
     if filename.characters.count > 0 {
@@ -314,39 +344,14 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     }
     return cell
   }
+}
 
-  // MARK: - NoContentsViewDelegate
-  /**
-   * 내가 작성한 포스트가 없을 경우 노출되는 NoContentsView에서 'Share your first photo or video' 버튼을 선택했을 때 발생하는 delegate
-   */
-  func addContentButtonTap(sender: UIButton) {
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    let tabBarVC = appDelegate.window?.rootViewController as! MainTabBarController
-    tabBarVC.presentWrapperViewController()
+extension PersonalViewController: UICollectionViewDelegate {
+  public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    let postArray = [self.posts[indexPath.row]]
+    let postVC = PostViewController(postArray)
+    self.navigationController?.pushViewController(postVC, animated: true)
   }
-
-  func postDidCreate(_ notification: Notification) {
-    guard let post = notification.userInfo?["post"] as? Post else { return }
-    self.posts.insert(post, at: 0)
-    print("create post", post.multipartIds)
-    if self.personalInfoView.isGridMode {
-      self.postGridCollectionView.reloadData()
-    } else {
-      self.adapter.performUpdates(animated: true, completion: nil)
-    }
-  }
-
-  /*
-  func logoutButtonDidTap() {
-    AuthService.instance.logout { (success) in
-      if success {
-        NotificationCenter.default.post(name: .presentLogin, object: nil, userInfo: nil)
-      } else {
-
-      }
-    }
-  }
- */
 }
 
 // MARK: -
@@ -382,23 +387,5 @@ class ColumnFlowLayout: UICollectionViewFlowLayout {
     let context = super.invalidationContext(forBoundsChange: newBounds) as! UICollectionViewFlowLayoutInvalidationContext
     context.invalidateFlowLayoutDelegateMetrics = newBounds != collectionView?.bounds
     return context
-  }
-}
-
-extension PersonalViewController: ListAdapterDataSource {
-  func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
-    let items: [ListDiffable] = self.posts
-    print("in objects", items)
-    return items
-  }
-  func listAdapter(_ listAdapter: ListAdapter, sectionControllerFor object: Any) -> ListSectionController {
-    if object is Post {
-      return PostSectionController()
-    } else {
-      return ListSectionController()
-    }
-  }
-  func emptyView(for listAdapter: ListAdapter) -> UIView? {
-    return nil
   }
 }
