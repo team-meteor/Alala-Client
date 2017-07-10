@@ -33,7 +33,7 @@ class PostSectionController: ListSectionController {
     case 0: // usercell
       return CGSize(width: width, height: 56)
     case 1: // multimediaCell
-      return CGSize(width: width, height: width * CGFloat(multimediaCellRatio!))
+      return CGSize(width: width * CGFloat(post.multipartIds.count), height: width * CGFloat(multimediaCellRatio!))
     case 2: // buttonGroupcell
       return CGSize(width: width, height: 50)
     case 3: // likeCountCell
