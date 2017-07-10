@@ -87,7 +87,7 @@ class PostEditorViewController: UIViewController {
   }
 
   func shareButtonDidTap() {
-
+    self.navigationItem.rightBarButtonItem?.isEnabled = false
     getMultipartsIdArr { idArr in
 
       PostService.postWithSingleMultipart(idArr: idArr, message: self.message, progress: { [weak self] progress in
