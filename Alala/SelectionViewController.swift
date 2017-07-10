@@ -75,7 +75,7 @@ class SelectionViewController: UIViewController {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = false
     $0.maximumZoomScale = 3.0
-    $0.minimumZoomScale = 0.3
+    $0.minimumZoomScale = 0.8
     $0.zoomScale = 1.0
     $0.bouncesZoom = true
     $0.alwaysBounceVertical = true
@@ -139,7 +139,7 @@ class SelectionViewController: UIViewController {
   }
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    self.scrollView.minimumZoomScale = self.setMinimumSize(image: self.getImage!)
+
     let bounds = self.navigationController!.navigationBar.bounds
     self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
   }
@@ -251,9 +251,7 @@ class SelectionViewController: UIViewController {
       if image != nil {
         self.getImage = image!
         self.scrollView.zoomScale = 1.0
-        print("size", self.imageView.frame)
         self.scaleAspectFillSize(image: image!, imageView: self.imageView)
-        print("size", self.imageView.frame)
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
         self.centerScrollView(animated: false)
@@ -284,13 +282,12 @@ class SelectionViewController: UIViewController {
 
     var imageWidth = image.size.width
     var imageHeight = image.size.height
-    print("width", imageWidth, imageHeight)
 
     imageView.frame.size = scrollView.frame.size
-    print("scroll", scrollView.frame)
     let imageViewWidth = imageView.frame.size.width
     let imageViewHeight = imageView.frame.size.height
-
+    print("imageWidth", imageWidth)
+    print("imageHeight", imageHeight)
     if imageWidth >= imageHeight {
       imageWidth = imageWidth * imageViewHeight / imageHeight
       imageHeight = imageViewHeight
@@ -299,21 +296,6 @@ class SelectionViewController: UIViewController {
       imageWidth = imageViewWidth
     }
     self.imageView.frame.size = CGSize(width: imageWidth, height: imageHeight)
-  }
-
-  func setMinimumSize(image: UIImage) -> CGFloat {
-    let imageWidth = image.size.width
-    let imageHeight = image.size.height
-    var minumumSize: CGFloat?
-
-    if imageWidth >= imageHeight {
-      minumumSize = cropAreaView.frame.width / imageView.frame.width
-    } else {
-      minumumSize = cropAreaView.frame.height / imageView.frame.height
-    }
-
-    return minumumSize!
-
   }
 
   func configureView() {
@@ -380,10 +362,8 @@ class SelectionViewController: UIViewController {
 
   func scrollViewZoom() {
 
-    let zoomValue = self.setMinimumSize(image: self.getImage!)
-
     if scrollView.zoomScale >= 1.0 {
-      scrollView.setZoomScale(zoomValue, animated: true)
+      scrollView.setZoomScale(0.8, animated: true)
       zoomMode = true
     } else {
       scrollView.setZoomScale(1.0, animated: true)
@@ -478,9 +458,6 @@ extension SelectionViewController: UICollectionViewDataSource {
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
         self.centerScrollView(animated: false)
-        let zoomValue = self.setMinimumSize(image: self.getImage!)
-
-        self.getZoomScale = zoomValue
       }
 
     })
@@ -547,11 +524,9 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
         self.centerScrollView(animated: false)
-        let zoomValue = self.setMinimumSize(image: self.getImage!)
 
-        let getZoomScale = zoomValue
         if self.zoomMode {
-          self.scrollView.zoomScale = zoomValue
+          self.scrollView.zoomScale = 0.8
         } else {
           self.scrollView.zoomScale = 1.0
         }
@@ -619,17 +594,6 @@ extension SelectionViewController: UIScrollViewDelegate {
     scrollView.contentInset = UIEdgeInsets(top: verticalPadding, left: horizontalPadding, bottom: verticalPadding, right: horizontalPadding)
 
   }
-//  func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-//    let currentZoomScale = scrollView.zoomScale
-//
-//    print("currentZoomScale", currentZoomScale)
-//    print("getZoomScale", getZoomScale)
-//
-//    if currentZoomScale < self.getZoomScale! {
-//      scrollView.zoomScale = self.getZoomScale!
-//      print("111")
-//    }
-//  }
 }
 
 extension SelectionViewController: UITableViewDelegate {
