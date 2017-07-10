@@ -193,8 +193,7 @@ class SelectionViewController: UIViewController {
     smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
     var smartArr = [PHAssetCollection]()
     smartAlbums.enumerateObjects({ (object, _, _) -> Void in
-      let collection = object as! PHAssetCollection
-
+      let collection = object
       let smartAlbum: PHFetchResult = PHAsset.fetchAssets(in: collection, options: nil)
       if smartAlbum.count > 0 {
         smartArr.append(collection)
@@ -280,14 +279,12 @@ class SelectionViewController: UIViewController {
         self.scrollView.contentSize = self.imageView.frame.size
         self.imageView.image = image
         self.centerScrollView(animated: false)
-        print("image", image)
       }
     })
 
   }
 
   func libraryButtonDidTap() {
-    print(self.smartAlbums)
     if libraryButton.currentTitle == "Library v" {
       if self.allPhotos.count == photosLimit {
         getAllAlbums()
@@ -313,8 +310,7 @@ class SelectionViewController: UIViewController {
     imageView.frame.size = scrollView.frame.size
     let imageViewWidth = imageView.frame.size.width
     let imageViewHeight = imageView.frame.size.height
-    print("imageWidth", imageWidth)
-    print("imageHeight", imageHeight)
+    
     if imageWidth >= imageHeight {
       imageWidth = imageWidth * imageViewHeight / imageHeight
       imageHeight = imageViewHeight
@@ -444,8 +440,6 @@ extension SelectionViewController: UICollectionViewDelegate {
     if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
 
       self.getAllAlbums()
-
-      print("fetch")
 
       self.fetchResult = self.allPhotos
       self.collectionView.reloadData()
@@ -719,7 +713,6 @@ extension SelectionViewController: UITableViewDataSource {
       cell.textLabel!.text = collection.localizedTitle
 
       if smartAlbumsFetchResult.count != 0 {
-        print("스마트", indexPath.row)
         let asset = smartAlbumsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
@@ -734,15 +727,13 @@ extension SelectionViewController: UITableViewDataSource {
 
     case .userCollections:
       let collection = userAlbumsArr[indexPath.row]
-      guard let assetCollection = collection as? PHAssetCollection
-        else { fatalError("expected asset collection") }
+      let assetCollection = collection
       self.userCollectionsFetchResult = PHAsset.fetchAssets(in: assetCollection, options: AllOptions)
 
       let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath)
       cell.textLabel!.text = collection.localizedTitle
 
       if userCollectionsFetchResult.count != 0 {
-        print("유저사진", indexPath.row)
         let asset = userCollectionsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
