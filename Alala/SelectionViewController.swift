@@ -126,6 +126,10 @@ class SelectionViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    let scrollViewDoubleTap = UITapGestureRecognizer(target: self, action: #selector(doubleTapped))
+    scrollViewDoubleTap.numberOfTapsRequired = 2
+    scrollView.addGestureRecognizer(scrollViewDoubleTap)
+
     NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying(note:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
 
     self.collectionView.dataSource = self
@@ -236,6 +240,16 @@ class SelectionViewController: UIViewController {
       self.navigationController?.pushViewController(postEditorViewController, animated: true)
     }
   }
+  func doubleTapped() {
+    if scrollView.zoomScale == 1.0 {
+      scrollView.setZoomScale(0.8, animated: true)
+      zoomMode = true
+    } else {
+      scrollView.setZoomScale(1.0, animated: true)
+      zoomMode = false
+    }
+
+  }
 
   func prepareMultiparts(completion: @escaping (_ success: Bool) -> Void) {
 
@@ -310,7 +324,7 @@ class SelectionViewController: UIViewController {
     imageView.frame.size = scrollView.frame.size
     let imageViewWidth = imageView.frame.size.width
     let imageViewHeight = imageView.frame.size.height
-    
+
     if imageWidth >= imageHeight {
       imageWidth = imageWidth * imageViewHeight / imageHeight
       imageHeight = imageViewHeight
