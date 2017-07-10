@@ -33,7 +33,7 @@ class PostSectionController: ListSectionController {
     case 0: // usercell
       return CGSize(width: width, height: 56)
     case 1: // multimediaCell
-      return CGSize(width: width * CGFloat(post.multipartIds.count), height: width * CGFloat(multimediaCellRatio!))
+      return CGSize(width: width, height: width * CGFloat(multimediaCellRatio!))
     case 2: // buttonGroupcell
       return CGSize(width: width, height: 50)
     case 3: // likeCountCell
@@ -71,7 +71,12 @@ class PostSectionController: ListSectionController {
       cell.profilePhoto.setImage(with: post.createdBy.profilePhotoId, size: .thumbnail)
       cell.profileNameLabel.text = post.createdBy.profileName
     } else if let cell = cell as? MultimediaCell {
-      cell.multimediaImageView.setImage(with: post.multipartIds[0], size: .hd)
+      cell.configure(multimediaCount: self.post.multipartIds.count)
+
+      for i in 0..<post.multipartIds.count {
+        print("i", i)
+        cell.imageViewArr[i].setImage(with: post.multipartIds[i], size: .hd)
+      }
     } else if let cell = cell as? LikeCountCell, post.isLiked == true {
       cell.likeCount.text = String(describing: post.likedUsers!.count)
     }
