@@ -33,14 +33,15 @@ class SelectionViewController: UIViewController {
   var allPhotos: PHFetchResult<PHAsset>!
   var smartAlbums: PHFetchResult<PHAssetCollection>!
   var userCollections: PHFetchResult<PHCollection>!
-  var fetchResult: PHFetchResult<PHAsset>! {
+  var fetchResult: PHFetchResult<PHAsset> = PHFetchResult<PHAsset>() {
     didSet {
-      print("changed")
       updateFirstImageView()
     }
   }
   var smartAlbumsFetchResult: PHFetchResult<PHAsset>!
+  var smartAlbumsArr = [PHAssetCollection]()
   var userCollectionsFetchResult: PHFetchResult<PHAsset>!
+  var userAlbumsArr = [PHAssetCollection]()
   var assetCollection: PHAssetCollection?
   let imageManager = PHCachingImageManager()
   let tileCellSpacing = CGFloat(1)
@@ -175,12 +176,12 @@ class SelectionViewController: UIViewController {
   }
 
   func getLimitedAlbumFromLibrary() {
+
     let limitedOptions = PHFetchOptions()
     let sortOptions = PHFetchOptions()
     limitedOptions.fetchLimit = photosLimit
     sortOptions.fetchLimit = photosLimit
     sortOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-
     allPhotos = PHAsset.fetchAssets(with: sortOptions)
     smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: limitedOptions)
     userCollections = PHCollectionList.fetchTopLevelUserCollections(with: limitedOptions)
@@ -188,11 +189,34 @@ class SelectionViewController: UIViewController {
   }
 
   func getAllAlbums() {
+
     let AllOptions = PHFetchOptions()
     AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
     allPhotos = PHAsset.fetchAssets(with: AllOptions)
+
     smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
+    var smartArr = [PHAssetCollection]()
+    smartAlbums.enumerateObjects({ (object, _, _) -> Void in
+      let collection = object
+      let smartAlbum: PHFetchResult = PHAsset.fetchAssets(in: collection, options: nil)
+      if smartAlbum.count > 0 {
+        smartArr.append(collection)
+      }
+
+    })
+    smartAlbumsArr = smartArr
+
     userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
+    var userArr = [PHAssetCollection]()
+    userCollections.enumerateObjects({ (object, _, _) -> Void in
+      let collection = object as! PHAssetCollection
+      let userAlbum: PHFetchResult = PHAsset.fetchAssets(in: collection, options: nil)
+      if userAlbum.count > 0 {
+        userArr.append(collection)
+      }
+    })
+    userAlbumsArr = userArr
+
   }
 
   func getCropImage() -> UIImage {
@@ -256,10 +280,10 @@ class SelectionViewController: UIViewController {
 
   func updateFirstImageView() {
 
-    let asset = self.fetchResult.object(at: 0)
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width:  600 * scale, height: 600 * scale)
     scrollView.frame.size = CGSize(width: 375.0, height: 398.0)
+    let asset = self.fetchResult.object(at: 0)
     self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
 
       if image != nil {
@@ -300,6 +324,7 @@ class SelectionViewController: UIViewController {
     imageView.frame.size = scrollView.frame.size
     let imageViewWidth = imageView.frame.size.width
     let imageViewHeight = imageView.frame.size.height
+
     if imageWidth >= imageHeight {
       imageWidth = imageWidth * imageViewHeight / imageHeight
       imageHeight = imageViewHeight
@@ -420,6 +445,7 @@ class SelectionViewController: UIViewController {
     NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
     print("selection deinit")
   }
+
 }
 
 extension SelectionViewController: UICollectionViewDelegate {
@@ -428,8 +454,6 @@ extension SelectionViewController: UICollectionViewDelegate {
     if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
 
       self.getAllAlbums()
-
-      print("fetch")
 
       self.fetchResult = self.allPhotos
       self.collectionView.reloadData()
@@ -611,10 +635,14 @@ extension SelectionViewController: UIScrollViewDelegate {
 extension SelectionViewController: UITableViewDelegate {
 
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+
     return 100
   }
 
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    let AllOptions = PHFetchOptions()
+    AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+
     switch Section(rawValue: indexPath.section)! {
 
     case .allPhotos:
@@ -624,20 +652,24 @@ extension SelectionViewController: UITableViewDelegate {
     case .smartAlbums:
 
       let collection: PHCollection
-      collection = smartAlbums.object(at: indexPath.row)
+      //collection = smartAlbums.object(at: indexPath.item)
+      collection = smartAlbumsArr[indexPath.item]
       guard let assetCollection = collection as? PHAssetCollection
         else { fatalError("expected asset collection") }
-      self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
+
       self.assetCollection = assetCollection
+      self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: AllOptions)
 
     case .userCollections:
 
       let collection: PHCollection
-      collection = userCollections.object(at: indexPath.row)
+      //collection = userCollections.object(at: indexPath.item)
+      collection = userAlbumsArr[indexPath.item]
       guard let assetCollection = collection as? PHAssetCollection
         else { fatalError("expected asset collection") }
-      self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
+
       self.assetCollection = assetCollection
+      self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: AllOptions)
     }
 
     self.libraryButton.setTitle("Library v", for: .normal)
@@ -659,49 +691,58 @@ extension SelectionViewController: UITableViewDataSource {
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     switch Section(rawValue: section)! {
     case .allPhotos: return 1
-    case .smartAlbums: return smartAlbums.count
-    case .userCollections: return userCollections.count
+    case .smartAlbums: return smartAlbumsArr.count
+    case .userCollections: return userAlbumsArr.count
     }
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    let AllOptions = PHFetchOptions()
+    AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+
     switch Section(rawValue: indexPath.section)! {
     case .allPhotos:
       let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.allPhotos.rawValue, for: indexPath)
-      cell.textLabel!.text = NSLocalizedString("All Photos", comment: "")
+
       if fetchResult.count != 0 {
-        let asset = fetchResult.object(at: indexPath[0])
+        cell.textLabel!.text = NSLocalizedString("All Photos", comment: "")
+        let asset = fetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
           cell.imageView?.image = image
 
         })
+        return cell
+      } else {
+        return cell
       }
 
-      return cell
-
     case .smartAlbums:
-      let collection = smartAlbums.object(at: indexPath.row)
-      self.smartAlbumsFetchResult = PHAsset.fetchAssets(in: collection, options: nil)
+
+      let collection = smartAlbumsArr[indexPath.row]
+      self.smartAlbumsFetchResult = PHAsset.fetchAssets(in: collection, options: AllOptions)
+
       let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath)
       cell.textLabel!.text = collection.localizedTitle
+
       if smartAlbumsFetchResult.count != 0 {
         let asset = smartAlbumsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
-        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
           cell.imageView?.image = image
 
         })
+        return cell
+      } else {
+        return cell
       }
-      return cell
 
     case .userCollections:
-      let collection = userCollections.object(at: indexPath.row)
-      guard let assetCollection = collection as? PHAssetCollection
-        else { fatalError("expected asset collection") }
-      self.userCollectionsFetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
+      let collection = userAlbumsArr[indexPath.row]
+      let assetCollection = collection
+      self.userCollectionsFetchResult = PHAsset.fetchAssets(in: assetCollection, options: AllOptions)
 
       let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath)
       cell.textLabel!.text = collection.localizedTitle
@@ -710,16 +751,20 @@ extension SelectionViewController: UITableViewDataSource {
         let asset = userCollectionsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
-        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
           cell.imageView?.image = image
 
         })
+        return cell
+      } else {
+        return cell
       }
-      return cell
+
     }
   }
 
   func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
     return sectionLocalizedTitles[section]
   }
+
 }
