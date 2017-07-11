@@ -24,9 +24,10 @@ class PostSectionController: ListSectionController {
     let width = collectionContext!.containerSize.width
 
     var multimediaCellRatio: Float = 1.0
-    if post.multipartIds.count > 0 {
-      multimediaCellRatio = Float(post.multipartIds[0].components(separatedBy: "_")[0])!
-    }
+//    if post.multipartIds.count > 0 {
+//      print("comp", post.multipartIds)
+//      multimediaCellRatio = Float(post.multipartIds[0].components(separatedBy: "_")[0])!
+//    }
 
     switch index {
     case 0: // usercell
@@ -70,14 +71,16 @@ class PostSectionController: ListSectionController {
       cell.profilePhoto.setImage(with: post.createdBy.profilePhotoId, size: .thumbnail)
       cell.profileNameLabel.text = post.createdBy.profileName
     } else if let cell = cell as? MultimediaCell {
-      print("multiid", self.post.multipartIds)
+      print("multi", self.post.multipartIds)
       cell.configure(multimediaCount: self.post.multipartIds.count)
       for i in 0..<post.multipartIds.count {
 
         if self.post.multipartIds[i].contains("_") {
           cell.imageViewArr[i].setImage(with: post.multipartIds[i], size: .hd)
+          print("image", post.multipartIds[i])
         } else {
           cell.imageViewArr[i].setVideo(videoId: post.multipartIds[i])
+          print("video", post.multipartIds[i])
         }
       }
     } else if let cell = cell as? LikeCountCell, post.isLiked == true {
