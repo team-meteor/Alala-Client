@@ -238,7 +238,7 @@ class SelectionViewController: UIViewController {
   }
 
   func prepareMultiparts(completion: @escaping (_ success: Bool) -> Void) {
-    print("index", self.collectionView.indexPathsForSelectedItems)
+
     if self.collectionView.indexPathsForSelectedItems?.count != 0 {
 
       for index in self.collectionView.indexPathsForSelectedItems! {
