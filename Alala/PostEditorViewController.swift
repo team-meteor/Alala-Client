@@ -38,6 +38,7 @@ class PostEditorViewController: UIViewController {
   }
 
   func getMultipartsIdArr(completion: @escaping (_ idArr: [String]) -> Void) {
+
     //비디오 촬영인 경우
     if videoData.count != 0 {
       MultipartService.uploadMultipart(image: nil, videoData: videoData, progress: nil) { videoId in

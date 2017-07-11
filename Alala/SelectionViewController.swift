@@ -106,13 +106,13 @@ class SelectionViewController: UIViewController {
   fileprivate let scrollViewZoomButton = Button()
   init() {
     super.init(nibName: nil, bundle: nil)
-    //cancle 버튼 생성
+
     self.navigationItem.leftBarButtonItem = UIBarButtonItem(
       barButtonSystemItem: .cancel,
       target: self,
       action: #selector(cancelButtonDidTap)
     )
-    //done 버튼 생성
+
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(
       barButtonSystemItem: .done,
       target: self,
@@ -262,20 +262,27 @@ class SelectionViewController: UIViewController {
           self.imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
             if let urlAsset = asset as? AVURLAsset {
               self.urlAssetArr.append(urlAsset)
-
+              print("video", self.urlAssetArr)
+              if self.urlAssetArr.count + self.imageArr.count == self.collectionView.indexPathsForSelectedItems?.count {
+                completion(true)
+              }
             }
           })
         } else {
           let scale = UIScreen.main.scale
           let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
           self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
-            self.imageArr.append(image!)
 
+            self.imageArr.append(image!)
+            print("image", self.imageArr )
+            if self.urlAssetArr.count + self.imageArr.count == self.collectionView.indexPathsForSelectedItems?.count {
+              completion(true)
+            }
           })
         }
       }
     }
-    completion(true)
+
   }
 
   func updateFirstImageView() {
@@ -306,13 +313,9 @@ class SelectionViewController: UIViewController {
         self.tableView.reloadData()
 
       }
-      self.libraryButton.setTitle("Library ^", for: .normal)
-      UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: -self.tableView.frame.height)})
-      NotificationCenter.default.post(name: Notification.Name("hideCustomTabBar"), object: nil)
+      tableViewOnMode()
     } else if libraryButton.currentTitle == "Library ^" {
-      self.libraryButton.setTitle("Library v", for: .normal)
-      UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)})
-      NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
+      tableViewOffMode()
     }
   }
 
@@ -444,6 +447,33 @@ class SelectionViewController: UIViewController {
   deinit {
     NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
     print("selection deinit")
+  }
+
+  func tableViewOffMode() {
+    self.libraryButton.setTitle("Library v", for: .normal)
+    UIView.animate(withDuration: 0.5, animations: {
+      self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)
+    })
+    NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
+    self.navigationItem.leftBarButtonItem = UIBarButtonItem(
+      barButtonSystemItem: .cancel,
+      target: self,
+      action: #selector(cancelButtonDidTap)
+    )
+
+    self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+      barButtonSystemItem: .done,
+      target: self,
+      action: #selector(doneButtonDidTap)
+    )
+  }
+
+  func tableViewOnMode() {
+    self.libraryButton.setTitle("Library ^", for: .normal)
+    UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: -self.tableView.frame.height)})
+    NotificationCenter.default.post(name: Notification.Name("hideCustomTabBar"), object: nil)
+    self.navigationItem.leftBarButtonItem = nil
+    self.navigationItem.rightBarButtonItem = nil
   }
 
 }
@@ -672,11 +702,7 @@ extension SelectionViewController: UITableViewDelegate {
       self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: AllOptions)
     }
 
-    self.libraryButton.setTitle("Library v", for: .normal)
-    UIView.animate(withDuration: 0.5, animations: {
-      self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)
-    })
-    NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
+    tableViewOffMode()
 
     self.collectionView.reloadData()
 

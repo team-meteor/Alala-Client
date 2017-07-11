@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Photos
+import AVKit
 
 extension UIImageView {
   func setImage(with photoId: String?, placeholder: UIImage? = nil, size: PhotoSize) {
@@ -17,4 +19,18 @@ extension UIImageView {
     let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(size.pixel)_\(photoId)")
     self.kf.setImage(with: url, placeholder: placeholder)
   }
+
+  func setVideo(videoId: String) {
+    let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(videoId)")
+    let playerItem = AVPlayerItem(url: url!)
+    let player = AVPlayer(playerItem: playerItem)
+    let playerLayer = AVPlayerLayer(player: player)
+    DispatchQueue.main.async {
+      self.layer.addSublayer(playerLayer)
+      playerLayer.frame = self.frame
+      player.play()
+    }
+
+  }
+
 }
