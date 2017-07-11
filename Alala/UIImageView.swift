@@ -7,7 +7,8 @@
 //
 
 import UIKit
-import Alamofire
+import Photos
+import AVKit
 
 extension UIImageView {
   func setImage(with photoId: String?, placeholder: UIImage? = nil, size: PhotoSize) {
@@ -21,15 +22,15 @@ extension UIImageView {
 
   func setVideo(videoId: String) {
     let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(videoId)")
-
-    let destination = DownloadRequest.suggestedDownloadDestination()
-    print("des", destination)
-
-    Alamofire.download(url!, to: destination).downloadProgress(queue: DispatchQueue.global(qos: .utility)) { (progress) in
-      print("Progress: \(progress.fractionCompleted)")
-      } .validate().responseData { ( response ) in
-        print("response", response)
-        print(response.destinationURL!.lastPathComponent)
+    let playerItem = AVPlayerItem(url: url!)
+    let player = AVPlayer(playerItem: playerItem)
+    let playerLayer = AVPlayerLayer(player: player)
+    DispatchQueue.main.async {
+      self.layer.addSublayer(playerLayer)
+      playerLayer.frame = self.frame
+      player.play()
     }
+
   }
+
 }

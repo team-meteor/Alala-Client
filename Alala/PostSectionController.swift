@@ -71,12 +71,15 @@ class PostSectionController: ListSectionController {
       cell.profilePhoto.setImage(with: post.createdBy.profilePhotoId, size: .thumbnail)
       cell.profileNameLabel.text = post.createdBy.profileName
     } else if let cell = cell as? MultimediaCell {
-
+      print("multiid", self.post.multipartIds)
       cell.configure(multimediaCount: self.post.multipartIds.count)
-
       for i in 0..<post.multipartIds.count {
-        print("i", i)
-        cell.imageViewArr[i].setImage(with: post.multipartIds[i], size: .hd)
+
+        if self.post.multipartIds[i].contains("_") {
+          cell.imageViewArr[i].setImage(with: post.multipartIds[i], size: .hd)
+        } else {
+          cell.imageViewArr[i].setVideo(videoId: post.multipartIds[i])
+        }
       }
     } else if let cell = cell as? LikeCountCell, post.isLiked == true {
       cell.likeCount.text = String(describing: post.likedUsers!.count)

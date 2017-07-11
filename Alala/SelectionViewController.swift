@@ -238,7 +238,7 @@ class SelectionViewController: UIViewController {
   }
 
   func prepareMultiparts(completion: @escaping (_ success: Bool) -> Void) {
-
+    print("index", self.collectionView.indexPathsForSelectedItems)
     if self.collectionView.indexPathsForSelectedItems?.count != 0 {
 
       for index in self.collectionView.indexPathsForSelectedItems! {
@@ -248,6 +248,7 @@ class SelectionViewController: UIViewController {
           self.imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
             if let urlAsset = asset as? AVURLAsset {
               self.urlAssetArr.append(urlAsset)
+              print("video", self.urlAssetArr)
               if self.urlAssetArr.count + self.imageArr.count == self.collectionView.indexPathsForSelectedItems?.count {
                 completion(true)
               }
@@ -257,7 +258,9 @@ class SelectionViewController: UIViewController {
           let scale = UIScreen.main.scale
           let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
           self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
+
             self.imageArr.append(image!)
+            print("image", self.imageArr )
             if self.urlAssetArr.count + self.imageArr.count == self.collectionView.indexPathsForSelectedItems?.count {
               completion(true)
             }
