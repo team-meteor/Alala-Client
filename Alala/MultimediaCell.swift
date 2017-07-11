@@ -34,7 +34,7 @@ class MultimediaCell: UICollectionViewCell {
   }
 
   func configure(multimediaCount: Int) {
-    for i in 0..<multimediaCount {
+    for _ in 0..<multimediaCount {
       let multimediaImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = UIColor.blue
@@ -62,20 +62,7 @@ class MultimediaCell: UICollectionViewCell {
     print("size", multimediaScrollView.contentSize)
     for i in 0..<imageViewArr.count {
       imageViewArr[i].frame = CGRect(x: self.contentView.bounds.width * CGFloat(i), y: 0, width: self.contentView.bounds.width, height: self.contentView.bounds.height)
-//      if i == 0 {
-//        imageViewArr[i].snp.makeConstraints { (make) in
-//          make.size.equalTo(self.contentView)
-//          make.centerY.equalTo(self.contentView)
-//          make.centerX.equalTo(self.contentView)
-//        }
-//      } else {
-//        imageViewArr[i].snp.makeConstraints { (make) in
-//          make.size.equalTo(self.contentView)
-//          make.centerY.equalTo(self.contentView)
-//          make.left.equalTo(imageViewArr[i-1].snp.right)
-//          //make.centerX.equalTo(imageViewArr[i-1].center.x + self.contentView.frame.width)
-//        }
-//      }
+
     }
   }
 }

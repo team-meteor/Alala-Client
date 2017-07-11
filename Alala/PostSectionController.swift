@@ -71,6 +71,7 @@ class PostSectionController: ListSectionController {
       cell.profilePhoto.setImage(with: post.createdBy.profilePhotoId, size: .thumbnail)
       cell.profileNameLabel.text = post.createdBy.profileName
     } else if let cell = cell as? MultimediaCell {
+
       cell.configure(multimediaCount: self.post.multipartIds.count)
 
       for i in 0..<post.multipartIds.count {

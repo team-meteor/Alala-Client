@@ -248,7 +248,9 @@ class SelectionViewController: UIViewController {
           self.imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
             if let urlAsset = asset as? AVURLAsset {
               self.urlAssetArr.append(urlAsset)
-
+              if self.urlAssetArr.count + self.imageArr.count == self.collectionView.indexPathsForSelectedItems?.count {
+                completion(true)
+              }
             }
           })
         } else {
@@ -256,12 +258,14 @@ class SelectionViewController: UIViewController {
           let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
           self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
             self.imageArr.append(image!)
-
+            if self.urlAssetArr.count + self.imageArr.count == self.collectionView.indexPathsForSelectedItems?.count {
+              completion(true)
+            }
           })
         }
       }
     }
-    completion(true)
+
   }
 
   func updateFirstImageView() {

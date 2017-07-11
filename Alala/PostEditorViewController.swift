@@ -38,6 +38,9 @@ class PostEditorViewController: UIViewController {
   }
 
   func getMultipartsIdArr(completion: @escaping (_ idArr: [String]) -> Void) {
+    print("iarr", imageArr)
+    print("marr", urlAssetArr)
+
     //비디오 촬영인 경우
     if videoData.count != 0 {
       MultipartService.uploadMultipart(image: nil, videoData: videoData, progress: nil) { videoId in
@@ -72,6 +75,7 @@ class PostEditorViewController: UIViewController {
           MultipartService.uploadMultipart(image: nil, videoData: movieData, progress: nil) { movieId in
             self.multipartsIdArr.append(movieId)
             if self.multipartsIdArr.count == self.imageArr.count + self.urlAssetArr.count {
+              print("id", movieId)
               completion(self.multipartsIdArr)
             }
           }
