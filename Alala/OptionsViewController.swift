@@ -23,4 +23,14 @@ class OptionsViewController: UIViewController {
       $0.sizeToFit()
     }
   }
+
+  func logoutButtonDidTap() {
+    AuthService.instance.logout { (success) in
+      if success {
+        NotificationCenter.default.post(name: .presentLogin, object: nil, userInfo: nil)
+      } else {
+
+      }
+    }
+  }
 }
