@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVKit
 
 class MultimediaCell: UICollectionViewCell {
 
@@ -18,52 +19,51 @@ class MultimediaCell: UICollectionViewCell {
     return view
   }()
 
-  var imageViewArr = [UIImageView]()
-
   override init(frame: CGRect) {
     super.init(frame: frame)
+    self.contentView.addSubview(multimediaScrollView)
   }
 
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-
   override func layoutSubviews() {
     super.layoutSubviews()
-
-  }
-
-  func configure(multimediaCount: Int, completion: @escaping (_ success: Bool) -> Void) {
-    for _ in 0..<multimediaCount {
-      let multimediaImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.backgroundColor = UIColor.blue
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-      }()
-      imageViewArr.append(multimediaImageView)
-    }
-
-    for imageView in imageViewArr {
-      multimediaScrollView.addSubview(imageView)
-    }
-
-    contentView.addSubview(multimediaScrollView)
-
     multimediaScrollView.snp.makeConstraints { (make) in
       make.size.equalTo(self.contentView)
       make.centerY.equalTo(self.contentView)
       make.centerX.equalTo(self.contentView)
     }
+  }
 
-    print("arr", imageViewArr)
-    multimediaScrollView.contentSize = CGSize(width: self.contentView.frame.width * CGFloat(multimediaCount), height: self.contentView.frame.height)
-
-    for i in 0..<imageViewArr.count {
-      imageViewArr[i].frame = CGRect(x: self.contentView.bounds.width * CGFloat(i), y: 0, width: self.contentView.bounds.width, height: self.contentView.bounds.height)
-
+  func configure(post: Post) {
+    var counter = 0
+    multimediaScrollView.contentSize = CGSize(
+      width: self.contentView.frame.width * CGFloat(post.multipartIds.count),
+      height: self.contentView.frame.height
+    )
+    for item in post.multipartIds {
+      if item.contains("_") {
+        let imageView = UIImageView()
+        imageView.setImage(with: item, size: .hd)
+        imageView.frame = CGRect(
+          x: self.contentView.bounds.width * CGFloat(counter),
+          y: 0,
+          width: self.contentView.bounds.width,
+          height: self.contentView.bounds.height)
+        multimediaScrollView.addSubview(imageView)
+      } else { // video
+        let videoView = UIView()
+        videoView.setVideoLayer(videoId: item)
+        videoView.frame = CGRect(
+          x: self.contentView.bounds.width * CGFloat(counter),
+          y: 0,
+          width: self.contentView.bounds.width,
+          height: self.contentView.bounds.height)
+        multimediaScrollView.addSubview(videoView)
+      }
+      counter += 1
     }
-
-    completion(true)
+    self.setNeedsLayout()
   }
 }

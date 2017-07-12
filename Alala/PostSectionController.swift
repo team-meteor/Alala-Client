@@ -24,11 +24,9 @@ class PostSectionController: ListSectionController {
     let width = collectionContext!.containerSize.width
 
     var multimediaCellRatio: Float = 1.0
-    //    if post.multipartIds.count > 0 {
-    //      print("comp", post.multipartIds)
-    //      multimediaCellRatio = Float(post.multipartIds[0].components(separatedBy: "_")[0])!
-    //    }
-
+    if post.multipartIds.count > 0 {
+      multimediaCellRatio = Float(post.multipartIds[0].components(separatedBy: "_")[0])!
+    }
     switch index {
     case 0: // usercell
       return CGSize(width: width, height: 56)
@@ -66,34 +64,13 @@ class PostSectionController: ListSectionController {
       cellClass = UICollectionViewCell.self
     }
     let cell = collectionContext!.dequeueReusableCell(of: cellClass, for: self, at: index)
-    var tempCount: Int = 0
-    var tempArr = [Int]()
 
     if let cell = cell as? UserCell {
       cell.profilePhoto.setImage(with: post.createdBy.profilePhotoId, size: .thumbnail)
       cell.profileNameLabel.text = post.createdBy.profileName
     } else if let cell = cell as? MultimediaCell {
-      print("multi", self.post.multipartIds)
-
-      cell.configure(multimediaCount: self.post.multipartIds.count) { _ in
-
-        while tempCount < self.post.multipartIds.count {
-
-          if self.post.multipartIds[tempCount].contains("_") && !(tempArr.contains(tempCount)) {
-            tempArr.append(tempCount)
-            cell.imageViewArr[tempCount].setImage(with: self.post.multipartIds[tempCount], size: .hd)
-            tempCount += 1
-            print("image", tempCount)
-
-          } else if !(self.post.multipartIds[tempCount].contains("_")) && !(tempArr.contains(tempCount)) {
-            tempArr.append(tempCount)
-            cell.imageViewArr[tempCount].setVideo(videoId: self.post.multipartIds[tempCount]) { _ in
-              tempCount += 1
-              print("video", tempCount)
-            }
-          }
-        }
-      }
+      cell.configure(post: post)
+    } else if let cell = cell as? ButtonGroupCell {
 
     } else if let cell = cell as? LikeCountCell, post.isLiked == true {
       cell.likeCount.text = String(describing: post.likedUsers!.count)

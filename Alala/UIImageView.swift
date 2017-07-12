@@ -17,13 +17,12 @@ extension UIImageView {
       return
     }
     let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(size.pixel)_\(photoId)")
-    DispatchQueue.main.async {
-      self.kf.setImage(with: url, placeholder: placeholder)
-    }
-
+    self.kf.setImage(with: url, placeholder: placeholder)
   }
+}
 
-  func setVideo(videoId: String, completion: @escaping (_ success: Bool) -> Void) {
+extension UIView {
+  func setVideoLayer(videoId: String) {
     let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(videoId)")
     let playerItem = AVPlayerItem(url: url!)
     let player = AVPlayer(playerItem: playerItem)
@@ -33,9 +32,6 @@ extension UIImageView {
       playerLayer.frame = self.frame
       print("playerframe", playerLayer.frame)
     }
-
     player.play()
-    completion(true)
   }
-
 }
