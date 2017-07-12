@@ -33,7 +33,7 @@ class MultimediaCell: UICollectionViewCell {
 
   }
 
-  func configure(multimediaCount: Int) {
+  func configure(multimediaCount: Int, completion: @escaping (_ success: Bool) -> Void) {
     for _ in 0..<multimediaCount {
       let multimediaImageView: UIImageView = {
         let imageView = UIImageView()
@@ -59,10 +59,11 @@ class MultimediaCell: UICollectionViewCell {
     print("arr", imageViewArr)
     multimediaScrollView.contentSize = CGSize(width: self.contentView.frame.width * CGFloat(multimediaCount), height: self.contentView.frame.height)
 
-    print("size", multimediaScrollView.contentSize)
     for i in 0..<imageViewArr.count {
       imageViewArr[i].frame = CGRect(x: self.contentView.bounds.width * CGFloat(i), y: 0, width: self.contentView.bounds.width, height: self.contentView.bounds.height)
 
     }
+
+    completion(true)
   }
 }
