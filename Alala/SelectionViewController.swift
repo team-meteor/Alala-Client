@@ -123,6 +123,7 @@ class SelectionViewController: UIViewController {
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -144,7 +145,7 @@ class SelectionViewController: UIViewController {
   }
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-
+    self.navigationItem.rightBarButtonItem?.isEnabled = true
     let bounds = self.navigationController!.navigationBar.bounds
     self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
   }
@@ -231,15 +232,19 @@ class SelectionViewController: UIViewController {
   }
 
   func doneButtonDidTap() {
-    prepareMultiparts { _ in
+    if self.collectionView.indexPathsForSelectedItems?.count != 0 {
+      self.navigationItem.rightBarButtonItem?.isEnabled = false
+      prepareMultiparts { _ in
 
-      let croppedImage = self.getCropImage()
-      let postEditorViewController = PostEditorViewController(image: croppedImage)
-      postEditorViewController.imageArr = self.imageArr
-      postEditorViewController.urlAssetArr = self.urlAssetArr
-      self.navigationController?.pushViewController(postEditorViewController, animated: true)
+        let croppedImage = self.getCropImage()
+        let postEditorViewController = PostEditorViewController(image: croppedImage)
+        postEditorViewController.imageArr = self.imageArr
+        postEditorViewController.urlAssetArr = self.urlAssetArr
+        self.navigationController?.pushViewController(postEditorViewController, animated: true)
+      }
     }
   }
+
   func doubleTapped() {
     if scrollView.zoomScale == 1.0 {
       scrollView.setZoomScale(0.8, animated: true)
@@ -252,6 +257,8 @@ class SelectionViewController: UIViewController {
   }
 
   func prepareMultiparts(completion: @escaping (_ success: Bool) -> Void) {
+    self.imageArr = []
+    self.urlAssetArr = []
 
     if self.collectionView.indexPathsForSelectedItems?.count != 0 {
 
@@ -557,7 +564,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     let asset = fetchResult.object(at: indexPath.item)
 
     if asset.mediaType == .video {
-
+      self.player?.pause()
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
         if let urlAsset = asset as? AVURLAsset {
 
@@ -568,6 +575,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
           self.scrollView.contentSize = self.imageView.frame.size
           self.imageView.image = previewImage
           self.centerScrollView(animated: false)
+
           self.addAVPlayer(videoUrl: localVideoUrl)
           self.player?.play()
         }
