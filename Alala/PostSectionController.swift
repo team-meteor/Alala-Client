@@ -48,7 +48,6 @@ class PostSectionController: ListSectionController {
   }
 
   override func didUpdate(to object: Any) {
-
     post = object as? Post
   }
 
@@ -77,7 +76,7 @@ class PostSectionController: ListSectionController {
       print("multi", self.post.multipartIds)
 
       cell.configure(multimediaCount: self.post.multipartIds.count) { _ in
-        
+
         while tempCount < self.post.multipartIds.count {
 
           if self.post.multipartIds[tempCount].contains("_") && !(tempArr.contains(tempCount)) {

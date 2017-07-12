@@ -41,7 +41,7 @@ class PostEditorViewController: UIViewController {
 
     //비디오 촬영인 경우
     if videoData.count != 0 {
-      MultipartService.uploadMultipart(image: nil, videoData: videoData, progress: nil) { videoId in
+      MultipartService.uploadMultipart(multiPartData: videoData, progress: nil) { videoId in
         self.multipartsIdArr.append(videoId)
         completion(self.multipartsIdArr)
       }
@@ -51,7 +51,7 @@ class PostEditorViewController: UIViewController {
       if imageArr.count != 0 {
 
         for image in imageArr {
-          MultipartService.uploadMultipart(image: image, videoData: nil, progress: nil) { imageId in
+          MultipartService.uploadMultipart(multiPartData: image, progress: nil) { imageId in
             self.multipartsIdArr.append(imageId)
             if self.multipartsIdArr.count == self.imageArr.count + self.urlAssetArr.count {
               completion(self.multipartsIdArr)
@@ -63,14 +63,14 @@ class PostEditorViewController: UIViewController {
 
         for asset in urlAssetArr {
           let videoUrl = asset.url
-          var movieData: Data?
+          var movieData: Data!
           do {
             movieData = try Data(contentsOf: videoUrl)
           } catch _ {
             movieData = nil
             return
           }
-          MultipartService.uploadMultipart(image: nil, videoData: movieData, progress: nil) { movieId in
+          MultipartService.uploadMultipart(multiPartData: movieData, progress: nil) { movieId in
             self.multipartsIdArr.append(movieId)
             if self.multipartsIdArr.count == self.imageArr.count + self.urlAssetArr.count {
               completion(self.multipartsIdArr)
@@ -80,7 +80,7 @@ class PostEditorViewController: UIViewController {
       }
       //사진촬영인 경우
     } else {
-      MultipartService.uploadMultipart(image: self.image, videoData: nil, progress: nil) { imageId in
+      MultipartService.uploadMultipart(multiPartData: self.image, progress: nil) { imageId in
         self.multipartsIdArr.append(imageId)
         completion(self.multipartsIdArr)
       }
