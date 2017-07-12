@@ -296,7 +296,11 @@ class SelectionViewController: UIViewController {
 
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width:  600 * scale, height: 600 * scale)
-    scrollView.frame.size = CGSize(width: 375.0, height: 398.0)
+    let screenWidth = self.view.bounds.width
+    let screenHeight = self.view.bounds.height
+
+    scrollView.frame.size = CGSize(width: screenWidth, height: screenHeight * 2 / 3 - screenWidth/8
+    )
     let asset = self.fetchResult.object(at: 0)
     self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
 
