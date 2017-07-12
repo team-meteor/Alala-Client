@@ -106,13 +106,13 @@ class SelectionViewController: UIViewController {
   fileprivate let scrollViewZoomButton = Button()
   init() {
     super.init(nibName: nil, bundle: nil)
-    //cancle 버튼 생성
+
     self.navigationItem.leftBarButtonItem = UIBarButtonItem(
       barButtonSystemItem: .cancel,
       target: self,
       action: #selector(cancelButtonDidTap)
     )
-    //done 버튼 생성
+
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(
       barButtonSystemItem: .done,
       target: self,
@@ -123,6 +123,7 @@ class SelectionViewController: UIViewController {
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -144,7 +145,7 @@ class SelectionViewController: UIViewController {
   }
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-
+    self.navigationItem.rightBarButtonItem?.isEnabled = true
     let bounds = self.navigationController!.navigationBar.bounds
     self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
   }
@@ -231,15 +232,19 @@ class SelectionViewController: UIViewController {
   }
 
   func doneButtonDidTap() {
-    prepareMultiparts { _ in
+    if self.collectionView.indexPathsForSelectedItems?.count != 0 {
+      self.navigationItem.rightBarButtonItem?.isEnabled = false
+      prepareMultiparts { _ in
 
-      let croppedImage = self.getCropImage()
-      let postEditorViewController = PostEditorViewController(image: croppedImage)
-      postEditorViewController.imageArr = self.imageArr
-      postEditorViewController.urlAssetArr = self.urlAssetArr
-      self.navigationController?.pushViewController(postEditorViewController, animated: true)
+        let croppedImage = self.getCropImage()
+        let postEditorViewController = PostEditorViewController(image: croppedImage)
+        postEditorViewController.imageArr = self.imageArr
+        postEditorViewController.urlAssetArr = self.urlAssetArr
+        self.navigationController?.pushViewController(postEditorViewController, animated: true)
+      }
     }
   }
+
   func doubleTapped() {
     if scrollView.zoomScale == 1.0 {
       scrollView.setZoomScale(0.8, animated: true)
@@ -252,6 +257,8 @@ class SelectionViewController: UIViewController {
   }
 
   func prepareMultiparts(completion: @escaping (_ success: Bool) -> Void) {
+    self.imageArr = []
+    self.urlAssetArr = []
 
     if self.collectionView.indexPathsForSelectedItems?.count != 0 {
 
@@ -262,20 +269,27 @@ class SelectionViewController: UIViewController {
           self.imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
             if let urlAsset = asset as? AVURLAsset {
               self.urlAssetArr.append(urlAsset)
-
+              print("video", self.urlAssetArr)
+              if self.urlAssetArr.count + self.imageArr.count == self.collectionView.indexPathsForSelectedItems?.count {
+                completion(true)
+              }
             }
           })
         } else {
           let scale = UIScreen.main.scale
           let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
           self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
-            self.imageArr.append(image!)
 
+            self.imageArr.append(image!)
+            print("image", self.imageArr )
+            if self.urlAssetArr.count + self.imageArr.count == self.collectionView.indexPathsForSelectedItems?.count {
+              completion(true)
+            }
           })
         }
       }
     }
-    completion(true)
+
   }
 
   func updateFirstImageView() {
@@ -306,13 +320,9 @@ class SelectionViewController: UIViewController {
         self.tableView.reloadData()
 
       }
-      self.libraryButton.setTitle("Library ^", for: .normal)
-      UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: -self.tableView.frame.height)})
-      NotificationCenter.default.post(name: Notification.Name("hideCustomTabBar"), object: nil)
+      tableViewOnMode()
     } else if libraryButton.currentTitle == "Library ^" {
-      self.libraryButton.setTitle("Library v", for: .normal)
-      UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)})
-      NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
+      tableViewOffMode()
     }
   }
 
@@ -446,6 +456,33 @@ class SelectionViewController: UIViewController {
     print("selection deinit")
   }
 
+  func tableViewOffMode() {
+    self.libraryButton.setTitle("Library v", for: .normal)
+    UIView.animate(withDuration: 0.5, animations: {
+      self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)
+    })
+    NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
+    self.navigationItem.leftBarButtonItem = UIBarButtonItem(
+      barButtonSystemItem: .cancel,
+      target: self,
+      action: #selector(cancelButtonDidTap)
+    )
+
+    self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+      barButtonSystemItem: .done,
+      target: self,
+      action: #selector(doneButtonDidTap)
+    )
+  }
+
+  func tableViewOnMode() {
+    self.libraryButton.setTitle("Library ^", for: .normal)
+    UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: -self.tableView.frame.height)})
+    NotificationCenter.default.post(name: Notification.Name("hideCustomTabBar"), object: nil)
+    self.navigationItem.leftBarButtonItem = nil
+    self.navigationItem.rightBarButtonItem = nil
+  }
+
 }
 
 extension SelectionViewController: UICollectionViewDelegate {
@@ -527,7 +564,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     let asset = fetchResult.object(at: indexPath.item)
 
     if asset.mediaType == .video {
-
+      self.player?.pause()
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
         if let urlAsset = asset as? AVURLAsset {
 
@@ -538,6 +575,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
           self.scrollView.contentSize = self.imageView.frame.size
           self.imageView.image = previewImage
           self.centerScrollView(animated: false)
+
           self.addAVPlayer(videoUrl: localVideoUrl)
           self.player?.play()
         }
@@ -672,11 +710,7 @@ extension SelectionViewController: UITableViewDelegate {
       self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: AllOptions)
     }
 
-    self.libraryButton.setTitle("Library v", for: .normal)
-    UIView.animate(withDuration: 0.5, animations: {
-      self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)
-    })
-    NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
+    tableViewOffMode()
 
     self.collectionView.reloadData()
 

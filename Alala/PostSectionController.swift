@@ -27,7 +27,6 @@ class PostSectionController: ListSectionController {
     if post.multipartIds.count > 0 {
       multimediaCellRatio = Float(post.multipartIds[0].components(separatedBy: "_")[0])!
     }
-
     switch index {
     case 0: // usercell
       return CGSize(width: width, height: 56)
@@ -47,7 +46,6 @@ class PostSectionController: ListSectionController {
   }
 
   override func didUpdate(to object: Any) {
-
     post = object as? Post
   }
 
@@ -66,14 +64,18 @@ class PostSectionController: ListSectionController {
       cellClass = UICollectionViewCell.self
     }
     let cell = collectionContext!.dequeueReusableCell(of: cellClass, for: self, at: index)
+
     if let cell = cell as? UserCell {
       cell.profilePhoto.setImage(with: post.createdBy.profilePhotoId, size: .thumbnail)
       cell.profileNameLabel.text = post.createdBy.profileName
     } else if let cell = cell as? MultimediaCell {
-      cell.multimediaImageView.setImage(with: post.multipartIds[0], size: .hd)
+      cell.configure(post: post)
+    } else if let cell = cell as? ButtonGroupCell {
+
     } else if let cell = cell as? LikeCountCell, post.isLiked == true {
       cell.likeCount.text = String(describing: post.likedUsers!.count)
     }
+
     return cell
   }
 }

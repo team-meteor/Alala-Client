@@ -83,7 +83,7 @@ class FeedViewController: UIViewController {
   fileprivate func fetchFeed(paging: Paging) {
     guard !self.isLoading else { return }
     self.isLoading = true
-    print("fetch")
+
     FeedService.feed(paging: paging) { [weak self] response in
       guard let `self` = self else { return }
       self.refreshControl.endRefreshing()
@@ -121,7 +121,7 @@ class FeedViewController: UIViewController {
 extension FeedViewController: ListAdapterDataSource {
   func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
     let items: [ListDiffable] = self.posts
-    print("in objects", items)
+
     return items
   }
   func listAdapter(_ listAdapter: ListAdapter, sectionControllerFor object: Any) -> ListSectionController {
