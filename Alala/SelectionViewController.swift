@@ -223,59 +223,53 @@ class SelectionViewController: UIViewController {
 
   }
 
-  func getCropImage() -> UIImage {
-    let image = self.imageView.image!
-    var rect = self.scrollView.convert(self.cropAreaView.frame, from: self.cropAreaView.superview)
-    print("rect", rect)
-    rect.origin.x *= image.size.width / self.imageView.frame.width
-    rect.origin.y *= image.size.height / self.imageView.frame.height
-    rect.size.width *= image.size.width / self.imageView.frame.width
-    rect.size.height *= image.size.height / self.imageView.frame.height
-    print("rect2", rect)
-    let croppedCGImage = image.cgImage?.cropping(to: rect)
-    return UIImage(cgImage: croppedCGImage!)
-  }
+//  func getCropImage() -> UIImage {
+//    let image = self.imageView.image!
+//    var rect = self.scrollView.convert(self.cropAreaView.frame, from: self.cropAreaView.superview)
+//    print("cropframe", self.cropAreaView.frame)
+//    print("from", self.cropAreaView.superview)
+//    print("imageview", self.imageView.frame)
+//    print("image", self.imageView.image?.size)
+//    print("rect", rect)
+//    rect.origin.x *= image.size.width / self.imageView.frame.width
+//    rect.origin.y *= image.size.height / self.imageView.frame.height
+//    rect.size.width *= image.size.width / self.imageView.frame.width
+//    rect.size.height *= image.size.height / self.imageView.frame.height
+//    print("rect2", rect)
+//    let croppedCGImage = image.cgImage?.cropping(to: rect)
+//    return UIImage(cgImage: croppedCGImage!)
+//  }
 
   func cropImage(image: UIImage) -> UIImage? {
-    var cropArea: CGRect {
-      get {
-        let factor = imageView.image!.size.width/view.frame.width
-        let scale = 1/scrollView.zoomScale
-        let imageFrame = imageView.imageFrame()
-        let x = (scrollView.contentOffset.x + cropAreaView.frame.origin.x - imageFrame.origin.x) * scale * factor
-        let y = (scrollView.contentOffset.y + cropAreaView.frame.origin.y - imageFrame.origin.y) * scale * factor
-        let width = cropAreaView.frame.size.width * scale * factor
-        let height = cropAreaView.frame.size.height * scale * factor
-        return CGRect(x: x, y: y, width: width, height: height)
-      }
+
+    let factor = imageView.image!.size.width/view.frame.width
+    let scale = 1/scrollView.zoomScale
+    let imageFrame = imageView.imageFrame()
+    let imageWidth = image.size.width
+    let imageHeight = image.size.height
+    var rect = CGRect()
+
+    if (imageWidth > imageHeight && scrollView.zoomScale == 1.0) || (imageWidth < imageHeight && scrollView.zoomScale == 1.0) {
+      // 1:1
+      rect.origin.x = (scrollView.contentOffset.x + cropAreaView.frame.origin.x - imageFrame.origin.x) * scale * factor
+      rect.origin.y = (scrollView.contentOffset.y + cropAreaView.frame.origin.y - imageFrame.origin.y) * scale * factor
+      rect.size.width = cropAreaView.frame.size.width * scale * factor
+      rect.size.height = cropAreaView.frame.size.height * scale * factor
+
+    } else if imageWidth < imageHeight && scrollView.zoomScale == 0.8 {
+      // 0.8 좌우 여백
+      rect.origin.x = self.imageView.imageFrame().origin.x
+      rect.origin.y = (scrollView.contentOffset.y + cropAreaView.frame.origin.y - imageFrame.origin.y) * scale * factor
+      rect.size.width = (self.imageView.image?.size.width)!
+      rect.size.height = cropAreaView.frame.size.height * scale * factor
+
+    } else {
+      // 원본
+      return image
     }
-    print("crop", cropArea)
-//    let imageWidth = image.size.width
-//    let imageHeight = image.size.height
-//    var rect = self.scrollView.convert(self.cropAreaView.frame, from: self.cropAreaView.superview)
-//    print("origin rect", rect)
-//
-//    if (imageWidth > imageHeight && scrollView.zoomScale == 1.0) || (imageWidth < imageHeight && scrollView.zoomScale == 1.0) {
-//      // 1:1
-//      rect.origin.x *= image.size.width / self.imageView.frame.width
-//      rect.origin.y *= image.size.height / self.imageView.frame.height
-//      rect.size.width *= image.size.width / self.imageView.frame.width
-//      rect.size.height *= image.size.height / self.imageView.frame.height
-//
-//    } else if imageWidth < imageHeight && scrollView.zoomScale == 0.8 {
-//      // 0.8 좌우 여백
-//      rect.origin.x *= image.size.width / self.imageView.frame.width
-//      rect.origin.y *= image.size.height / self.imageView.frame.height
-//      rect.size.width *= image.size.width / self.imageView.frame.width
-//      rect.size.height *= image.size.height / self.imageView.frame.height
-//
-//    } else {
-//      // 원본
-//      return image
-//    }
 
     let cgImage: CGImage! = image.cgImage
-    let croppedCGImage: CGImage! = cgImage.cropping(to: cropArea)
+    let croppedCGImage: CGImage! = cgImage.cropping(to: rect)
 
     return UIImage(cgImage: croppedCGImage)
 
@@ -329,8 +323,8 @@ class SelectionViewController: UIViewController {
           let scale = UIScreen.main.scale
           let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
           self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
-
-            self.imageArr.append(image!)
+            let croppedImage = self.cropImage(image: image!)
+            self.imageArr.append(croppedImage!)
             print("image", self.imageArr )
             if self.urlAssetArr.count + self.imageArr.count == self.collectionView.indexPathsForSelectedItems?.count {
               completion(true)
@@ -346,7 +340,12 @@ class SelectionViewController: UIViewController {
 
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width:  600 * scale, height: 600 * scale)
-    scrollView.frame.size = CGSize(width: self.view.bounds.width, height: self.view.bounds.width + 44)
+
+    let screenWidth = self.view.bounds.width
+    let screenHeight = self.view.bounds.height
+
+    scrollView.frame.size = CGSize(width: 375.0, height: 398.0)
+
     let asset = self.fetchResult.object(at: 0)
     self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
 

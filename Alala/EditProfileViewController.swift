@@ -191,8 +191,12 @@ class EditProfileViewController: UIViewController, UITableViewDataSource, UITabl
 
   // MARK: User Action
   func backNaviButtonTap() {
-    self.dismiss(animated: true) {
+    if self.navigationController?.viewControllers.first == self {
+      self.dismiss(animated: true)
+    } else {
+      self.navigationController?.popViewController(animated: true)
     }
+
   }
 
   func doneNaviButtonTap() {

@@ -15,11 +15,11 @@ import UIKit
  */
 class UIBorderView: UIView {
   let topBorderLine = UIView().then {
-    $0.backgroundColor = UIColor.lightGray
+    $0.backgroundColor = UIColor(rgb: 0xbbbbbb)
     $0.isHidden = true
   }
   let bottomBorderLine = UIView().then {
-    $0.backgroundColor = UIColor.lightGray
+    $0.backgroundColor = UIColor(rgb: 0x999999)
     $0.isHidden = true
   }
 
@@ -35,6 +35,8 @@ class UIBorderView: UIView {
 
   func setupUI() {
     // Setup UI
+    self.layoutMargins = UIEdgeInsets.zero
+
     self.addSubview(topBorderLine)
     self.addSubview(bottomBorderLine)
 
