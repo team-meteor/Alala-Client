@@ -198,6 +198,9 @@ class SelectionViewController: UIViewController {
     AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
     allPhotos = PHAsset.fetchAssets(with: AllOptions)
 
+  }
+  
+  func getSmartUserAlbums() {
     smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
     var smartArr = [PHAssetCollection]()
     smartAlbums.enumerateObjects({ (object, _, _) -> Void in
@@ -206,13 +209,14 @@ class SelectionViewController: UIViewController {
       if smartAlbum.count > 0 {
         smartArr.append(collection)
       }
-
+      
     })
     smartAlbumsArr = smartArr
-
+    
     userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
     var userArr = [PHAssetCollection]()
     userCollections.enumerateObjects({ (object, _, _) -> Void in
+      print("object")
       let collection = object as! PHAssetCollection
       let userAlbum: PHFetchResult = PHAsset.fetchAssets(in: collection, options: nil)
       if userAlbum.count > 0 {
@@ -220,25 +224,7 @@ class SelectionViewController: UIViewController {
       }
     })
     userAlbumsArr = userArr
-
   }
-
-//  func getCropImage() -> UIImage {
-//    let image = self.imageView.image!
-//    var rect = self.scrollView.convert(self.cropAreaView.frame, from: self.cropAreaView.superview)
-//    print("cropframe", self.cropAreaView.frame)
-//    print("from", self.cropAreaView.superview)
-//    print("imageview", self.imageView.frame)
-//    print("image", self.imageView.image?.size)
-//    print("rect", rect)
-//    rect.origin.x *= image.size.width / self.imageView.frame.width
-//    rect.origin.y *= image.size.height / self.imageView.frame.height
-//    rect.size.width *= image.size.width / self.imageView.frame.width
-//    rect.size.height *= image.size.height / self.imageView.frame.height
-//    print("rect2", rect)
-//    let croppedCGImage = image.cgImage?.cropping(to: rect)
-//    return UIImage(cgImage: croppedCGImage!)
-//  }
 
   func cropImage(image: UIImage) -> UIImage? {
 
@@ -337,14 +323,12 @@ class SelectionViewController: UIViewController {
   }
 
   func updateFirstImageView() {
-
+    let screenWidth = self.view.bounds.width
+    let screenHeight = self.view.bounds.height
     let scale = UIScreen.main.scale
     let targetSize = CGSize(width:  600 * scale, height: 600 * scale)
 
-    let screenWidth = self.view.bounds.width
-    let screenHeight = self.view.bounds.height
-
-    scrollView.frame.size = CGSize(width: 375.0, height: 398.0)
+    scrollView.frame.size = CGSize(width: screenWidth, height: screenHeight * 2 / 3)
 
     let asset = self.fetchResult.object(at: 0)
     self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
@@ -395,9 +379,9 @@ class SelectionViewController: UIViewController {
   }
 
   func configureView() {
-
     let screenWidth = self.view.bounds.width
     let screenHeight = self.view.bounds.height
+
     let navigationBarHeight = self.navigationController?.navigationBar.frame.height
     let bounds = self.navigationController!.navigationBar.bounds
     self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
