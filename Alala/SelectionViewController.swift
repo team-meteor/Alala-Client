@@ -217,8 +217,7 @@ class SelectionViewController: UIViewController {
     userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
     var userArr = [PHAssetCollection]()
     userCollections.enumerateObjects({ (object, _, _) -> Void in
-      
-      let collection = object as! PHAssetCollection
+      guard let collection = object as? PHAssetCollection else { return }
       let userAlbum: PHFetchResult = PHAsset.fetchAssets(in: collection, options: nil)
       if userAlbum.count > 0 {
         userArr.append(collection)
@@ -405,7 +404,7 @@ class SelectionViewController: UIViewController {
     //constraints
     self.tableView.snp.makeConstraints { make in
       make.width.equalTo(self.view)
-      make.height.equalTo(self.view.frame.height - 90)
+      make.height.equalTo(self.view.frame.height)
       make.centerX.equalTo(self.view)
       make.top.equalTo(self.view.snp.bottom)
     }

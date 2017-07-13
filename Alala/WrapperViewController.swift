@@ -53,14 +53,14 @@ class WrapperViewController: UIViewController {
 
     self.addChildViewController(self.cameraViewController)
     self.scrollView.addSubview(self.cameraViewController.view)
-		self.scrollView.delegate = self
-		self.addChildViewController(libraryViewController)
-		self.scrollView.addSubview(libraryViewController.view)
-		self.view.addSubview(scrollView)
-		self.customTabBar.addSubview(libraryButton)
-		self.customTabBar.addSubview(photoButton)
-		self.customTabBar.addSubview(videoButton)
-		self.view.addSubview(customTabBar)
+    self.scrollView.delegate = self
+    self.addChildViewController(libraryViewController)
+    self.scrollView.addSubview(libraryViewController.view)
+    self.view.addSubview(scrollView)
+    self.customTabBar.addSubview(libraryButton)
+    self.customTabBar.addSubview(photoButton)
+    self.customTabBar.addSubview(videoButton)
+    self.view.addSubview(customTabBar)
 
 		self.customTabBar.snp.makeConstraints { make in
 			make.left.bottom.right.equalTo(self.view)
@@ -126,11 +126,20 @@ class WrapperViewController: UIViewController {
   }
 
   func showCustomTabBar() {
-    UIView.animate(withDuration: 0.5, animations: {self.customTabBar.transform = CGAffineTransform.identity})
+    UIView.animate(withDuration: 0.2, animations: {self.customTabBar.transform = CGAffineTransform.identity})
+    self.customTabBar.snp.remakeConstraints { make in
+      make.left.bottom.right.equalTo(self.view)
+      make.height.equalTo(50)
+    }
   }
 
   func hideCustomTabBar() {
-    UIView.animate(withDuration: 0.5, animations: {self.customTabBar.transform = CGAffineTransform(translationX: 0, y: 50)})
+    UIView.animate(withDuration: 0.2, animations: {self.customTabBar.transform = CGAffineTransform(translationX: 0, y: 50)})
+    self.customTabBar.snp.remakeConstraints { make in
+      make.top.equalTo(self.view.snp.bottom)
+      make.width.equalTo(self.view.frame.width)
+      make.height.equalTo(50)
+    }
   }
 
   override var prefersStatusBarHidden: Bool {
