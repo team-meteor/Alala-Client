@@ -13,7 +13,9 @@ import UIKit
  *
  * **[PATH]** 내 프로필 화면 > '프로필 수정' 버튼 탭
  */
-class EditProfileViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class EditProfileViewController: UIViewController {
+
+  let me = AuthService.instance.currentUser
 
   let contentView = UIView()
 
@@ -43,8 +45,12 @@ class EditProfileViewController: UIViewController, UITableViewDataSource, UITabl
     self.edgesForExtendedLayout = []
 
     setupNavigation()
-    setupProfileItemData()
+
+    setupProfileItem()
+
     setupUI()
+
+    setupMyUserData()
   }
 
   /**
@@ -65,7 +71,7 @@ class EditProfileViewController: UIViewController, UITableViewDataSource, UITabl
   /**
    * 각 row에 출력될 프로필 아이템 데이터 설정
    */
-  func setupProfileItemData() {
+  func setupProfileItem() {
     publicItemArray.append(ProfileItem(iconImageName: "personal", placeHolder: "Name"))
     publicItemArray.append(ProfileItem(iconImageName: "personal", placeHolder: "Username"))
     publicItemArray.append(ProfileItem(iconImageName: "personal", placeHolder: "Website"))
@@ -103,6 +109,10 @@ class EditProfileViewController: UIViewController, UITableViewDataSource, UITabl
       make.width.equalTo(70)
       make.height.equalTo(70)
     }
+    currentProfileImageView.addGestureRecognizer(UITapGestureRecognizer(
+      target: self,
+      action: #selector(self.changePhotoButtonTap))
+    )
 
     changePhotoButton.snp.makeConstraints { (make) in
       make.top.equalTo(currentProfileImageView.snp.bottom).offset(5)
@@ -113,11 +123,38 @@ class EditProfileViewController: UIViewController, UITableViewDataSource, UITabl
     contentTableView.tableHeaderView = tableHeaderView
   }
 
+  func setupMyUserData() {
+    currentProfileImageView.setImage(with: me?.profilePhotoId, size: .small)
+  }
+
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     self.navigationController?.isNavigationBarHidden = false
   }
 
+  func doneNaviButtonTap() {
+
+  }
+
+  func changePhotoButtonTap() {
+    let pickerController = UIImagePickerController()
+    pickerController.delegate = self
+    self.present(pickerController, animated: true, completion: nil)
+  }
+
+}
+
+extension EditProfileViewController: UIImagePickerControllerDelegate {
+  func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+    guard let selectedImage = info[UIImagePickerControllerOriginalImage] as? UIImage else { return }
+    self.currentProfileImageView.image = selectedImage
+    self.dismiss(animated: true, completion: nil)
+  }
+}
+extension EditProfileViewController: UINavigationControllerDelegate {
+}
+
+extension EditProfileViewController: UITableViewDataSource {
   // MARK: Tableview DataSource
   func numberOfSections(in tableView: UITableView) -> Int {
     return allProfileItemArray.count
@@ -183,7 +220,9 @@ class EditProfileViewController: UIViewController, UITableViewDataSource, UITabl
     let lastRowIndex = tableView.numberOfRows(inSection: tableView.numberOfSections-1)
     return  (indexPath.row == lastRowIndex - 1)
   }
+}
 
+extension EditProfileViewController: UITableViewDelegate {
   // method to run when table view cell is tapped
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     print("You tapped cell number \(indexPath.row).")
@@ -196,14 +235,6 @@ class EditProfileViewController: UIViewController, UITableViewDataSource, UITabl
     } else {
       self.navigationController?.popViewController(animated: true)
     }
-
-  }
-
-  func doneNaviButtonTap() {
-
-  }
-
-  func changePhotoButtonTap() {
 
   }
 }

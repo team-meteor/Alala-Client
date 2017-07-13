@@ -268,7 +268,6 @@ extension PersonalViewController: PersonalInfoViewDelegate {
   }
 
   func listPostMenuButtonTap(sender: UIButton) {
-
     self.setupPostList()
     self.postViewController.updateNewPost(self.posts)
   }
