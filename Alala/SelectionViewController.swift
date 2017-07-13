@@ -348,7 +348,7 @@ class SelectionViewController: UIViewController {
   func libraryButtonDidTap() {
     if libraryButton.currentTitle == "Library v" {
       if self.allPhotos.count == photosLimit {
-        getAllAlbums()
+        getSmartUserAlbums()
 
         self.tableView.reloadData()
 
