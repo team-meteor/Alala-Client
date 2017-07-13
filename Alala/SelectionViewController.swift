@@ -217,7 +217,7 @@ class SelectionViewController: UIViewController {
     userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
     var userArr = [PHAssetCollection]()
     userCollections.enumerateObjects({ (object, _, _) -> Void in
-      
+
       let collection = object as! PHAssetCollection
       let userAlbum: PHFetchResult = PHAsset.fetchAssets(in: collection, options: nil)
       if userAlbum.count > 0 {
