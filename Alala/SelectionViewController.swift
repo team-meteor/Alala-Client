@@ -181,15 +181,16 @@ class SelectionViewController: UIViewController {
 
   func getLimitedAlbumFromLibrary() {
 
-    let limitedOptions = PHFetchOptions()
+    //let limitedOptions = PHFetchOptions()
     let sortOptions = PHFetchOptions()
-    limitedOptions.fetchLimit = photosLimit
+    //limitedOptions.fetchLimit = photosLimit
     sortOptions.fetchLimit = photosLimit
     sortOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
     allPhotos = PHAsset.fetchAssets(with: sortOptions)
-    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: limitedOptions)
-    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: limitedOptions)
+//    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: limitedOptions)
+//    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: limitedOptions)
     self.fetchResult = allPhotos
+
   }
 
   func getAllAlbums() {
@@ -199,7 +200,7 @@ class SelectionViewController: UIViewController {
     allPhotos = PHAsset.fetchAssets(with: AllOptions)
 
   }
-  
+
   func getSmartUserAlbums() {
     smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
     var smartArr = [PHAssetCollection]()
@@ -209,14 +210,14 @@ class SelectionViewController: UIViewController {
       if smartAlbum.count > 0 {
         smartArr.append(collection)
       }
-      
+
     })
     smartAlbumsArr = smartArr
-    
+
     userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
     var userArr = [PHAssetCollection]()
     userCollections.enumerateObjects({ (object, _, _) -> Void in
-      print("object")
+      
       let collection = object as! PHAssetCollection
       let userAlbum: PHFetchResult = PHAsset.fetchAssets(in: collection, options: nil)
       if userAlbum.count > 0 {
@@ -347,7 +348,9 @@ class SelectionViewController: UIViewController {
 
   func libraryButtonDidTap() {
     if libraryButton.currentTitle == "Library v" {
-      if self.allPhotos.count == photosLimit {
+
+      if self.smartAlbums == nil || self.userCollections == nil {
+        print("getsmartuser")
         getSmartUserAlbums()
 
         self.tableView.reloadData()
