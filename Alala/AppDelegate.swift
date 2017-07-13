@@ -35,6 +35,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return true
   }
 
+  func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+    return UIInterfaceOrientationMask(rawValue: UIInterfaceOrientationMask.portrait.rawValue)
+  }
+
   func configureAppearance() {
     UINavigationBar.appearance().tintColor = .black
     UIBarButtonItem.appearance().tintColor = .black

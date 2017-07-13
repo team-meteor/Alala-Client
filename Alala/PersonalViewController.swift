@@ -5,7 +5,6 @@
 //  Created by hoemoon on 05/06/2017.
 //  Copyright © 2017 team-meteor. All rights reserved.
 //
-
 import UIKit
 import Alamofire
 import ObjectMapper
@@ -105,7 +104,6 @@ class PersonalViewController: UIViewController {
 
     //-- Section 1 : closable notice view (Optional)
     // (todo)
-
     //-- Section 2 : personal infomation view (Required)
     scrollView.addSubview(personalInfoView)
     personalInfoView.snp.makeConstraints { (make) in
@@ -316,7 +314,6 @@ extension PersonalViewController: UICollectionViewDataSource {
   public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 
     //personalInfoView.bounds.size.height
-
     let size = CGSize(width: scrollView.frame.size.width, height: scrollView.bounds.size.height)
     scrollView.contentSize = size
 
