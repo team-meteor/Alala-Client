@@ -26,6 +26,10 @@ class EditProfileTableViewCell: UITableViewCell {
     $0.text = "test"
   }
 
+  let textField = UITextField().then {
+    $0.placeholder = ""
+  }
+
   let rightImageView = UIImageView()
 
   let rightButton = UIButton().then {
@@ -36,7 +40,7 @@ class EditProfileTableViewCell: UITableViewCell {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
 
     self.addSubview(iconImageView)
-    self.addSubview(textView)
+    self.addSubview(textField)
     //self.addSubview(rightImageView)
     self.addSubview(rightButton)
 
@@ -47,7 +51,7 @@ class EditProfileTableViewCell: UITableViewCell {
       make.height.equalTo(30)
     }
 
-    textView.snp.makeConstraints { (make) in
+    textField.snp.makeConstraints { (make) in
       make.top.equalTo(self).offset(5)
       make.bottom.equalTo(self).offset(-5)
       make.left.equalTo(iconImageView.snp.right).offset(10)
@@ -78,25 +82,25 @@ class EditProfileTableViewCell: UITableViewCell {
     super.awakeFromNib()
     // Initialization code
 
-    self.addSubview(iconImageView)
-    self.addSubview(textView)
+//    self.addSubview(iconImageView)
+//    self.addSubview(textView)
     //self.addSubview(rightImageView)
     //self.addSubview(rightButton)
 
-    iconImageView.snp.makeConstraints { (make) in
-      make.centerY.equalTo(self)
-      make.left.equalTo(10)
-      make.width.equalTo(20)
-      make.height.equalTo(20)
-    }
-
-    textView.snp.makeConstraints { (make) in
-      make.top.equalTo(self).offset(5)
-      make.bottom.equalTo(self).offset(-5)
-      make.left.equalTo(iconImageView.snp.right).offset(20)
-      //make.right.equalTo(rightButton.snp.left)
-      make.right.equalTo(self)
-    }
+//    iconImageView.snp.makeConstraints { (make) in
+//      make.centerY.equalTo(self)
+//      make.left.equalTo(10)
+//      make.width.equalTo(20)
+//      make.height.equalTo(20)
+//    }
+//
+//    textView.snp.makeConstraints { (make) in
+//      make.top.equalTo(self).offset(5)
+//      make.bottom.equalTo(self).offset(-5)
+//      make.left.equalTo(iconImageView.snp.right).offset(20)
+//      //make.right.equalTo(rightButton.snp.left)
+//      make.right.equalTo(self)
+//    }
 
 //    rightImageView.snp.makeConstraints { (make) in
 //      make.centerY.equalTo(self)

@@ -16,6 +16,7 @@ import UIKit
 class EditProfileViewController: UIViewController {
 
   let me = AuthService.instance.currentUser
+  var tempUserInfo: User?
 
   let contentView = UIView()
 
@@ -69,17 +70,18 @@ class EditProfileViewController: UIViewController {
   }
 
   /**
-   * 각 row에 출력될 프로필 아이템 데이터 설정
+   * 각 row에 출력될 프로필 아이템 설정
    */
   func setupProfileItem() {
-    publicItemArray.append(ProfileItem(iconImageName: "personal", placeHolder: "Name"))
-    publicItemArray.append(ProfileItem(iconImageName: "personal", placeHolder: "Username"))
-    publicItemArray.append(ProfileItem(iconImageName: "personal", placeHolder: "Website"))
-    publicItemArray.append(ProfileItem(iconImageName: "personal", placeHolder: "Bio"))
 
-    privateItemArray.append(ProfileItem(iconImageName: "personal", placeHolder: "Email"))
-    privateItemArray.append(ProfileItem(iconImageName: "personal", placeHolder: "Phone"))
-    privateItemArray.append(ProfileItem(iconImageName: "personal", placeHolder: "gender"))
+    publicItemArray.append(ProfileItem(key: "profileName", iconImageName: "personal", placeHolder: "Name"))
+    publicItemArray.append(ProfileItem(key: "profileName", iconImageName: "personal", placeHolder: "Username"))
+    publicItemArray.append(ProfileItem(key: "website", iconImageName: "personal", placeHolder: "Website"))
+    publicItemArray.append(ProfileItem(key: "bio", iconImageName: "personal", placeHolder: "Bio"))
+
+    privateItemArray.append(ProfileItem(key: "email", iconImageName: "personal", placeHolder: "Email"))
+    privateItemArray.append(ProfileItem(key: "Phone", iconImageName: "personal", placeHolder: "Phone"))
+    privateItemArray.append(ProfileItem(key: "gender", iconImageName: "personal", placeHolder: "gender"))
 
     allProfileItemArray = [publicItemArray, privateItemArray]
   }
@@ -124,6 +126,9 @@ class EditProfileViewController: UIViewController {
   }
 
   func setupMyUserData() {
+    let encodedData = NSKeyedArchiver.archivedData(withRootObject: me!)
+    tempUserInfo = NSKeyedUnarchiver.unarchiveObject(with: encodedData) as? User
+
     currentProfileImageView.setImage(with: me?.profilePhotoId, size: .small)
   }
 
@@ -132,10 +137,40 @@ class EditProfileViewController: UIViewController {
     self.navigationController?.isNavigationBarHidden = false
   }
 
-  func doneNaviButtonTap() {
-
+  // MARK: User Action
+  func backNaviButtonTap() {
+    if self.navigationController?.viewControllers.first == self {
+      self.dismiss(animated: true)
+    } else {
+      self.navigationController?.popViewController(animated: true)
+    }
   }
 
+  /**
+   * 수정 완료 버튼 선택 시 프로필 정보 업데이트
+   */
+  func doneNaviButtonTap() {
+
+    MultipartService.uploadMultipart(multiPartData: currentProfileImageView.image!, progress: nil) { (_) in
+      AuthService.instance.updateProfile(userInfo: self.tempUserInfo!, completion: { (success) in
+        if success {
+          AuthService.instance.me(completion: { (user) in
+            if user != nil {
+              DispatchQueue.main.async {
+                self.backNaviButtonTap()
+              }
+            }
+          })
+        } else {
+          print("failed update profile")
+        }
+      })
+    }
+  }
+
+  /**
+   * 프로필 사진 ImageView Touch 혹은 프로필 사진 변경 버튼 선택 시
+   */
   func changePhotoButtonTap() {
     let pickerController = UIImagePickerController()
     pickerController.delegate = self
@@ -170,13 +205,22 @@ extension EditProfileViewController: UITableViewDataSource {
     let cell: EditProfileTableViewCell = contentTableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier) as! EditProfileTableViewCell
     let array = allProfileItemArray[indexPath.section] as Array
     let profileItem = array[indexPath.row] as ProfileItem
-    cell.textView.text = profileItem.placeHolder
+    cell.textField.placeholder = profileItem.placeHolder
+
+    let text = tempUserInfo?.value(forKey: profileItem.key as String) as! String
+    if text != nil {
+      cell.textField.text = text
+    }
+//    cell.textField.text = tempUserInfo?.value(forKey: profileItem.key as String)
+
+    tempUserInfo?.value(forKey: profileItem.key as String)
+    //NSString(format: "%d", obj.valueForKey(variable as String)
 
     // 우측에 버튼을 출력하는 Cell은 constant값을 주어 레이아웃 변경 가능
     /*
-    cell.rightButtonWidthConstraint?.constant = 0
-    cell.needsUpdateConstraints()
-    */
+     cell.rightButtonWidthConstraint?.constant = 0
+     cell.needsUpdateConstraints()
+     */
     return cell
   }
 
@@ -227,23 +271,15 @@ extension EditProfileViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     print("You tapped cell number \(indexPath.row).")
   }
-
-  // MARK: User Action
-  func backNaviButtonTap() {
-    if self.navigationController?.viewControllers.first == self {
-      self.dismiss(animated: true)
-    } else {
-      self.navigationController?.popViewController(animated: true)
-    }
-
-  }
 }
 
 struct ProfileItem {
+  var key: String
   var iconImageName: String
   var placeHolder: String
 
-  init(iconImageName: String, placeHolder: String) {
+  init(key: String, iconImageName: String, placeHolder: String) {
+    self.key = key
     self.placeHolder = placeHolder
     self.iconImageName = iconImageName
   }
