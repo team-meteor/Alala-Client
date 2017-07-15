@@ -17,8 +17,6 @@ class TableViewWrapperController: UIViewController {
     $0.deliveryMode = .fastFormat
   }
   var allPhotos: PHFetchResult<PHAsset>!
-  var smartAlbums: PHFetchResult<PHAssetCollection>!
-  var userCollections: PHFetchResult<PHCollection>!
   var smartAlbumsFetchResult: PHFetchResult<PHAsset>!
   var smartAlbumsArr = [PHAssetCollection]()
   var userCollectionsFetchResult: PHFetchResult<PHAsset>!
@@ -59,7 +57,6 @@ class TableViewWrapperController: UIViewController {
     self.allPhotos = photoAlbum.allPhotos
     self.smartAlbumsArr = photoAlbum.smartAlbumsArr
     self.userAlbumsArr = photoAlbum.userAlbumsArr
-
     self.tableView.delegate = self
     self.tableView.dataSource = self
   }

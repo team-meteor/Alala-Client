@@ -4,9 +4,6 @@ import AVKit
 
 class SelectionViewController: UIViewController {
 
-  var playerLayer: AVPlayerLayer?
-  var player: AVPlayer?
-  var playerItem: AVPlayerItem?
   var imageArr = [UIImage]()
   var urlAssetArr = [AVURLAsset]()
   var photoAlbum = PhotoAlbum.sharedInstance
@@ -42,10 +39,7 @@ class SelectionViewController: UIViewController {
     $0.backgroundColor = UIColor.red
     $0.setTitle("Library v", for: .normal)
   }
-  fileprivate let playButton = UIButton().then {
-    $0.backgroundColor = UIColor.blue
-    $0.setTitle("Pause", for: UIControlState.normal)
-  }
+
   fileprivate let multiSelectButton = MultiSelectButton()
 
   fileprivate let baseScrollView = UIScrollView().then {
@@ -112,8 +106,6 @@ class SelectionViewController: UIViewController {
     scrollViewDoubleTap.numberOfTapsRequired = 2
     scrollView.addGestureRecognizer(scrollViewDoubleTap)
 
-    NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying(note:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
-
     NotificationCenter.default.addObserver(self, selector: #selector(fetchSmartUserAlbums), name: NSNotification.Name(rawValue: "fetchSmartUserAlbums"), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(fetchAllPhotoAlbum), name: NSNotification.Name(rawValue: "fetchAllPhotoAlbum"), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(tableViewOffMode), name: NSNotification.Name(rawValue: "tableViewOffMode"), object: nil)
@@ -126,7 +118,6 @@ class SelectionViewController: UIViewController {
     self.configureView()
     photoAlbum.getLimitedPhotos()
     self.allPhotos = photoAlbum.allPhotos
-
     self.fetchResult = allPhotos
   }
   override func viewDidAppear(_ animated: Bool) {
@@ -189,7 +180,6 @@ class SelectionViewController: UIViewController {
     }
 
     return UIImage(cgImage: image.cgImage!.cropping(to: rect)!)
-
   }
 
   func doneButtonDidTap() {
@@ -274,7 +264,6 @@ class SelectionViewController: UIViewController {
         self.centerScrollView(animated: false)
       }
     })
-
   }
 
   func libraryButtonDidTap() {
@@ -378,7 +367,6 @@ class SelectionViewController: UIViewController {
     self.scrollViewZoomButton.addTarget(self, action: #selector(scrollViewZoom), for: .touchUpInside)
     self.multiSelectButton.addTarget(self, action: #selector(multiSelectButtonDidTap), for: .touchUpInside)
     self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
-    self.playButton.addTarget(self, action: #selector(self.playButtonDidTap), for: .touchUpInside)
   }
 
   func scrollViewZoom() {
@@ -390,7 +378,6 @@ class SelectionViewController: UIViewController {
       scrollView.setZoomScale(1.0, animated: true)
       zoomMode = false
     }
-
   }
 
   func multiSelectButtonDidTap() {
@@ -410,44 +397,6 @@ class SelectionViewController: UIViewController {
       zoomMode = false
       scrollView.isUserInteractionEnabled = false
     }
-  }
-
-  func addAVPlayer(videoUrl: URL) {
-    self.cropAreaView.isUserInteractionEnabled = true
-    playerItem = AVPlayerItem(url: videoUrl)
-    player = AVPlayer(playerItem: playerItem)
-    self.playerLayer = AVPlayerLayer(player: player)
-    DispatchQueue.main.async {
-      self.setConstraintOfPlayer()
-    }
-
-  }
-
-  func setConstraintOfPlayer() {
-    self.imageView.layer.addSublayer(self.playerLayer!)
-    self.playerLayer!.frame = self.imageView.frame
-    self.cropAreaView.addSubview(self.playButton)
-    self.playButton.snp.makeConstraints { make in
-      make.center.equalTo(self.cropAreaView)
-      make.width.height.equalTo(50)
-    }
-  }
-
-  func playButtonDidTap() {
-
-    if player?.rate == 0 {
-      player!.play()
-
-      playButton.setTitle("Pause", for: UIControlState.normal)
-    } else {
-      player!.pause()
-
-      playButton.setTitle("Play", for: UIControlState.normal)
-    }
-  }
-  deinit {
-    NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
-    print("selection deinit")
   }
 
   func tableViewOffMode() {
@@ -485,32 +434,6 @@ class SelectionViewController: UIViewController {
     self.navigationItem.rightBarButtonItem = nil
   }
 
-  func previewImageFromVideo(videoUrl: URL) -> UIImage? {
-    let asset = AVAsset(url: videoUrl)
-    let imageGenerator = AVAssetImageGenerator(asset: asset)
-    imageGenerator.appliesPreferredTrackTransform = true
-
-    var time = asset.duration
-    time.value = min(time.value, 2)
-
-    do {
-      let imageRef = try imageGenerator.copyCGImage(at: time, actualTime: nil)
-      return UIImage(cgImage: imageRef)
-    } catch {
-      return nil
-    }
-  }
-
-  func playerDidFinishPlaying(note: NSNotification) {
-    setPlayerFinishMode()
-  }
-
-  func setPlayerFinishMode() {
-    self.playerLayer?.removeFromSuperlayer()
-    self.playButton.removeFromSuperview()
-    self.cropAreaView.isUserInteractionEnabled = false
-  }
-
 }
 
 extension SelectionViewController: UICollectionViewDelegate {
@@ -520,7 +443,6 @@ extension SelectionViewController: UICollectionViewDelegate {
     if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
 
       photoAlbum.getAllPhotos()
-
     }
 
   }
@@ -596,25 +518,36 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     let asset = fetchResult.object(at: indexPath.item)
 
     if asset.mediaType == .video {
-      self.player?.pause()
+
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
         if let urlAsset = asset as? AVURLAsset {
 
           let localVideoUrl: URL = urlAsset.url as URL
-          let previewImage = self.previewImageFromVideo(videoUrl: localVideoUrl)
-          self.scaleAspectFillSize(image: previewImage!, imageView: self.imageView)
+//          var videoPlayer = VideoPlayer(videoUrl: localVideoUrl, imageView: self.imageView)
+//          let previewImage = videoPlayer.getThumbnailFromVideo()
+//          self.scaleAspectFillSize(image: previewImage!, imageView: self.imageView)
+//          self.scrollView.contentSize = self.imageView.frame.size
+//          self.imageView.image = previewImage
+//          self.centerScrollView(animated: false)
+//          videoPlayer.addAVPlayer()
+          
           self.scrollView.contentSize = self.imageView.frame.size
-          self.imageView.image = previewImage
           self.centerScrollView(animated: false)
+          let player = AVPlayer(url: localVideoUrl)
+          let playerController = VideoPlayerViewController()
+          playerController.player = player
+          self.addChildViewController(playerController)
+          //playerController.videoGravity = AVLayerVideoGravityResizeAspectFill
+          DispatchQueue.main.async {
+            self.imageView.addSubview(playerController.view)
+            playerController.view.frame = self.imageView.frame
+          }
+          self.imageView.isUserInteractionEnabled = true
+          player.play()
 
-          self.addAVPlayer(videoUrl: localVideoUrl)
-          self.player?.play()
         }
       })
     } else {
-
-      setPlayerFinishMode()
-
       self.baseScrollView.setContentOffset(CGPoint(x:0, y:0), animated: true)
 
       let scale = UIScreen.main.scale
