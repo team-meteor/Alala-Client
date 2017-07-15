@@ -18,37 +18,19 @@ class SelectionViewController: UIViewController {
   var getImage: UIImage?
   var getZoomScale: CGFloat?
 
-  enum Section: Int {
-    case allPhotos = 0
-    case smartAlbums
-    case userCollections
-
-    static let count = 3
-  }
-  enum CellIdentifier: String {
-    case allPhotos, collection
-  }
-  enum SegueIdentifier: String {
-    case showAllPhotos
-    case showCollection
-  }
   var allPhotos: PHFetchResult<PHAsset>!
-  var smartAlbums: PHFetchResult<PHAssetCollection>!
-  var userCollections: PHFetchResult<PHCollection>!
+
   var fetchResult: PHFetchResult<PHAsset> = PHFetchResult<PHAsset>() {
     didSet {
       updateFirstImageView()
       self.collectionView.reloadData()
     }
   }
-  var smartAlbumsFetchResult: PHFetchResult<PHAsset>!
+
   var smartAlbumsArr = [PHAssetCollection]()
-  var userCollectionsFetchResult: PHFetchResult<PHAsset>!
   var userAlbumsArr = [PHAssetCollection]()
-  var assetCollection: PHAssetCollection?
   let imageManager = PHCachingImageManager()
   let tileCellSpacing = CGFloat(1)
-  let sectionLocalizedTitles = ["", NSLocalizedString("Smart Albums", comment: ""), NSLocalizedString("Albums", comment: "")]
 
   let initialRequestOptions = PHImageRequestOptions().then {
     $0.isSynchronous = true
@@ -134,6 +116,7 @@ class SelectionViewController: UIViewController {
 
     NotificationCenter.default.addObserver(self, selector: #selector(fetchSmartUserAlbums), name: NSNotification.Name(rawValue: "fetchSmartUserAlbums"), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(fetchAllPhotoAlbum), name: NSNotification.Name(rawValue: "fetchAllPhotoAlbum"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(tableViewOffMode), name: NSNotification.Name(rawValue: "tableViewOffMode"), object: nil)
 
     self.collectionView.dataSource = self
     self.collectionView.delegate = self
@@ -231,7 +214,6 @@ class SelectionViewController: UIViewController {
       scrollView.setZoomScale(1.0, animated: true)
       zoomMode = false
     }
-
   }
 
   func prepareMultiparts(completion: @escaping (_ success: Bool) -> Void) {
@@ -298,13 +280,10 @@ class SelectionViewController: UIViewController {
   func libraryButtonDidTap() {
     if libraryButton.currentTitle == "Library v" {
       if allPhotos.count == photosLimit {
-
         photoAlbum.getAllPhotos()
       }
-      if smartAlbums == nil || userCollections == nil {
-
+      if photoAlbum.smartAlbumsArr.count == 0 || photoAlbum.userAlbumsArr.count == 0 {
         photoAlbum.getSmartUserAlbums()
-
       }
       tableViewOnMode()
     } else if libraryButton.currentTitle == "Library ^" {
@@ -360,15 +339,7 @@ class SelectionViewController: UIViewController {
     self.baseScrollView.addSubview(self.buttonBarView)
     self.scrollView.addSubview(self.imageView)
     self.view.addSubview(baseScrollView)
-    //self.view.addSubview(self.wrapperView!)
 
-    //constraints
-//    self.wrapperView?.snp.makeConstraints { make in
-//      make.width.equalTo(self.view)
-//      make.height.equalTo(self.view.frame.height - 44)
-//      make.centerX.equalTo(self.view)
-//      make.top.equalTo(self.view.snp.bottom)
-//    }
     self.baseScrollView.snp.makeConstraints { make in
       make.bottom.left.right.equalTo(self.view)
     }
@@ -481,11 +452,12 @@ class SelectionViewController: UIViewController {
 
   func tableViewOffMode() {
     self.libraryButton.setTitle("Library v", for: .normal)
+    self.fetchResult = photoAlbum.fetchResult!
+    self.tableWrapperVC?.view.removeFromSuperview()
+    self.tableWrapperVC?.removeFromParentViewController()
 
-    self.tableWrapperVC?.dismiss(animated: true, completion: nil)
-    //    UIView.animate(withDuration: 0.5, animations: {
-    //      self.wrapperView?.transform = CGAffineTransform(translationX: 0, y: (self.wrapperView?.frame.height)!)
-    //    })
+    //self.tableWrapperVC?.dismiss(animated: true, completion: nil)
+
     NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
     self.navigationItem.leftBarButtonItem = UIBarButtonItem(
       barButtonSystemItem: .cancel,
@@ -504,12 +476,39 @@ class SelectionViewController: UIViewController {
     self.libraryButton.setTitle("Library ^", for: .normal)
     tableWrapperVC = TableViewWrapperController()
 
-    self.present(tableWrapperVC!, animated: true, completion: nil)
+    self.view.addSubview((tableWrapperVC?.view)!)
+    self.addChildViewController(tableWrapperVC!)
 
-    //    UIView.animate(withDuration: 0.5, animations: {self.tableWrapperVC?.view.transform = CGAffineTransform(translationX: 0, y: -((self.tableWrapperVC!.view.frame.height)))})
-    NotificationCenter.default.post(name: Notification.Name("hideCustomTabBar"), object: nil)
+    //self.present(tableWrapperVC!, animated: true, completion: nil)
+
     self.navigationItem.leftBarButtonItem = nil
     self.navigationItem.rightBarButtonItem = nil
+  }
+
+  func previewImageFromVideo(videoUrl: URL) -> UIImage? {
+    let asset = AVAsset(url: videoUrl)
+    let imageGenerator = AVAssetImageGenerator(asset: asset)
+    imageGenerator.appliesPreferredTrackTransform = true
+
+    var time = asset.duration
+    time.value = min(time.value, 2)
+
+    do {
+      let imageRef = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+      return UIImage(cgImage: imageRef)
+    } catch {
+      return nil
+    }
+  }
+
+  func playerDidFinishPlaying(note: NSNotification) {
+    setPlayerFinishMode()
+  }
+
+  func setPlayerFinishMode() {
+    self.playerLayer?.removeFromSuperlayer()
+    self.playButton.removeFromSuperview()
+    self.cropAreaView.isUserInteractionEnabled = false
   }
 
 }
@@ -638,34 +637,6 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     }
 
   }
-
-  func previewImageFromVideo(videoUrl: URL) -> UIImage? {
-    let asset = AVAsset(url: videoUrl)
-    let imageGenerator = AVAssetImageGenerator(asset: asset)
-    imageGenerator.appliesPreferredTrackTransform = true
-
-    var time = asset.duration
-    time.value = min(time.value, 2)
-
-    do {
-      let imageRef = try imageGenerator.copyCGImage(at: time, actualTime: nil)
-      return UIImage(cgImage: imageRef)
-    } catch {
-      return nil
-    }
-  }
-
-  func playerDidFinishPlaying(note: NSNotification) {
-    setPlayerFinishMode()
-  }
-
-  func setPlayerFinishMode() {
-
-    self.playerLayer?.removeFromSuperlayer()
-    self.playButton.removeFromSuperview()
-    self.cropAreaView.isUserInteractionEnabled = false
-  }
-
 }
 
 extension SelectionViewController: UIScrollViewDelegate {
