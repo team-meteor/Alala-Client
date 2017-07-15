@@ -16,7 +16,7 @@ import UIKit
 class EditProfileViewController: UIViewController {
 
   let me = AuthService.instance.currentUser
-  var tempUserInfo: User?
+  var tempMe: User?
 
   let contentView = UIView()
 
@@ -36,9 +36,8 @@ class EditProfileViewController: UIViewController {
   let contentTableView = UITableView()
   let cellReuseIdentifier = "cell"
 
-  var allProfileItemArray = [[ProfileItem]]()
-  var publicItemArray = [ProfileItem]()
-  var privateItemArray = [ProfileItem]()
+  //var allProfileItemArray = [[ProfileItem]]()
+  var allProfileItemArray: Array<Dictionary<String, Array<ProfileItem>>> = []
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -73,17 +72,16 @@ class EditProfileViewController: UIViewController {
    * 각 row에 출력될 프로필 아이템 설정
    */
   func setupProfileItem() {
-
-    publicItemArray.append(ProfileItem(key: "profileName", iconImageName: "personal", placeHolder: "Name"))
-    publicItemArray.append(ProfileItem(key: "profileName", iconImageName: "personal", placeHolder: "Username"))
-    publicItemArray.append(ProfileItem(key: "website", iconImageName: "personal", placeHolder: "Website"))
-    publicItemArray.append(ProfileItem(key: "bio", iconImageName: "personal", placeHolder: "Bio"))
-
-    privateItemArray.append(ProfileItem(key: "email", iconImageName: "personal", placeHolder: "Email"))
-    privateItemArray.append(ProfileItem(key: "Phone", iconImageName: "personal", placeHolder: "Phone"))
-    privateItemArray.append(ProfileItem(key: "gender", iconImageName: "personal", placeHolder: "gender"))
-
-    allProfileItemArray = [publicItemArray, privateItemArray]
+    allProfileItemArray = [
+      ["": [ProfileItem(key: "displayName", iconImageName: "nametag", placeHolder: "Name"),
+            ProfileItem(key: "profileName", iconImageName: "personal", placeHolder: "Username"),
+            ProfileItem(key: "website", iconImageName: "website", placeHolder: "Website"),
+            ProfileItem(key: "bio", iconImageName: "information", placeHolder: "Bio")]],
+      ["PRIVATE INFORMATION":
+           [ProfileItem(key: "email", iconImageName: "email", placeHolder: "Email"),
+            ProfileItem(key: "Phone", iconImageName: "phone", placeHolder: "Phone"),
+            ProfileItem(key: "gender", iconImageName: "gender", placeHolder: "Gender")]]
+    ]
   }
 
   func setupUI() {
@@ -127,7 +125,7 @@ class EditProfileViewController: UIViewController {
 
   func setupMyUserData() {
     let encodedData = NSKeyedArchiver.archivedData(withRootObject: me!)
-    tempUserInfo = NSKeyedUnarchiver.unarchiveObject(with: encodedData) as? User
+    tempMe = NSKeyedUnarchiver.unarchiveObject(with: encodedData) as? User
 
     currentProfileImageView.setImage(with: me?.profilePhotoId, size: .small)
   }
@@ -151,20 +149,29 @@ class EditProfileViewController: UIViewController {
    */
   func doneNaviButtonTap() {
 
-    MultipartService.uploadMultipart(multiPartData: currentProfileImageView.image!, progress: nil) { (_) in
-      AuthService.instance.updateProfile(userInfo: self.tempUserInfo!, completion: { (success) in
-        if success {
-          AuthService.instance.me(completion: { (user) in
-            if user != nil {
-              DispatchQueue.main.async {
-                self.backNaviButtonTap()
+    updateCurrentInfoToTempMe()
+
+    if User.isEqual(l:me!, r:tempMe!) {
+      // 변경사항 없음
+      self.backNaviButtonTap()
+    } else {
+      // 변경사항 존재
+      MultipartService.uploadMultipart(multiPartData: currentProfileImageView.image!, progress: nil) { (imageId) in
+        self.tempMe?.profilePhotoId = imageId
+        AuthService.instance.updateProfile(userInfo: self.tempMe!, completion: { (success) in
+          if success {
+            AuthService.instance.me(completion: { (user) in
+              if user != nil {
+                DispatchQueue.main.async {
+                  self.backNaviButtonTap()
+                }
               }
-            }
-          })
-        } else {
-          print("failed update profile")
-        }
-      })
+            })
+          } else {
+            print("failed update profile")
+          }
+        })
+      }
     }
   }
 
@@ -177,12 +184,25 @@ class EditProfileViewController: UIViewController {
     self.present(pickerController, animated: true, completion: nil)
   }
 
+  func updateCurrentInfoToTempMe() {
+    for section in 0..<contentTableView.numberOfSections {
+      let dic: Dictionary<String, Array<ProfileItem>> = allProfileItemArray[section]
+      let arr: Array<ProfileItem> = dic.values.first!
+      for row in 0..<contentTableView.numberOfRows(inSection: section) {
+        let profileItem: ProfileItem = arr[row]
+        let cell = contentTableView.cellForRow(at: IndexPath(row: row, section: section)) as! EditProfileTableViewCell
+        tempMe?.setValue(cell.textField.text, forKey: profileItem.key)
+      }
+    }
+    //print(tempMe?.description!)
+  }
 }
 
 extension EditProfileViewController: UIImagePickerControllerDelegate {
   func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
     guard let selectedImage = info[UIImagePickerControllerOriginalImage] as? UIImage else { return }
     self.currentProfileImageView.image = selectedImage
+    self.tempMe?.profilePhotoId = ""
     self.dismiss(animated: true, completion: nil)
   }
 }
@@ -196,25 +216,35 @@ extension EditProfileViewController: UITableViewDataSource {
   }
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    let array = allProfileItemArray[section]
-    return (array as AnyObject).count
+//    let array = allProfileItemArray[section]
+//    return (array as AnyObject).count
+    let dic: Dictionary<String, Array<ProfileItem>> = allProfileItemArray[section]
+    let arr: Array<ProfileItem> = dic.values.first!
+    return arr.count
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     // create a new cell if needed or reuse an old one
     let cell: EditProfileTableViewCell = contentTableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier) as! EditProfileTableViewCell
-    let array = allProfileItemArray[indexPath.section] as Array
-    let profileItem = array[indexPath.row] as ProfileItem
+
+    let dic: Dictionary<String, Array<ProfileItem>> = allProfileItemArray[indexPath.section]
+    let arr: Array<ProfileItem> = dic.values.first!
+    let profileItem: ProfileItem = arr[indexPath.row]
+
+    cell.iconImageView.image = UIImage(named: profileItem.iconImageName)?.resizeImage(scaledTolength: 15)
     cell.textField.placeholder = profileItem.placeHolder
 
-    let text = tempUserInfo?.value(forKey: profileItem.key as String) as! String
-    if text != nil {
-      cell.textField.text = text
+    if profileItem.key=="gender" {
+      let gender = tempMe?.value(forKey: profileItem.key as String) as? String
+      if gender?.characters.count == 0 {
+        cell.textField.text = "입력되지 않음"
+      } else {
+        cell.textField.text = gender=="M" ? "남성" : "여성"
+      }
+      cell.textField.isEnabled = false
+    } else {
+      cell.textField.text = tempMe?.value(forKey: profileItem.key as String) as? String
     }
-//    cell.textField.text = tempUserInfo?.value(forKey: profileItem.key as String)
-
-    tempUserInfo?.value(forKey: profileItem.key as String)
-    //NSString(format: "%d", obj.valueForKey(variable as String)
 
     // 우측에 버튼을 출력하는 Cell은 constant값을 주어 레이아웃 변경 가능
     /*
@@ -266,6 +296,12 @@ extension EditProfileViewController: UITableViewDataSource {
   }
 }
 
+extension EditProfileViewController: UITextFieldDelegate {
+  public func textFieldDidEndEditing(_ textField: UITextField) {
+
+  }
+}
+
 extension EditProfileViewController: UITableViewDelegate {
   // method to run when table view cell is tapped
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -279,8 +315,16 @@ struct ProfileItem {
   var placeHolder: String
 
   init(key: String, iconImageName: String, placeHolder: String) {
-    self.key = key
+    self.key = key // User.swift에서의 정보에 해당하는 키값
     self.placeHolder = placeHolder
     self.iconImageName = iconImageName
+  }
+}
+
+struct ProfileItemGender {
+  enum genderType {
+    case none
+    case male
+    case female
   }
 }
