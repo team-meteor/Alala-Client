@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4828D27A1F186320001D2C2C /* TableViewWrapperController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4828D2791F186320001D2C2C /* TableViewWrapperController.swift */; };
+		4828D27C1F187776001D2C2C /* PhotoAlbum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4828D27B1F187776001D2C2C /* PhotoAlbum.swift */; };
 		485647BF1EEE6B4D00834BBB /* TileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485647BE1EEE6B4D00834BBB /* TileCell.swift */; };
 		485ABFAB1EF3735500949456 /* PostEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485ABFAA1EF3735500949456 /* PostEditorViewController.swift */; };
 		485ABFAD1EF37F5A00949456 /* PostEditingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485ABFAC1EF37F5A00949456 /* PostEditingCell.swift */; };
@@ -97,6 +99,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4828D2791F186320001D2C2C /* TableViewWrapperController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewWrapperController.swift; sourceTree = "<group>"; };
+		4828D27B1F187776001D2C2C /* PhotoAlbum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbum.swift; sourceTree = "<group>"; };
 		485647BE1EEE6B4D00834BBB /* TileCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileCell.swift; sourceTree = "<group>"; };
 		485ABFAA1EF3735500949456 /* PostEditorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostEditorViewController.swift; sourceTree = "<group>"; };
 		485ABFAC1EF37F5A00949456 /* PostEditingCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostEditingCell.swift; sourceTree = "<group>"; };
@@ -276,6 +280,7 @@
 				9921706A1F0A33ED00D03E01 /* PhotosForYouViewController.swift */,
 				9921706C1F0A374500D03E01 /* SavedViewController.swift */,
 				992227751F134DB3008DDD59 /* PostViewController.swift */,
+				4828D2791F186320001D2C2C /* TableViewWrapperController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -311,6 +316,7 @@
 				6F5B855A1EE54101009285DD /* Post.swift */,
 				6F5B85581EE540F9009285DD /* Feed.swift */,
 				6F0A205E1EFA5D6700C71417 /* Comment.swift */,
+				4828D27B1F187776001D2C2C /* PhotoAlbum.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -640,6 +646,7 @@
 				6F5B85551EE52BB9009285DD /* SelectionViewController.swift in Sources */,
 				99C654FC1F0784170005AD3E /* RoundCornerButton.swift in Sources */,
 				99C654E01F0159F30005AD3E /* ArchiveViewController.swift in Sources */,
+				4828D27C1F187776001D2C2C /* PhotoAlbum.swift in Sources */,
 				6F09C8E21EF127C900BCFFEF /* AfterRegisterViewController.swift in Sources */,
 				485ABFAB1EF3735500949456 /* PostEditorViewController.swift in Sources */,
 				48F857A01EFA4B4200957B3A /* GridViewCell.swift in Sources */,
@@ -647,6 +654,7 @@
 				6F09C8DA1EF013B900BCFFEF /* AuthService.swift in Sources */,
 				6FBD855D1F04EF8F0097B82A /* PhotoSize.swift in Sources */,
 				6F8887AA1F0791DC00CE9A04 /* CommentCell.swift in Sources */,
+				4828D27A1F186320001D2C2C /* TableViewWrapperController.swift in Sources */,
 				99C654EC1F017D380005AD3E /* PersonalInfoView.swift in Sources */,
 				6FFC06AD1EE3D49000E542BC /* AppDelegate.swift in Sources */,
 				6F0068891EFE161D009EDFBF /* FeedService.swift in Sources */,
