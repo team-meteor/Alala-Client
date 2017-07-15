@@ -11,6 +11,7 @@ class SelectionViewController: UIViewController {
   var urlAssetArr = [AVURLAsset]()
 
   var zoomMode: Bool = false
+  var multiSelectMode: Bool = false
   let photosLimit: Int = 500
   var getImageView: UIImageView?
   var getImage: UIImage?
@@ -66,6 +67,8 @@ class SelectionViewController: UIViewController {
     $0.backgroundColor = UIColor.blue
     $0.setTitle("Pause", for: UIControlState.normal)
   }
+  fileprivate let multiSelectButton = MultiSelectButton()
+
   fileprivate let baseScrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = false
@@ -91,7 +94,7 @@ class SelectionViewController: UIViewController {
     $0.backgroundColor = .white
     $0.alwaysBounceVertical = true
     $0.register(TileCell.self, forCellWithReuseIdentifier: "tileCell")
-    $0.allowsMultipleSelection = true
+    $0.allowsMultipleSelection = false
     $0.showsVerticalScrollIndicator = true
   }
 
@@ -103,7 +106,7 @@ class SelectionViewController: UIViewController {
   fileprivate let buttonBarView = UIView().then {
     $0.backgroundColor = UIColor.clear
   }
-  fileprivate let scrollViewZoomButton = Button()
+  fileprivate let scrollViewZoomButton = ZoomButton()
   init() {
     super.init(nibName: nil, bundle: nil)
 
@@ -178,15 +181,16 @@ class SelectionViewController: UIViewController {
 
   func getLimitedAlbumFromLibrary() {
 
-    let limitedOptions = PHFetchOptions()
+    //let limitedOptions = PHFetchOptions()
     let sortOptions = PHFetchOptions()
-    limitedOptions.fetchLimit = photosLimit
+    //limitedOptions.fetchLimit = photosLimit
     sortOptions.fetchLimit = photosLimit
     sortOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
     allPhotos = PHAsset.fetchAssets(with: sortOptions)
-    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: limitedOptions)
-    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: limitedOptions)
+//    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: limitedOptions)
+//    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: limitedOptions)
     self.fetchResult = allPhotos
+
   }
 
   func getAllAlbums() {
@@ -195,6 +199,9 @@ class SelectionViewController: UIViewController {
     AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
     allPhotos = PHAsset.fetchAssets(with: AllOptions)
 
+  }
+
+  func getSmartUserAlbums() {
     smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
     var smartArr = [PHAssetCollection]()
     smartAlbums.enumerateObjects({ (object, _, _) -> Void in
@@ -210,6 +217,7 @@ class SelectionViewController: UIViewController {
     userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
     var userArr = [PHAssetCollection]()
     userCollections.enumerateObjects({ (object, _, _) -> Void in
+
       let collection = object as! PHAssetCollection
       let userAlbum: PHFetchResult = PHAsset.fetchAssets(in: collection, options: nil)
       if userAlbum.count > 0 {
@@ -217,18 +225,41 @@ class SelectionViewController: UIViewController {
       }
     })
     userAlbumsArr = userArr
-
   }
 
-  func getCropImage() -> UIImage {
-    let image = self.imageView.image!
-    var rect = self.scrollView.convert(self.cropAreaView.frame, from: self.cropAreaView.superview)
-    rect.origin.x *= image.size.width / self.imageView.frame.width
-    rect.origin.y *= image.size.height / self.imageView.frame.height
-    rect.size.width *= image.size.width / self.imageView.frame.width
-    rect.size.height *= image.size.height / self.imageView.frame.height
-    let croppedCGImage = image.cgImage?.cropping(to: rect)
-    return UIImage(cgImage: croppedCGImage!)
+  func cropImage(image: UIImage) -> UIImage? {
+
+    let factor = imageView.image!.size.width/view.frame.width
+    let scale = 1/scrollView.zoomScale
+    let imageFrame = imageView.imageFrame()
+    let imageWidth = image.size.width
+    let imageHeight = image.size.height
+    var rect = CGRect()
+
+    if (imageWidth > imageHeight && scrollView.zoomScale == 1.0) || (imageWidth < imageHeight && scrollView.zoomScale == 1.0) {
+      // 1:1
+      rect.origin.x = (scrollView.contentOffset.x + cropAreaView.frame.origin.x - imageFrame.origin.x) * scale * factor
+      rect.origin.y = (scrollView.contentOffset.y + cropAreaView.frame.origin.y - imageFrame.origin.y) * scale * factor
+      rect.size.width = cropAreaView.frame.size.width * scale * factor
+      rect.size.height = cropAreaView.frame.size.height * scale * factor
+
+    } else if imageWidth < imageHeight && scrollView.zoomScale == 0.8 {
+      // 0.8 좌우 여백
+      rect.origin.x = self.imageView.imageFrame().origin.x
+      rect.origin.y = (scrollView.contentOffset.y + cropAreaView.frame.origin.y - imageFrame.origin.y) * scale * factor
+      rect.size.width = (self.imageView.image?.size.width)!
+      rect.size.height = cropAreaView.frame.size.height * scale * factor
+
+    } else {
+      // 원본
+      return image
+    }
+
+    let cgImage: CGImage! = image.cgImage
+    let croppedCGImage: CGImage! = cgImage.cropping(to: rect)
+
+    return UIImage(cgImage: croppedCGImage)
+
   }
 
   func doneButtonDidTap() {
@@ -236,8 +267,8 @@ class SelectionViewController: UIViewController {
       self.navigationItem.rightBarButtonItem?.isEnabled = false
       prepareMultiparts { _ in
 
-        let croppedImage = self.getCropImage()
-        let postEditorViewController = PostEditorViewController(image: croppedImage)
+        let croppedImage = self.cropImage(image: self.imageView.image!)
+        let postEditorViewController = PostEditorViewController(image: croppedImage!)
         postEditorViewController.imageArr = self.imageArr
         postEditorViewController.urlAssetArr = self.urlAssetArr
         self.navigationController?.pushViewController(postEditorViewController, animated: true)
@@ -279,8 +310,8 @@ class SelectionViewController: UIViewController {
           let scale = UIScreen.main.scale
           let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
           self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
-
-            self.imageArr.append(image!)
+            let croppedImage = self.cropImage(image: image!)
+            self.imageArr.append(croppedImage!)
             print("image", self.imageArr )
             if self.urlAssetArr.count + self.imageArr.count == self.collectionView.indexPathsForSelectedItems?.count {
               completion(true)
@@ -293,14 +324,13 @@ class SelectionViewController: UIViewController {
   }
 
   func updateFirstImageView() {
-
-    let scale = UIScreen.main.scale
-    let targetSize = CGSize(width:  600 * scale, height: 600 * scale)
     let screenWidth = self.view.bounds.width
     let screenHeight = self.view.bounds.height
+    let scale = UIScreen.main.scale
+    let targetSize = CGSize(width:  600 * scale, height: 600 * scale)
 
-    scrollView.frame.size = CGSize(width: screenWidth, height: screenHeight * 2 / 3 - screenWidth/8
-    )
+    scrollView.frame.size = CGSize(width: screenWidth, height: screenHeight * 2 / 3)
+
     let asset = self.fetchResult.object(at: 0)
     self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
 
@@ -318,8 +348,10 @@ class SelectionViewController: UIViewController {
 
   func libraryButtonDidTap() {
     if libraryButton.currentTitle == "Library v" {
-      if self.allPhotos.count == photosLimit {
-        getAllAlbums()
+
+      if self.smartAlbums == nil || self.userCollections == nil {
+        print("getsmartuser")
+        getSmartUserAlbums()
 
         self.tableView.reloadData()
 
@@ -350,9 +382,9 @@ class SelectionViewController: UIViewController {
   }
 
   func configureView() {
-
     let screenWidth = self.view.bounds.width
     let screenHeight = self.view.bounds.height
+
     let navigationBarHeight = self.navigationController?.navigationBar.frame.height
     let bounds = self.navigationController!.navigationBar.bounds
     self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
@@ -361,6 +393,7 @@ class SelectionViewController: UIViewController {
     self.baseScrollView.contentSize = CGSize(width: screenWidth, height: screenHeight * 2 / 3 + screenHeight - screenWidth/8 * 2 - navigationBarHeight!)
 
     self.buttonBarView.addSubview(scrollViewZoomButton)
+    self.buttonBarView.addSubview(multiSelectButton)
     self.baseScrollView.addSubview(self.scrollView)
     self.baseScrollView.addSubview(self.cropAreaView)
     self.baseScrollView.addSubview(self.collectionView)
@@ -405,8 +438,14 @@ class SelectionViewController: UIViewController {
       make.centerY.equalTo(self.buttonBarView)
       make.left.equalTo(self.buttonBarView).offset(10)
     }
-
+    self.multiSelectButton.snp.makeConstraints { make in
+      make.width.equalTo(screenWidth/12)
+      make.height.equalTo(screenWidth/12)
+      make.centerY.equalTo(self.buttonBarView)
+      make.right.equalTo(self.buttonBarView).offset(-10)
+    }
     self.scrollViewZoomButton.addTarget(self, action: #selector(scrollViewZoom), for: .touchUpInside)
+    self.multiSelectButton.addTarget(self, action: #selector(multiSelectButtonDidTap), for: .touchUpInside)
     self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
     self.playButton.addTarget(self, action: #selector(self.playButtonDidTap), for: .touchUpInside)
   }
@@ -422,6 +461,26 @@ class SelectionViewController: UIViewController {
     }
 
   }
+
+  func multiSelectButtonDidTap() {
+    if multiSelectMode {
+      collectionView.allowsMultipleSelection = false
+      multiSelectMode = false
+      scrollViewZoomButton.isHidden = false
+      zoomMode = true
+      scrollView.isUserInteractionEnabled = true
+    } else {
+      collectionView.allowsMultipleSelection = true
+      multiSelectMode = true
+      scrollViewZoomButton.isHidden = true
+      if scrollView.zoomScale != 1.0 {
+        scrollView.setZoomScale(1.0, animated: true)
+      }
+      zoomMode = false
+      scrollView.isUserInteractionEnabled = false
+    }
+  }
+
   func addAVPlayer(videoUrl: URL) {
     self.cropAreaView.isUserInteractionEnabled = true
     playerItem = AVPlayerItem(url: videoUrl)
@@ -490,6 +549,7 @@ class SelectionViewController: UIViewController {
 }
 
 extension SelectionViewController: UICollectionViewDelegate {
+
   func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
 
     if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
@@ -565,6 +625,15 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   }
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
+    if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
+
+      self.getAllAlbums()
+
+      self.fetchResult = self.allPhotos
+      self.collectionView.reloadData()
+
+    }
+
     let asset = fetchResult.object(at: indexPath.item)
 
     if asset.mediaType == .video {
@@ -574,7 +643,6 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
 
           let localVideoUrl: URL = urlAsset.url as URL
           let previewImage = self.previewImageFromVideo(videoUrl: localVideoUrl)
-
           self.scaleAspectFillSize(image: previewImage!, imageView: self.imageView)
           self.scrollView.contentSize = self.imageView.frame.size
           self.imageView.image = previewImage
@@ -587,9 +655,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     } else {
 
       setPlayerFinishMode()
-      self.playerLayer?.removeFromSuperlayer()
-      self.playButton.removeFromSuperview()
-      self.cropAreaView.isUserInteractionEnabled = false
+
       self.baseScrollView.setContentOffset(CGPoint(x:0, y:0), animated: true)
 
       let scale = UIScreen.main.scale
@@ -634,6 +700,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   }
 
   func setPlayerFinishMode() {
+
     self.playerLayer?.removeFromSuperlayer()
     self.playButton.removeFromSuperview()
     self.cropAreaView.isUserInteractionEnabled = false

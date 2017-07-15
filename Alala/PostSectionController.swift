@@ -24,7 +24,7 @@ class PostSectionController: ListSectionController {
     let width = collectionContext!.containerSize.width
 
     var multimediaCellRatio: Float = 1.0
-    if post.multipartIds.count > 0 {
+    if post.multipartIds[0].contains("_") && post.multipartIds.count > 0 {
       multimediaCellRatio = Float(post.multipartIds[0].components(separatedBy: "_")[0])!
     }
     switch index {
