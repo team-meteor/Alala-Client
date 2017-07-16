@@ -71,7 +71,10 @@ class TableViewWrapperController: UIViewController {
 //      make.centerY.equalTo(UIScreen.main.bounds.height/2 + 44)
 //    }
     self.view.snp.makeConstraints { make in
-      make.edges.equalToSuperview()
+      make.width.equalTo(UIScreen.main.bounds.width)
+      make.height.equalTo(UIScreen.main.bounds.height)
+      make.centerX.equalTo(UIScreen.main.bounds.width/2)
+      make.centerY.equalTo(UIScreen.main.bounds.height/2 + 44)
     }
 
     self.view.addSubview(tableView)

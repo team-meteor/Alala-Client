@@ -4,18 +4,17 @@ import AVKit
 
 class SelectionViewController: UIViewController {
 
-  var imageArr = [UIImage]()
-  var urlAssetArr = [AVURLAsset]()
   var photoAlbum = PhotoAlbum.sharedInstance
-
+  var allPhotos: PHFetchResult<PHAsset>!
+  var smartAlbumsArr = [PHAssetCollection]()
+  var userAlbumsArr = [PHAssetCollection]()
+  let imageManager = PHCachingImageManager()
+  var cropImageArr = [UIImage]()
+  let tileCellSpacing = CGFloat(1)
+  var videoPlayerVC: VideoPlayerViewController?
   var zoomMode: Bool = false
   var multiSelectMode: Bool = false
   let photosLimit: Int = 500
-  var getImageView: UIImageView?
-  var getImage: UIImage?
-  var getZoomScale: CGFloat?
-
-  var allPhotos: PHFetchResult<PHAsset>!
 
   var fetchResult: PHFetchResult<PHAsset> = PHFetchResult<PHAsset>() {
     didSet {
@@ -23,11 +22,6 @@ class SelectionViewController: UIViewController {
       self.collectionView.reloadData()
     }
   }
-
-  var smartAlbumsArr = [PHAssetCollection]()
-  var userAlbumsArr = [PHAssetCollection]()
-  let imageManager = PHCachingImageManager()
-  let tileCellSpacing = CGFloat(1)
 
   let initialRequestOptions = PHImageRequestOptions().then {
     $0.isSynchronous = true
@@ -153,9 +147,9 @@ class SelectionViewController: UIViewController {
 
   func cropImage(image: UIImage) -> UIImage? {
 
-    let factor = imageView.image!.size.width/view.frame.width
+    let factor = image.size.width/view.frame.width
     let scale = 1/scrollView.zoomScale
-    let imageFrame = imageView.imageFrame()
+    let imageFrame = imageView.imageFrame(image: image)
     let imageWidth = image.size.width
     let imageHeight = image.size.height
     var rect = CGRect()
@@ -169,31 +163,60 @@ class SelectionViewController: UIViewController {
 
     } else if imageWidth < imageHeight && scrollView.zoomScale == 0.8 {
       // 0.8 좌우 여백
-      rect.origin.x = self.imageView.imageFrame().origin.x
+      rect.origin.x = self.imageView.imageFrame(image: image).origin.x
       rect.origin.y = (scrollView.contentOffset.y + cropAreaView.frame.origin.y - imageFrame.origin.y) * scale * factor
-      rect.size.width = (self.imageView.image?.size.width)!
+      rect.size.width = image.size.width
       rect.size.height = cropAreaView.frame.size.height * scale * factor
 
     } else {
       // 원본
       return image
     }
-
     return UIImage(cgImage: image.cgImage!.cropping(to: rect)!)
   }
 
   func doneButtonDidTap() {
-    if self.collectionView.indexPathsForSelectedItems?.count != 0 {
-      self.navigationItem.rightBarButtonItem?.isEnabled = false
-      prepareMultiparts { _ in
 
+    if self.collectionView.indexPathsForSelectedItems?.count != 0 {
+      getCropImageArr { videoIndexArr in
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
         let croppedImage = self.cropImage(image: self.imageView.image!)
         let postEditorViewController = PostEditorViewController(image: croppedImage!)
-        postEditorViewController.imageArr = self.imageArr
-        postEditorViewController.urlAssetArr = self.urlAssetArr
+        postEditorViewController.videoIndexArr = videoIndexArr
+        postEditorViewController.cropImageArr = self.cropImageArr
+        postEditorViewController.fetchResult = self.fetchResult
         self.navigationController?.pushViewController(postEditorViewController, animated: true)
       }
     }
+  }
+
+  func getCropImageArr(completion: @escaping (_ videoIndexArr: [IndexPath]) -> Void) {
+    cropImageArr = []
+    var videoIndexArr = [IndexPath]()
+    var counter = 0
+
+    for index in self.collectionView.indexPathsForSelectedItems! {
+      let asset = self.fetchResult.object(at: index.item)
+      if asset.mediaType == .image {
+
+        let targetSize = CGSize(width: 600 * UIScreen.main.scale, height: 600 * UIScreen.main.scale)
+        self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
+          let croppedImage = self.cropImage(image: image!)
+          self.cropImageArr.append(croppedImage!)
+          counter += 1
+          if counter == self.collectionView.indexPathsForSelectedItems?.count {
+            completion(videoIndexArr)
+          }
+        })
+      } else {
+        videoIndexArr.append(index)
+        counter += 1
+        if counter == self.collectionView.indexPathsForSelectedItems?.count {
+          completion(videoIndexArr)
+        }
+      }
+    }
+
   }
 
   func doubleTapped() {
@@ -206,57 +229,15 @@ class SelectionViewController: UIViewController {
     }
   }
 
-  func prepareMultiparts(completion: @escaping (_ success: Bool) -> Void) {
-    self.imageArr = []
-    self.urlAssetArr = []
-
-    if self.collectionView.indexPathsForSelectedItems?.count != 0 {
-
-      for index in self.collectionView.indexPathsForSelectedItems! {
-        let asset = self.fetchResult.object(at: index.item)
-
-        if asset.mediaType == .video {
-          self.imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
-            if let urlAsset = asset as? AVURLAsset {
-              self.urlAssetArr.append(urlAsset)
-              print("video", self.urlAssetArr)
-              if self.urlAssetArr.count + self.imageArr.count == self.collectionView.indexPathsForSelectedItems?.count {
-                completion(true)
-              }
-            }
-          })
-        } else {
-          self.imageManager.requestImage(
-            for: asset,
-            targetSize: CGSize(width: 600 * UIScreen.main.scale, height: 600 * UIScreen.main.scale),
-            contentMode: .aspectFit,
-            options: self.initialRequestOptions,
-            resultHandler: { image, _ in
-              let croppedImage = self.cropImage(image: image!)
-              self.imageArr.append(croppedImage!)
-              print("image", self.imageArr )
-              if self.urlAssetArr.count + self.imageArr.count == self.collectionView.indexPathsForSelectedItems?.count {
-                completion(true)
-              }
-          })
-        }
-      }
-    }
-  }
-
   func updateFirstImageView() {
-    let screenWidth = self.view.bounds.width
-    let screenHeight = self.view.bounds.height
-    let scale = UIScreen.main.scale
-    let targetSize = CGSize(width:  600 * scale, height: 600 * scale)
 
-    scrollView.frame.size = CGSize(width: screenWidth, height: screenHeight * 2 / 3)
+    let targetSize = CGSize(width:  600 * UIScreen.main.scale, height: 600 * UIScreen.main.scale)
+    scrollView.frame.size = CGSize(width: self.view.bounds.width, height: self.view.bounds.height * 2 / 3)
 
     let asset = self.fetchResult.object(at: 0)
     self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
 
       if image != nil {
-        self.getImage = image!
         self.scrollView.zoomScale = 1.0
         self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
@@ -464,8 +445,8 @@ extension SelectionViewController: UICollectionViewDataSource {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "tileCell", for: indexPath) as! TileCell
     let asset = self.fetchResult.object(at: indexPath.item)
     cell.representedAssetIdentifier = asset.localIdentifier
-    let scale = UIScreen.main.scale
-    let targetSize = CGSize(width:  100 * scale, height: 100 * scale)
+
+    let targetSize = CGSize(width:  100 * UIScreen.main.scale, height: 100 * UIScreen.main.scale)
 
     imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
@@ -473,7 +454,7 @@ extension SelectionViewController: UICollectionViewDataSource {
       }
 
       if asset == self.fetchResult.object(at: 0) && self.imageView.image == nil {
-        self.getImage = image
+
         self.scrollView.zoomScale = 1.0
         self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
@@ -492,12 +473,12 @@ extension SelectionViewController: UICollectionViewDataSource {
 
 extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    let collectionViewWidth = collectionView.frame.width
+
     let cellWidth: CGFloat?
-    if(collectionViewWidth >= 375) {
-      cellWidth = round((collectionViewWidth - 5 * tileCellSpacing) / 4)
+    if(collectionView.frame.width >= 375) {
+      cellWidth = round((collectionView.frame.width - 5 * tileCellSpacing) / 4)
     } else {
-      cellWidth = round((collectionViewWidth - 4 * tileCellSpacing) / 3)
+      cellWidth = round((collectionView.frame.width - 4 * tileCellSpacing) / 3)
     }
     return TileCell.size(width: cellWidth!)
   }
@@ -518,43 +499,31 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     let asset = fetchResult.object(at: indexPath.item)
 
     if asset.mediaType == .video {
+      videoPlayerVC?.removeVideoPlayer()
 
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
         if let urlAsset = asset as? AVURLAsset {
 
           let localVideoUrl: URL = urlAsset.url as URL
-//          var videoPlayer = VideoPlayer(videoUrl: localVideoUrl, imageView: self.imageView)
-//          let previewImage = videoPlayer.getThumbnailFromVideo()
-//          self.scaleAspectFillSize(image: previewImage!, imageView: self.imageView)
-//          self.scrollView.contentSize = self.imageView.frame.size
-//          self.imageView.image = previewImage
-//          self.centerScrollView(animated: false)
-//          videoPlayer.addAVPlayer()
 
           self.scrollView.contentSize = self.imageView.frame.size
           self.centerScrollView(animated: false)
-          let player = AVPlayer(url: localVideoUrl)
-          let playerController = VideoPlayerViewController()
-          playerController.player = player
-          self.addChildViewController(playerController)
-          //playerController.videoGravity = AVLayerVideoGravityResizeAspectFill
-          DispatchQueue.main.async {
-            self.imageView.addSubview(playerController.view)
-            playerController.view.frame = self.imageView.frame
-          }
-          self.imageView.isUserInteractionEnabled = true
-          player.play()
 
+          self.videoPlayerVC = VideoPlayerViewController()
+          let thumbnailImage = self.videoPlayerVC?.getThumbnailImage(videoUrl: localVideoUrl)
+          self.imageView.image = thumbnailImage
+          self.videoPlayerVC?.addVideoPlayer(videoUrl: localVideoUrl, videoView: self.imageView)
         }
       })
     } else {
+      videoPlayerVC?.removeVideoPlayer()
+
       self.baseScrollView.setContentOffset(CGPoint(x:0, y:0), animated: true)
 
-      let scale = UIScreen.main.scale
-      let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+      let targetSize = CGSize(width: 600 * UIScreen.main.scale, height: 600 * UIScreen.main.scale)
 
       imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
-        self.getImage = image
+
         self.scrollView.zoomScale = 1.0
         self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size

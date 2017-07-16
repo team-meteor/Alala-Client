@@ -52,4 +52,37 @@ class VideoPlayerViewController: AVPlayerViewController {
     }
   }
 
+  func addVideoPlayer(videoUrl: URL, videoView: UIView) {
+    player = AVPlayer(url: videoUrl)
+    self.parent?.addChildViewController(self)
+    DispatchQueue.main.async {
+      videoView.addSubview(self.view)
+      self.view.frame = videoView.frame
+    }
+    videoView.isUserInteractionEnabled = true
+    player?.play()
+  }
+
+  func removeVideoPlayer() {
+    player?.pause()
+    self.view.removeFromSuperview()
+    self.removeFromParentViewController()
+  }
+
+  func getThumbnailImage(videoUrl: URL) -> UIImage? {
+    let asset = AVAsset(url: videoUrl)
+    let imageGenerator = AVAssetImageGenerator(asset: asset)
+    imageGenerator.appliesPreferredTrackTransform = true
+
+    var time = asset.duration
+    time.value = min(time.value, 2)
+
+    do {
+      let imageRef = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+      return UIImage(cgImage: imageRef)
+    } catch {
+      return nil
+    }
+  }
+
 }
