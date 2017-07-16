@@ -530,7 +530,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
 //          self.imageView.image = previewImage
 //          self.centerScrollView(animated: false)
 //          videoPlayer.addAVPlayer()
-          
+
           self.scrollView.contentSize = self.imageView.frame.size
           self.centerScrollView(animated: false)
           let player = AVPlayer(url: localVideoUrl)

@@ -8,16 +8,21 @@
 
 import UIKit
 import AVKit
+import AVFoundation
 
 class VideoPlayerViewController: AVPlayerViewController {
 
   fileprivate let playButton = UIButton().then {
-    $0.backgroundColor = UIColor.blue
-    $0.setTitle("Pause", for: UIControlState.normal)
+    $0.setImage(UIImage(named: "pause"), for: .normal)
   }
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { _ in
+      self.player?.seek(to: kCMTimeZero)
+      self.player?.play()
+    }
+
     self.showsPlaybackControls = false
 
     self.view.addSubview(playButton)
@@ -28,7 +33,7 @@ class VideoPlayerViewController: AVPlayerViewController {
     super.viewDidLayoutSubviews()
 
     playButton.snp.makeConstraints { make in
-      make.height.width.equalTo(50)
+      make.height.width.equalTo(100)
       make.center.equalTo(self.view)
     }
 
@@ -39,11 +44,11 @@ class VideoPlayerViewController: AVPlayerViewController {
     if player?.rate == 0 {
       player!.play()
 
-      playButton.setTitle("Pause", for: UIControlState.normal)
+      playButton.setImage(UIImage(named: "pause"), for: .normal)
     } else {
       player!.pause()
 
-      playButton.setTitle("Play", for: UIControlState.normal)
+      playButton.setImage(UIImage(named: "play"), for: .normal)
     }
   }
 
