@@ -55,6 +55,7 @@ class MultimediaCell: UICollectionViewCell {
       } else { // video
         let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(item)")
         let videoView = UIView()
+
         videoView.frame = CGRect(
           x: self.contentView.bounds.width * CGFloat(counter),
           y: 0,

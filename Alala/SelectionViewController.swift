@@ -512,6 +512,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
           self.videoPlayerVC = VideoPlayerViewController()
           let thumbnailImage = self.videoPlayerVC?.getThumbnailImage(videoUrl: localVideoUrl)
           self.imageView.image = thumbnailImage
+
           self.videoPlayerVC?.addVideoPlayer(videoUrl: localVideoUrl, videoView: self.imageView)
         }
       })

@@ -38,24 +38,28 @@ class PostEditorViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    //self.progressView.isHidden = true
+
     self.tableView.dataSource = self
     self.tableView.delegate = self
 
     self.view.addSubview(self.tableView)
     self.view.addSubview(self.progressView)
+    self.progressView.progress = 0.0
+    self.progressView.isHidden = false
   }
 
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     self.tableView.snp.makeConstraints { make in
       make.left.top.right.equalTo(self.view)
+      make.width.equalTo(self.view)
       make.height.equalTo(300)
     }
 
     self.progressView.snp.makeConstraints { make in
       make.top.equalTo(self.tableView.snp.bottom)
-      make.left.right.equalToSuperview()
+      make.width.equalTo(self.view)
+      make.height.equalTo(100)
     }
   }
 
@@ -95,9 +99,12 @@ class PostEditorViewController: UIViewController {
     if cropImageArr.count != 0 {
 
       for image in cropImageArr {
-        MultipartService.uploadMultipart(multiPartData: image, progress: nil) { imageId in
+        MultipartService.uploadMultipart(multiPartData: image, progressCompletion: { [unowned self] percent in
+          self.progressView.setProgress(percent, animated: true)
+        }) { imageId in
           self.multipartsIdArr.append(imageId)
-          if self.multipartsIdArr.count == self.cropImageArr.count + self.videoDataArr.count {
+            self.progressView.isHidden = true
+            if self.multipartsIdArr.count == self.cropImageArr.count + self.videoDataArr.count {
             completion(self.multipartsIdArr)
           }
         }
@@ -106,8 +113,11 @@ class PostEditorViewController: UIViewController {
     if videoDataArr.count != 0 {
 
       for movieData in videoDataArr {
-        MultipartService.uploadMultipart(multiPartData: movieData, progress: nil) { movieId in
+        MultipartService.uploadMultipart(multiPartData: movieData, progressCompletion: { [unowned self] percent in
+          self.progressView.setProgress(percent, animated: true)
+        }) { movieId in
           self.multipartsIdArr.append(movieId)
+          self.progressView.isHidden = true
           if self.multipartsIdArr.count == self.cropImageArr.count + self.videoDataArr.count {
             completion(self.multipartsIdArr)
           }
@@ -124,10 +134,7 @@ class PostEditorViewController: UIViewController {
       transformAssetToVideoData { success in
         self.getMultipartsIdArr { idArr in
 
-          PostService.postWithSingleMultipart(idArr: idArr, message: self.message, progress: { [weak self] progress in
-            guard let `self` = self else { return }
-            self.progressView.progress = Float(progress.completedUnitCount) / Float(progress.totalUnitCount)
-            }, completion: { [weak self] response in
+          PostService.postWithSingleMultipart(idArr: idArr, message: self.message, progress: nil, completion: { [weak self] response in
               guard self != nil else { return }
               switch response.result {
               case .success(let post):
@@ -151,10 +158,7 @@ class PostEditorViewController: UIViewController {
     } else {
       self.getMultipartsIdArr { idArr in
 
-        PostService.postWithSingleMultipart(idArr: idArr, message: self.message, progress: { [weak self] progress in
-          guard let `self` = self else { return }
-          self.progressView.progress = Float(progress.completedUnitCount) / Float(progress.totalUnitCount)
-          }, completion: { [weak self] response in
+        PostService.postWithSingleMultipart(idArr: idArr, message: self.message, progress: nil, completion: { [weak self] response in
             guard self != nil else { return }
             switch response.result {
             case .success(let post):
