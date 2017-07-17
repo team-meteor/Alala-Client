@@ -13,12 +13,7 @@ class PostEditorViewController: UIViewController {
 
   fileprivate let image: UIImage
   fileprivate var message: String?
-  var fetchResult = PHFetchResult<PHAsset>()
-  var videoDataArr = [Data]()
-  var videoIndexArr = [IndexPath]()
-  var cropImageArr = [UIImage]()
-  var multipartsIdArr = [String]()
-  fileprivate let progressView = UIProgressView()
+  var multipartArr = [Any]()
 
   fileprivate let tableView = UITableView().then {
     $0.isScrollEnabled = false
@@ -43,9 +38,6 @@ class PostEditorViewController: UIViewController {
     self.tableView.delegate = self
 
     self.view.addSubview(self.tableView)
-    self.view.addSubview(self.progressView)
-    self.progressView.progress = 0.0
-    self.progressView.isHidden = false
   }
 
   override func viewDidLayoutSubviews() {
@@ -55,12 +47,6 @@ class PostEditorViewController: UIViewController {
       make.width.equalTo(self.view)
       make.height.equalTo(300)
     }
-
-    self.progressView.snp.makeConstraints { make in
-      make.top.equalTo(self.tableView.snp.bottom)
-      make.width.equalTo(self.view)
-      make.height.equalTo(100)
-    }
   }
 
   override func didMove(toParentViewController parent: UIViewController?) {
@@ -69,116 +55,18 @@ class PostEditorViewController: UIViewController {
     }
   }
 
-  func transformAssetToVideoData(completion: @escaping (_ success: Bool) -> Void) {
-    let imageManager = PHCachingImageManager()
-
-    for index in videoIndexArr {
-      let asset = self.fetchResult.object(at: index.item)
-
-      imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
-        if let urlAsset = asset as? AVURLAsset {
-          let localVideoUrl: URL = urlAsset.url as URL
-          var movieData: Data?
-          do {
-            movieData = try Data(contentsOf: localVideoUrl)
-          } catch _ {
-            movieData = nil
-            return
-          }
-          self.videoDataArr.append(movieData!)
-          if self.videoDataArr.count == self.videoIndexArr.count {
-            completion(true)
-          }
-        }
-      })
-    }
-  }
-
-  func getMultipartsIdArr(completion: @escaping (_ idArr: [String]) -> Void) {
-
-    if cropImageArr.count != 0 {
-
-      for image in cropImageArr {
-        MultipartService.uploadMultipart(multiPartData: image, progressCompletion: { [unowned self] percent in
-          self.progressView.setProgress(percent, animated: true)
-        }) { imageId in
-          self.multipartsIdArr.append(imageId)
-            self.progressView.isHidden = true
-            if self.multipartsIdArr.count == self.cropImageArr.count + self.videoDataArr.count {
-            completion(self.multipartsIdArr)
-          }
-        }
-      }
-    }
-    if videoDataArr.count != 0 {
-
-      for movieData in videoDataArr {
-        MultipartService.uploadMultipart(multiPartData: movieData, progressCompletion: { [unowned self] percent in
-          self.progressView.setProgress(percent, animated: true)
-        }) { movieId in
-          self.multipartsIdArr.append(movieId)
-          self.progressView.isHidden = true
-          if self.multipartsIdArr.count == self.cropImageArr.count + self.videoDataArr.count {
-            completion(self.multipartsIdArr)
-          }
-        }
-
-      }
-    }
-
-  }
-
   func shareButtonDidTap() {
     self.navigationItem.rightBarButtonItem?.isEnabled = false
-    if videoIndexArr.count != 0 {
-      transformAssetToVideoData { success in
-        self.getMultipartsIdArr { idArr in
+    var postDic = [String: Any]()
+    postDic["multipartArr"] = self.multipartArr
+    postDic["message"] = self.message
+    NotificationCenter.default.post(
+      name: NSNotification.Name(rawValue: "preparePosting"),
+      object: self,
+      userInfo: ["postDic": postDic]
+    )
 
-          PostService.postWithSingleMultipart(idArr: idArr, message: self.message, progress: nil, completion: { [weak self] response in
-              guard self != nil else { return }
-              switch response.result {
-              case .success(let post):
-
-                self?.dismiss(animated: true) { _ in
-                  NotificationCenter.default.post(
-                    name: NSNotification.Name(rawValue: "postDidCreate"),
-                    object: self,
-                    userInfo: ["post": post]
-                  )
-                }
-              case .failure(let error):
-                print(error)
-
-              }
-            }
-
-          )
-        }
-      }
-    } else {
-      self.getMultipartsIdArr { idArr in
-
-        PostService.postWithSingleMultipart(idArr: idArr, message: self.message, progress: nil, completion: { [weak self] response in
-            guard self != nil else { return }
-            switch response.result {
-            case .success(let post):
-
-              self?.dismiss(animated: true) { _ in
-                NotificationCenter.default.post(
-                  name: NSNotification.Name(rawValue: "postDidCreate"),
-                  object: self,
-                  userInfo: ["post": post]
-                )
-              }
-            case .failure(let error):
-              print(error)
-
-            }
-          }
-
-        )}
-    }
-
+    self.dismiss(animated: true, completion: nil)
   }
 
   deinit {

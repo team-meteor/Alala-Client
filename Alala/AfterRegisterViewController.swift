@@ -10,7 +10,7 @@ import UIKit
 
 class AfterRegisterViewController: UIViewController {
   let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: nil)
-  fileprivate let progressView = UIProgressView()
+
   let profilePhoto = CircleImageView().then {
     $0.layer.borderWidth = 1
     $0.layer.masksToBounds = false
@@ -65,8 +65,7 @@ class AfterRegisterViewController: UIViewController {
     guard let profileImage = profilePhoto.image, let username = usernameTextField.text, !username.isEmpty else {
       return
     }
-    MultipartService.uploadMultipart(multiPartData: profileImage, progressCompletion: { [unowned self] percent in
-      self.progressView.setProgress(percent, animated: true)
+    MultipartService.uploadMultipart(multiPartData: profileImage, progressCompletion: { _ in
     }) { (imageId) in
       AuthService.instance.updateProfile(profileName: username, profileImageId: imageId, completion: { (success) in
         if success {

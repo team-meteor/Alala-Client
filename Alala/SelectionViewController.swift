@@ -9,7 +9,6 @@ class SelectionViewController: UIViewController {
   var smartAlbumsArr = [PHAssetCollection]()
   var userAlbumsArr = [PHAssetCollection]()
   let imageManager = PHCachingImageManager()
-  var cropImageArr = [UIImage]()
   let tileCellSpacing = CGFloat(1)
   var videoPlayerVC: VideoPlayerViewController?
   var zoomMode: Bool = false
@@ -176,47 +175,56 @@ class SelectionViewController: UIViewController {
   }
 
   func doneButtonDidTap() {
-
     if self.collectionView.indexPathsForSelectedItems?.count != 0 {
-      getCropImageArr { videoIndexArr in
+      getMultipartArr { multipartArr in
         self.navigationItem.rightBarButtonItem?.isEnabled = false
         let croppedImage = self.cropImage(image: self.imageView.image!)
         let postEditorViewController = PostEditorViewController(image: croppedImage!)
-        postEditorViewController.videoIndexArr = videoIndexArr
-        postEditorViewController.cropImageArr = self.cropImageArr
-        postEditorViewController.fetchResult = self.fetchResult
+
+        postEditorViewController.multipartArr = multipartArr
         self.navigationController?.pushViewController(postEditorViewController, animated: true)
       }
     }
   }
 
-  func getCropImageArr(completion: @escaping (_ videoIndexArr: [IndexPath]) -> Void) {
-    cropImageArr = []
-    var videoIndexArr = [IndexPath]()
+  func getMultipartArr(completion: @escaping (_ multipartArr: [Any]) -> Void) {
+    var multipartArr = [Any]()
     var counter = 0
-
     for index in self.collectionView.indexPathsForSelectedItems! {
       let asset = self.fetchResult.object(at: index.item)
+      //사진
       if asset.mediaType == .image {
 
         let targetSize = CGSize(width: 600 * UIScreen.main.scale, height: 600 * UIScreen.main.scale)
         self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
           let croppedImage = self.cropImage(image: image!)
-          self.cropImageArr.append(croppedImage!)
+          multipartArr.append(croppedImage!)
           counter += 1
           if counter == self.collectionView.indexPathsForSelectedItems?.count {
-            completion(videoIndexArr)
+            completion(multipartArr)
           }
         })
       } else {
-        videoIndexArr.append(index)
-        counter += 1
-        if counter == self.collectionView.indexPathsForSelectedItems?.count {
-          completion(videoIndexArr)
-        }
+        //비디오
+        imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
+          if let urlAsset = asset as? AVURLAsset {
+            let localVideoUrl: URL = urlAsset.url as URL
+            var movieData: Data?
+            do {
+              movieData = try Data(contentsOf: localVideoUrl)
+            } catch _ {
+              movieData = nil
+              return
+            }
+            multipartArr.append(movieData!)
+            counter += 1
+            if counter == self.collectionView.indexPathsForSelectedItems?.count {
+              completion(multipartArr)
+            }
+          }
+        })
       }
     }
-
   }
 
   func doubleTapped() {
