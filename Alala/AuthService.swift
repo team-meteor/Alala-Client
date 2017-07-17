@@ -232,4 +232,23 @@ class AuthService {
         }
     }
   }
+
+  func updateProfile(userInfo: User, completion: @escaping (_ success: Bool) -> Void) {
+    guard let token = self.authToken else { return }
+    let headers = [
+      "Authorization": "Bearer " + token,
+      "Content-Type": "application/json; charset=utf-8"
+    ]
+    let body = userInfo.toJSON() as [String : Any]
+
+    Alamofire.request(Constants.BASE_URL + "/user/profile/", method: .put, parameters: body, encoding: JSONEncoding.default, headers: headers)
+      .validate(statusCode: 200..<300)
+      .responseJSON { response in
+        if response.result.error == nil {
+          completion(true)
+        } else {
+          completion(false)
+        }
+    }
+  }
 }

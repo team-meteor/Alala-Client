@@ -89,7 +89,7 @@ class PersonalViewController: UIViewController {
 
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = AuthService.instance.currentUser?.email
+      $0.text = AuthService.instance.currentUser?.profileName
       $0.sizeToFit()
     }
     self.navigationController?.navigationBar.topItem?.title = ""
@@ -129,6 +129,7 @@ class PersonalViewController: UIViewController {
     self.fetchFeedMine(paging: .refresh)
 
     NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: NSNotification.Name(rawValue: "postDidCreate"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(profileUpdated), name: .profileUpdated, object: nil)
   }
 
   func setupNoContents() {
@@ -227,6 +228,12 @@ class PersonalViewController: UIViewController {
     super.viewWillAppear(animated)
     self.navigationController?.isNavigationBarHidden = false
   }
+
+  func profileUpdated(_ notification: Notification) {
+    guard let userInfo = notification.userInfo?["user"] as? User else { return }
+
+    personalInfoView.setupUserInfo(userInfo: userInfo/*AuthService.instance.currentUser!*/)
+  }
 }
 
 extension PersonalViewController: PersonalInfoViewDelegate {
@@ -268,7 +275,6 @@ extension PersonalViewController: PersonalInfoViewDelegate {
   }
 
   func listPostMenuButtonTap(sender: UIButton) {
-
     self.setupPostList()
     self.postViewController.updateNewPost(self.posts)
   }
