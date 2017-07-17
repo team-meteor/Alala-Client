@@ -14,20 +14,26 @@ import UIKit
 class EditProfileTableViewCell: UITableViewCell {
 
   static let cellReuseIdentifier = "editProfileCell"
-  static let cellSeparatorInsets = UIEdgeInsets(top: 0, left: 50, bottom: 0, right: 0)
+  static let textFieldCell = "textFieldCell"
+  static let textViewCell  = "textViewCell"
+  static let cellSeparatorInsets = UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 0)
+
+  var cellIdentifier: String = textFieldCell
 
   var rightButtonWidthConstraint: NSLayoutConstraint?
 
   let iconImageView = UIImageView().then {
-    $0.image = UIImage(named: "personal")?.resizeImage(scaledTolength: 25)
+    $0.image = UIImage(named: "personal")?.resizeImage(scaledTolength: 20)
   }
 
-  let textView = UITextView().then {
-    $0.text = "test"
+  let textView = UIPlaceholderTextView().then {
+    $0.text = ""
+    $0.font = UIFont(name: "HelveticaNeue", size: 16)
   }
 
   let textField = UITextField().then {
-    $0.placeholder = ""
+    $0.clearButtonMode = .whileEditing
+    $0.font = UIFont(name: "HelveticaNeue", size: 16)
   }
 
   let rightImageView = UIImageView()
@@ -36,26 +42,49 @@ class EditProfileTableViewCell: UITableViewCell {
     $0.backgroundColor = UIColor.white
   }
 
+  var isEnable: Bool {
+    didSet {
+      switch cellIdentifier {
+      case EditProfileTableViewCell.textViewCell:
+        self.textView.isEditable = isEnable
+      default: //EditProfileTableViewCell.textFieldCell
+        textField.isEnabled = isEnable
+      }
+    }
+  }
+
   override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    isEnable = true
     super.init(style: style, reuseIdentifier: reuseIdentifier)
 
     self.addSubview(iconImageView)
-    self.addSubview(textField)
-    //self.addSubview(rightImageView)
     self.addSubview(rightButton)
 
     iconImageView.snp.makeConstraints { (make) in
       make.centerY.equalTo(self)
       make.left.equalTo(10)
-      make.width.equalTo(30)
-      make.height.equalTo(30)
+      make.width.equalTo(20)
+      make.height.equalTo(20)
     }
 
-    textField.snp.makeConstraints { (make) in
-      make.top.equalTo(self).offset(5)
-      make.bottom.equalTo(self).offset(-5)
-      make.left.equalTo(iconImageView.snp.right).offset(10)
-      make.right.equalTo(rightButton.snp.left)
+    cellIdentifier = reuseIdentifier!
+    switch cellIdentifier {
+    case EditProfileTableViewCell.textViewCell:
+      self.addSubview(textView)
+      textView.snp.makeConstraints { (make) in
+        make.top.equalTo(self).offset(5)
+        make.bottom.equalTo(self).offset(-5)
+        make.left.equalTo(iconImageView.snp.right).offset(5)
+        make.right.equalTo(rightButton.snp.left)
+      }
+    default: //EditProfileTableViewCell.textFieldCell
+      self.addSubview(textField)
+      textField.snp.makeConstraints { (make) in
+        make.top.equalTo(self).offset(5)
+        make.bottom.equalTo(self).offset(-5)
+        make.left.equalTo(iconImageView.snp.right).offset(10)
+        make.right.equalTo(rightButton.snp.left)
+      }
     }
 
     rightButton.snp.makeConstraints { (make) in
@@ -78,48 +107,39 @@ class EditProfileTableViewCell: UITableViewCell {
     fatalError("init(coder:) has not been implemented")
   }
 
-  override func awakeFromNib() {
-    super.awakeFromNib()
-    // Initialization code
+  func setText(text: String?) {
+    if text == nil {
+      return
+    }
 
-//    self.addSubview(iconImageView)
-//    self.addSubview(textView)
-    //self.addSubview(rightImageView)
-    //self.addSubview(rightButton)
+    switch cellIdentifier {
+    case EditProfileTableViewCell.textViewCell:
+      self.textView.text = text
+    default: //EditProfileTableViewCell.textFieldCell
+      textField.text = text
+    }
+  }
 
-//    iconImageView.snp.makeConstraints { (make) in
-//      make.centerY.equalTo(self)
-//      make.left.equalTo(10)
-//      make.width.equalTo(20)
-//      make.height.equalTo(20)
-//    }
+  func getText() -> String {
+    switch cellIdentifier {
+    case EditProfileTableViewCell.textViewCell:
+      return self.textView.text
+    default: //EditProfileTableViewCell.textFieldCell
+      return self.textField.text!
+    }
+  }
+
+  func setPlaceholder(text: String) {
+    switch cellIdentifier {
+    case EditProfileTableViewCell.textViewCell:
+      self.textView.placeholder = text
+    default: //EditProfileTableViewCell.textFieldCell
+      textField.placeholder = text
+    }
+  }
+//  override func setSelected(_ selected: Bool, animated: Bool) {
+//      super.setSelected(selected, animated: animated)
 //
-//    textView.snp.makeConstraints { (make) in
-//      make.top.equalTo(self).offset(5)
-//      make.bottom.equalTo(self).offset(-5)
-//      make.left.equalTo(iconImageView.snp.right).offset(20)
-//      //make.right.equalTo(rightButton.snp.left)
-//      make.right.equalTo(self)
-//    }
-
-//    rightImageView.snp.makeConstraints { (make) in
-//      make.centerY.equalTo(self)
-//      make.left.equalTo(iconImageView.snp.right).offset(20)
-//    }
-
-//    rightButton.snp.makeConstraints { (make) in
-//      make.centerY.equalTo(self)
-//      make.left.equalTo(textView.snp.right)
-//      make.right.equalTo(self).offset(-10)
-//      make.width.equalTo(30)
-//      make.height.equalTo(self.frame.size.height-10)
-//    }
-  }
-
-  override func setSelected(_ selected: Bool, animated: Bool) {
-      super.setSelected(selected, animated: animated)
-
-      // Configure the view for the selected state
-  }
-
+//      // Configure the view for the selected state
+//  }
 }
