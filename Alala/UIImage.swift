@@ -26,4 +26,5 @@ extension UIImage {
     UIGraphicsEndImageContext()
     return newImage
   }
+
 }

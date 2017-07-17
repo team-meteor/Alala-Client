@@ -20,9 +20,9 @@ extension UIImageView {
     self.kf.setImage(with: url, placeholder: placeholder)
   }
 
-  func imageFrame() -> CGRect {
+  func imageFrame(image: UIImage) -> CGRect {
     let imageViewSize = self.frame.size
-    guard let imageSize = self.image?.size else {return CGRect.zero}
+    let imageSize = image.size
     let imageRatio = imageSize.width / imageSize.height
     let imageViewRatio = imageViewSize.width / imageViewSize.height
     if imageRatio < imageViewRatio {
@@ -36,17 +36,5 @@ extension UIImageView {
       let topLeftY = (imageViewSize.height - height) * 0.5
       return CGRect(x: 0, y: topLeftY, width: imageViewSize.width, height: height)
     }
-  }
-}
-
-extension UIView {
-  func setVideoLayer(videoId: String) {
-    let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(videoId)")
-    let playerItem = AVPlayerItem(url: url!)
-    let player = AVPlayer(playerItem: playerItem)
-    let playerLayer = AVPlayerLayer(player: player)
-    self.layer.addSublayer(playerLayer)
-    playerLayer.frame = self.frame
-    player.play()
   }
 }

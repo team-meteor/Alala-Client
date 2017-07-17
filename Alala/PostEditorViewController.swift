@@ -11,13 +11,12 @@ import Photos
 
 class PostEditorViewController: UIViewController {
 
-  //캡쳐사진
   fileprivate let image: UIImage
   fileprivate var message: String?
-  //비디오촬영
-  var videoData = Data()
-  var urlAssetArr = [AVURLAsset]()
-  var imageArr = [UIImage]()
+  var fetchResult = PHFetchResult<PHAsset>()
+  var videoDataArr = [Data]()
+  var videoIndexArr = [IndexPath]()
+  var cropImageArr = [UIImage]()
   var multipartsIdArr = [String]()
   fileprivate let progressView = UIProgressView()
 
@@ -35,89 +34,6 @@ class PostEditorViewController: UIViewController {
 
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
-  }
-
-  func getMultipartsIdArr(completion: @escaping (_ idArr: [String]) -> Void) {
-
-    //비디오 촬영인 경우
-    if videoData.count != 0 {
-      MultipartService.uploadMultipart(multiPartData: videoData, progress: nil) { videoId in
-        self.multipartsIdArr.append(videoId)
-        completion(self.multipartsIdArr)
-      }
-
-      //멀티셀렉션인 경우
-    } else if imageArr.count != 0 || urlAssetArr.count != 0 {
-      if imageArr.count != 0 {
-
-        for image in imageArr {
-          MultipartService.uploadMultipart(multiPartData: image, progress: nil) { imageId in
-            self.multipartsIdArr.append(imageId)
-            if self.multipartsIdArr.count == self.imageArr.count + self.urlAssetArr.count {
-              completion(self.multipartsIdArr)
-            }
-          }
-        }
-      }
-      if urlAssetArr.count != 0 {
-
-        for asset in urlAssetArr {
-          let videoUrl = asset.url
-          var movieData: Data!
-          do {
-            movieData = try Data(contentsOf: videoUrl)
-          } catch _ {
-            movieData = nil
-            return
-          }
-          MultipartService.uploadMultipart(multiPartData: movieData, progress: nil) { movieId in
-            self.multipartsIdArr.append(movieId)
-            if self.multipartsIdArr.count == self.imageArr.count + self.urlAssetArr.count {
-              completion(self.multipartsIdArr)
-            }
-          }
-        }
-      }
-      //사진촬영인 경우
-    } else {
-      MultipartService.uploadMultipart(multiPartData: self.image, progress: nil) { imageId in
-        self.multipartsIdArr.append(imageId)
-        completion(self.multipartsIdArr)
-      }
-    }
-  }
-
-  func shareButtonDidTap() {
-    self.navigationItem.rightBarButtonItem?.isEnabled = false
-    getMultipartsIdArr { idArr in
-
-      PostService.postWithSingleMultipart(idArr: idArr, message: self.message, progress: { [weak self] progress in
-        guard let `self` = self else { return }
-        self.progressView.progress = Float(progress.completedUnitCount) / Float(progress.totalUnitCount)
-        }, completion: { [weak self] response in
-          guard self != nil else { return }
-          switch response.result {
-          case .success(let post):
-
-            self?.dismiss(animated: true) { _ in
-              NotificationCenter.default.post(
-                name: NSNotification.Name(rawValue: "postDidCreate"),
-                object: self,
-                userInfo: ["post": post]
-              )
-            }
-          case .failure(let error):
-            print(error)
-
-          }
-        }
-
-      )
-    }
-  }
-
-  deinit {
-    NotificationCenter.default.removeObserver(self)
   }
 
   override func viewDidLoad() {
@@ -147,6 +63,122 @@ class PostEditorViewController: UIViewController {
     if parent == nil {
       NotificationCenter.default.post(name: Notification.Name("cameraStart"), object: nil)
     }
+  }
+
+  func transformAssetToVideoData(completion: @escaping (_ success: Bool) -> Void) {
+    let imageManager = PHCachingImageManager()
+
+    for index in videoIndexArr {
+      let asset = self.fetchResult.object(at: index.item)
+
+      imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
+        if let urlAsset = asset as? AVURLAsset {
+          let localVideoUrl: URL = urlAsset.url as URL
+          var movieData: Data?
+          do {
+            movieData = try Data(contentsOf: localVideoUrl)
+          } catch _ {
+            movieData = nil
+            return
+          }
+          self.videoDataArr.append(movieData!)
+          if self.videoDataArr.count == self.videoIndexArr.count {
+            completion(true)
+          }
+        }
+      })
+    }
+  }
+
+  func getMultipartsIdArr(completion: @escaping (_ idArr: [String]) -> Void) {
+
+    if cropImageArr.count != 0 {
+
+      for image in cropImageArr {
+        MultipartService.uploadMultipart(multiPartData: image, progress: nil) { imageId in
+          self.multipartsIdArr.append(imageId)
+          if self.multipartsIdArr.count == self.cropImageArr.count + self.videoDataArr.count {
+            completion(self.multipartsIdArr)
+          }
+        }
+      }
+    }
+    if videoDataArr.count != 0 {
+
+      for movieData in videoDataArr {
+        MultipartService.uploadMultipart(multiPartData: movieData, progress: nil) { movieId in
+          self.multipartsIdArr.append(movieId)
+          if self.multipartsIdArr.count == self.cropImageArr.count + self.videoDataArr.count {
+            completion(self.multipartsIdArr)
+          }
+        }
+
+      }
+    }
+
+  }
+
+  func shareButtonDidTap() {
+    self.navigationItem.rightBarButtonItem?.isEnabled = false
+    if videoIndexArr.count != 0 {
+      transformAssetToVideoData { success in
+        self.getMultipartsIdArr { idArr in
+
+          PostService.postWithSingleMultipart(idArr: idArr, message: self.message, progress: { [weak self] progress in
+            guard let `self` = self else { return }
+            self.progressView.progress = Float(progress.completedUnitCount) / Float(progress.totalUnitCount)
+            }, completion: { [weak self] response in
+              guard self != nil else { return }
+              switch response.result {
+              case .success(let post):
+
+                self?.dismiss(animated: true) { _ in
+                  NotificationCenter.default.post(
+                    name: NSNotification.Name(rawValue: "postDidCreate"),
+                    object: self,
+                    userInfo: ["post": post]
+                  )
+                }
+              case .failure(let error):
+                print(error)
+
+              }
+            }
+
+          )
+        }
+      }
+    } else {
+      self.getMultipartsIdArr { idArr in
+
+        PostService.postWithSingleMultipart(idArr: idArr, message: self.message, progress: { [weak self] progress in
+          guard let `self` = self else { return }
+          self.progressView.progress = Float(progress.completedUnitCount) / Float(progress.totalUnitCount)
+          }, completion: { [weak self] response in
+            guard self != nil else { return }
+            switch response.result {
+            case .success(let post):
+
+              self?.dismiss(animated: true) { _ in
+                NotificationCenter.default.post(
+                  name: NSNotification.Name(rawValue: "postDidCreate"),
+                  object: self,
+                  userInfo: ["post": post]
+                )
+              }
+            case .failure(let error):
+              print(error)
+
+            }
+          }
+
+        )}
+    }
+
+  }
+
+  deinit {
+    NotificationCenter.default.removeObserver(self)
   }
 
 }

@@ -4,69 +4,36 @@ import AVKit
 
 class SelectionViewController: UIViewController {
 
-  var playerLayer: AVPlayerLayer?
-  var player: AVPlayer?
-  var playerItem: AVPlayerItem?
-  var imageArr = [UIImage]()
-  var urlAssetArr = [AVURLAsset]()
-
+  var photoAlbum = PhotoAlbum.sharedInstance
+  var allPhotos: PHFetchResult<PHAsset>!
+  var smartAlbumsArr = [PHAssetCollection]()
+  var userAlbumsArr = [PHAssetCollection]()
+  let imageManager = PHCachingImageManager()
+  var cropImageArr = [UIImage]()
+  let tileCellSpacing = CGFloat(1)
+  var videoPlayerVC: VideoPlayerViewController?
   var zoomMode: Bool = false
   var multiSelectMode: Bool = false
   let photosLimit: Int = 500
-  var getImageView: UIImageView?
-  var getImage: UIImage?
-  var getZoomScale: CGFloat?
 
-  enum Section: Int {
-    case allPhotos = 0
-    case smartAlbums
-    case userCollections
-
-    static let count = 3
-  }
-  enum CellIdentifier: String {
-    case allPhotos, collection
-  }
-  enum SegueIdentifier: String {
-    case showAllPhotos
-    case showCollection
-  }
-  var allPhotos: PHFetchResult<PHAsset>!
-  var smartAlbums: PHFetchResult<PHAssetCollection>!
-  var userCollections: PHFetchResult<PHCollection>!
   var fetchResult: PHFetchResult<PHAsset> = PHFetchResult<PHAsset>() {
     didSet {
       updateFirstImageView()
+      self.collectionView.reloadData()
     }
   }
-  var smartAlbumsFetchResult: PHFetchResult<PHAsset>!
-  var smartAlbumsArr = [PHAssetCollection]()
-  var userCollectionsFetchResult: PHFetchResult<PHAsset>!
-  var userAlbumsArr = [PHAssetCollection]()
-  var assetCollection: PHAssetCollection?
-  let imageManager = PHCachingImageManager()
-  let tileCellSpacing = CGFloat(1)
-  let sectionLocalizedTitles = ["", NSLocalizedString("Smart Albums", comment: ""), NSLocalizedString("Albums", comment: "")]
 
   let initialRequestOptions = PHImageRequestOptions().then {
     $0.isSynchronous = true
     $0.resizeMode = .fast
     $0.deliveryMode = .fastFormat
   }
-
-  fileprivate let tableView = UITableView().then {
-    $0.isScrollEnabled = true
-    $0.register(GridViewCell.self, forCellReuseIdentifier: CellIdentifier.allPhotos.rawValue)
-    $0.register(GridViewCell.self, forCellReuseIdentifier: CellIdentifier.collection.rawValue)
-  }
+  fileprivate var tableWrapperVC: TableViewWrapperController?
   fileprivate let libraryButton = UIButton().then {
     $0.backgroundColor = UIColor.red
     $0.setTitle("Library v", for: .normal)
   }
-  fileprivate let playButton = UIButton().then {
-    $0.backgroundColor = UIColor.blue
-    $0.setTitle("Pause", for: UIControlState.normal)
-  }
+
   fileprivate let multiSelectButton = MultiSelectButton()
 
   fileprivate let baseScrollView = UIScrollView().then {
@@ -107,9 +74,8 @@ class SelectionViewController: UIViewController {
     $0.backgroundColor = UIColor.clear
   }
   fileprivate let scrollViewZoomButton = ZoomButton()
-  init() {
-    super.init(nibName: nil, bundle: nil)
-
+  override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     self.navigationItem.leftBarButtonItem = UIBarButtonItem(
       barButtonSystemItem: .cancel,
       target: self,
@@ -134,17 +100,19 @@ class SelectionViewController: UIViewController {
     scrollViewDoubleTap.numberOfTapsRequired = 2
     scrollView.addGestureRecognizer(scrollViewDoubleTap)
 
-    NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying(note:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
+    NotificationCenter.default.addObserver(self, selector: #selector(fetchSmartUserAlbums), name: NSNotification.Name(rawValue: "fetchSmartUserAlbums"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(fetchAllPhotoAlbum), name: NSNotification.Name(rawValue: "fetchAllPhotoAlbum"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(tableViewOffMode), name: NSNotification.Name(rawValue: "tableViewOffMode"), object: nil)
 
     self.collectionView.dataSource = self
     self.collectionView.delegate = self
     self.baseScrollView.delegate = self
     self.scrollView.delegate = self
-    self.tableView.delegate = self
-    self.tableView.dataSource = self
 
     self.configureView()
-    getLimitedAlbumFromLibrary()
+    photoAlbum.getLimitedPhotos()
+    self.allPhotos = photoAlbum.allPhotos
+    self.fetchResult = allPhotos
   }
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
@@ -163,7 +131,6 @@ class SelectionViewController: UIViewController {
       make.width.equalTo(100)
       make.center.equalTo((self.navigationController?.navigationBar)!)
     }
-
   }
 
   func centerScrollView(animated: Bool) {
@@ -175,63 +142,14 @@ class SelectionViewController: UIViewController {
   }
 
   func cancelButtonDidTap() {
-    //self.dismiss(animated: true, completion: nil)
     NotificationCenter.default.post(name: Notification.Name("dismissWrapperVC"), object: nil)
-  }
-
-  func getLimitedAlbumFromLibrary() {
-
-    //let limitedOptions = PHFetchOptions()
-    let sortOptions = PHFetchOptions()
-    //limitedOptions.fetchLimit = photosLimit
-    sortOptions.fetchLimit = photosLimit
-    sortOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-    allPhotos = PHAsset.fetchAssets(with: sortOptions)
-//    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: limitedOptions)
-//    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: limitedOptions)
-    self.fetchResult = allPhotos
-
-  }
-
-  func getAllAlbums() {
-
-    let AllOptions = PHFetchOptions()
-    AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-    allPhotos = PHAsset.fetchAssets(with: AllOptions)
-
-  }
-
-  func getSmartUserAlbums() {
-    smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
-    var smartArr = [PHAssetCollection]()
-    smartAlbums.enumerateObjects({ (object, _, _) -> Void in
-      let collection = object
-      let smartAlbum: PHFetchResult = PHAsset.fetchAssets(in: collection, options: nil)
-      if smartAlbum.count > 0 {
-        smartArr.append(collection)
-      }
-
-    })
-    smartAlbumsArr = smartArr
-
-    userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
-    var userArr = [PHAssetCollection]()
-    userCollections.enumerateObjects({ (object, _, _) -> Void in
-
-      let collection = object as! PHAssetCollection
-      let userAlbum: PHFetchResult = PHAsset.fetchAssets(in: collection, options: nil)
-      if userAlbum.count > 0 {
-        userArr.append(collection)
-      }
-    })
-    userAlbumsArr = userArr
   }
 
   func cropImage(image: UIImage) -> UIImage? {
 
-    let factor = imageView.image!.size.width/view.frame.width
+    let factor = image.size.width/view.frame.width
     let scale = 1/scrollView.zoomScale
-    let imageFrame = imageView.imageFrame()
+    let imageFrame = imageView.imageFrame(image: image)
     let imageWidth = image.size.width
     let imageHeight = image.size.height
     var rect = CGRect()
@@ -245,35 +163,60 @@ class SelectionViewController: UIViewController {
 
     } else if imageWidth < imageHeight && scrollView.zoomScale == 0.8 {
       // 0.8 좌우 여백
-      rect.origin.x = self.imageView.imageFrame().origin.x
+      rect.origin.x = self.imageView.imageFrame(image: image).origin.x
       rect.origin.y = (scrollView.contentOffset.y + cropAreaView.frame.origin.y - imageFrame.origin.y) * scale * factor
-      rect.size.width = (self.imageView.image?.size.width)!
+      rect.size.width = image.size.width
       rect.size.height = cropAreaView.frame.size.height * scale * factor
 
     } else {
       // 원본
       return image
     }
-
-    let cgImage: CGImage! = image.cgImage
-    let croppedCGImage: CGImage! = cgImage.cropping(to: rect)
-
-    return UIImage(cgImage: croppedCGImage)
-
+    return UIImage(cgImage: image.cgImage!.cropping(to: rect)!)
   }
 
   func doneButtonDidTap() {
-    if self.collectionView.indexPathsForSelectedItems?.count != 0 {
-      self.navigationItem.rightBarButtonItem?.isEnabled = false
-      prepareMultiparts { _ in
 
+    if self.collectionView.indexPathsForSelectedItems?.count != 0 {
+      getCropImageArr { videoIndexArr in
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
         let croppedImage = self.cropImage(image: self.imageView.image!)
         let postEditorViewController = PostEditorViewController(image: croppedImage!)
-        postEditorViewController.imageArr = self.imageArr
-        postEditorViewController.urlAssetArr = self.urlAssetArr
+        postEditorViewController.videoIndexArr = videoIndexArr
+        postEditorViewController.cropImageArr = self.cropImageArr
+        postEditorViewController.fetchResult = self.fetchResult
         self.navigationController?.pushViewController(postEditorViewController, animated: true)
       }
     }
+  }
+
+  func getCropImageArr(completion: @escaping (_ videoIndexArr: [IndexPath]) -> Void) {
+    cropImageArr = []
+    var videoIndexArr = [IndexPath]()
+    var counter = 0
+
+    for index in self.collectionView.indexPathsForSelectedItems! {
+      let asset = self.fetchResult.object(at: index.item)
+      if asset.mediaType == .image {
+
+        let targetSize = CGSize(width: 600 * UIScreen.main.scale, height: 600 * UIScreen.main.scale)
+        self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
+          let croppedImage = self.cropImage(image: image!)
+          self.cropImageArr.append(croppedImage!)
+          counter += 1
+          if counter == self.collectionView.indexPathsForSelectedItems?.count {
+            completion(videoIndexArr)
+          }
+        })
+      } else {
+        videoIndexArr.append(index)
+        counter += 1
+        if counter == self.collectionView.indexPathsForSelectedItems?.count {
+          completion(videoIndexArr)
+        }
+      }
+    }
+
   }
 
   func doubleTapped() {
@@ -284,58 +227,17 @@ class SelectionViewController: UIViewController {
       scrollView.setZoomScale(1.0, animated: true)
       zoomMode = false
     }
-
-  }
-
-  func prepareMultiparts(completion: @escaping (_ success: Bool) -> Void) {
-    self.imageArr = []
-    self.urlAssetArr = []
-
-    if self.collectionView.indexPathsForSelectedItems?.count != 0 {
-
-      for index in self.collectionView.indexPathsForSelectedItems! {
-        let asset = self.fetchResult.object(at: index.item)
-
-        if asset.mediaType == .video {
-          self.imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
-            if let urlAsset = asset as? AVURLAsset {
-              self.urlAssetArr.append(urlAsset)
-              print("video", self.urlAssetArr)
-              if self.urlAssetArr.count + self.imageArr.count == self.collectionView.indexPathsForSelectedItems?.count {
-                completion(true)
-              }
-            }
-          })
-        } else {
-          let scale = UIScreen.main.scale
-          let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
-          self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
-            let croppedImage = self.cropImage(image: image!)
-            self.imageArr.append(croppedImage!)
-            print("image", self.imageArr )
-            if self.urlAssetArr.count + self.imageArr.count == self.collectionView.indexPathsForSelectedItems?.count {
-              completion(true)
-            }
-          })
-        }
-      }
-    }
-
   }
 
   func updateFirstImageView() {
-    let screenWidth = self.view.bounds.width
-    let screenHeight = self.view.bounds.height
-    let scale = UIScreen.main.scale
-    let targetSize = CGSize(width:  600 * scale, height: 600 * scale)
 
-    scrollView.frame.size = CGSize(width: screenWidth, height: screenHeight * 2 / 3)
+    let targetSize = CGSize(width:  600 * UIScreen.main.scale, height: 600 * UIScreen.main.scale)
+    scrollView.frame.size = CGSize(width: self.view.bounds.width, height: self.view.bounds.height * 2 / 3)
 
     let asset = self.fetchResult.object(at: 0)
     self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
 
       if image != nil {
-        self.getImage = image!
         self.scrollView.zoomScale = 1.0
         self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
@@ -343,23 +245,30 @@ class SelectionViewController: UIViewController {
         self.centerScrollView(animated: false)
       }
     })
-
   }
 
   func libraryButtonDidTap() {
     if libraryButton.currentTitle == "Library v" {
-
-      if self.smartAlbums == nil || self.userCollections == nil {
-        print("getsmartuser")
-        getSmartUserAlbums()
-
-        self.tableView.reloadData()
-
+      if allPhotos.count == photosLimit {
+        photoAlbum.getAllPhotos()
+      }
+      if photoAlbum.smartAlbumsArr.count == 0 || photoAlbum.userAlbumsArr.count == 0 {
+        photoAlbum.getSmartUserAlbums()
       }
       tableViewOnMode()
     } else if libraryButton.currentTitle == "Library ^" {
       tableViewOffMode()
     }
+  }
+
+  func fetchSmartUserAlbums() {
+    self.smartAlbumsArr = photoAlbum.smartAlbumsArr
+    self.userAlbumsArr = photoAlbum.userAlbumsArr
+  }
+
+  func fetchAllPhotoAlbum() {
+    self.allPhotos = photoAlbum.allPhotos
+    self.fetchResult = self.allPhotos
   }
 
   func scaleAspectFillSize(image: UIImage, imageView: UIImageView) {
@@ -400,15 +309,7 @@ class SelectionViewController: UIViewController {
     self.baseScrollView.addSubview(self.buttonBarView)
     self.scrollView.addSubview(self.imageView)
     self.view.addSubview(baseScrollView)
-    self.view.addSubview(self.tableView)
 
-    //constraints
-    self.tableView.snp.makeConstraints { make in
-      make.width.equalTo(self.view)
-      make.height.equalTo(self.view.frame.height - 90)
-      make.centerX.equalTo(self.view)
-      make.top.equalTo(self.view.snp.bottom)
-    }
     self.baseScrollView.snp.makeConstraints { make in
       make.bottom.left.right.equalTo(self.view)
     }
@@ -447,7 +348,6 @@ class SelectionViewController: UIViewController {
     self.scrollViewZoomButton.addTarget(self, action: #selector(scrollViewZoom), for: .touchUpInside)
     self.multiSelectButton.addTarget(self, action: #selector(multiSelectButtonDidTap), for: .touchUpInside)
     self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
-    self.playButton.addTarget(self, action: #selector(self.playButtonDidTap), for: .touchUpInside)
   }
 
   func scrollViewZoom() {
@@ -459,7 +359,6 @@ class SelectionViewController: UIViewController {
       scrollView.setZoomScale(1.0, animated: true)
       zoomMode = false
     }
-
   }
 
   func multiSelectButtonDidTap() {
@@ -481,49 +380,14 @@ class SelectionViewController: UIViewController {
     }
   }
 
-  func addAVPlayer(videoUrl: URL) {
-    self.cropAreaView.isUserInteractionEnabled = true
-    playerItem = AVPlayerItem(url: videoUrl)
-    player = AVPlayer(playerItem: playerItem)
-    self.playerLayer = AVPlayerLayer(player: player)
-    DispatchQueue.main.async {
-      self.setConstraintOfPlayer()
-    }
-
-  }
-
-  func setConstraintOfPlayer() {
-    self.imageView.layer.addSublayer(self.playerLayer!)
-    self.playerLayer!.frame = self.imageView.frame
-    self.cropAreaView.addSubview(self.playButton)
-    self.playButton.snp.makeConstraints { make in
-      make.center.equalTo(self.cropAreaView)
-      make.width.height.equalTo(50)
-    }
-  }
-
-  func playButtonDidTap() {
-
-    if player?.rate == 0 {
-      player!.play()
-
-      playButton.setTitle("Pause", for: UIControlState.normal)
-    } else {
-      player!.pause()
-
-      playButton.setTitle("Play", for: UIControlState.normal)
-    }
-  }
-  deinit {
-    NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
-    print("selection deinit")
-  }
-
   func tableViewOffMode() {
     self.libraryButton.setTitle("Library v", for: .normal)
-    UIView.animate(withDuration: 0.5, animations: {
-      self.tableView.transform = CGAffineTransform(translationX: 0, y: self.tableView.frame.height)
-    })
+    self.fetchResult = photoAlbum.fetchResult!
+    self.tableWrapperVC?.view.removeFromSuperview()
+    self.tableWrapperVC?.removeFromParentViewController()
+
+    //self.tableWrapperVC?.dismiss(animated: true, completion: nil)
+
     NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
     self.navigationItem.leftBarButtonItem = UIBarButtonItem(
       barButtonSystemItem: .cancel,
@@ -540,8 +404,13 @@ class SelectionViewController: UIViewController {
 
   func tableViewOnMode() {
     self.libraryButton.setTitle("Library ^", for: .normal)
-    UIView.animate(withDuration: 0.5, animations: {self.tableView.transform = CGAffineTransform(translationX: 0, y: -self.tableView.frame.height)})
-    NotificationCenter.default.post(name: Notification.Name("hideCustomTabBar"), object: nil)
+    tableWrapperVC = TableViewWrapperController()
+
+    self.view.addSubview((tableWrapperVC?.view)!)
+    self.addChildViewController(tableWrapperVC!)
+
+    //self.present(tableWrapperVC!, animated: true, completion: nil)
+
     self.navigationItem.leftBarButtonItem = nil
     self.navigationItem.rightBarButtonItem = nil
   }
@@ -554,11 +423,7 @@ extension SelectionViewController: UICollectionViewDelegate {
 
     if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
 
-      self.getAllAlbums()
-
-      self.fetchResult = self.allPhotos
-      self.collectionView.reloadData()
-
+      photoAlbum.getAllPhotos()
     }
 
   }
@@ -580,8 +445,8 @@ extension SelectionViewController: UICollectionViewDataSource {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "tileCell", for: indexPath) as! TileCell
     let asset = self.fetchResult.object(at: indexPath.item)
     cell.representedAssetIdentifier = asset.localIdentifier
-    let scale = UIScreen.main.scale
-    let targetSize = CGSize(width:  100 * scale, height: 100 * scale)
+
+    let targetSize = CGSize(width:  100 * UIScreen.main.scale, height: 100 * UIScreen.main.scale)
 
     imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
@@ -589,7 +454,7 @@ extension SelectionViewController: UICollectionViewDataSource {
       }
 
       if asset == self.fetchResult.object(at: 0) && self.imageView.image == nil {
-        self.getImage = image
+
         self.scrollView.zoomScale = 1.0
         self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
@@ -608,12 +473,12 @@ extension SelectionViewController: UICollectionViewDataSource {
 
 extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    let collectionViewWidth = collectionView.frame.width
+
     let cellWidth: CGFloat?
-    if(collectionViewWidth >= 375) {
-      cellWidth = round((collectionViewWidth - 5 * tileCellSpacing) / 4)
+    if(collectionView.frame.width >= 375) {
+      cellWidth = round((collectionView.frame.width - 5 * tileCellSpacing) / 4)
     } else {
-      cellWidth = round((collectionViewWidth - 4 * tileCellSpacing) / 3)
+      cellWidth = round((collectionView.frame.width - 4 * tileCellSpacing) / 3)
     }
     return TileCell.size(width: cellWidth!)
   }
@@ -627,42 +492,38 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
 
     if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
 
-      self.getAllAlbums()
-
-      self.fetchResult = self.allPhotos
-      self.collectionView.reloadData()
+      photoAlbum.getAllPhotos()
 
     }
 
     let asset = fetchResult.object(at: indexPath.item)
 
     if asset.mediaType == .video {
-      self.player?.pause()
+      videoPlayerVC?.removeVideoPlayer()
+
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
         if let urlAsset = asset as? AVURLAsset {
 
           let localVideoUrl: URL = urlAsset.url as URL
-          let previewImage = self.previewImageFromVideo(videoUrl: localVideoUrl)
-          self.scaleAspectFillSize(image: previewImage!, imageView: self.imageView)
+
           self.scrollView.contentSize = self.imageView.frame.size
-          self.imageView.image = previewImage
           self.centerScrollView(animated: false)
 
-          self.addAVPlayer(videoUrl: localVideoUrl)
-          self.player?.play()
+          self.videoPlayerVC = VideoPlayerViewController()
+          let thumbnailImage = self.videoPlayerVC?.getThumbnailImage(videoUrl: localVideoUrl)
+          self.imageView.image = thumbnailImage
+          self.videoPlayerVC?.addVideoPlayer(videoUrl: localVideoUrl, videoView: self.imageView)
         }
       })
     } else {
-
-      setPlayerFinishMode()
+      videoPlayerVC?.removeVideoPlayer()
 
       self.baseScrollView.setContentOffset(CGPoint(x:0, y:0), animated: true)
 
-      let scale = UIScreen.main.scale
-      let targetSize = CGSize(width: 600 * scale, height: 600 * scale)
+      let targetSize = CGSize(width: 600 * UIScreen.main.scale, height: 600 * UIScreen.main.scale)
 
       imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
-        self.getImage = image
+
         self.scrollView.zoomScale = 1.0
         self.scaleAspectFillSize(image: image!, imageView: self.imageView)
         self.scrollView.contentSize = self.imageView.frame.size
@@ -678,34 +539,6 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     }
 
   }
-
-  func previewImageFromVideo(videoUrl: URL) -> UIImage? {
-    let asset = AVAsset(url: videoUrl)
-    let imageGenerator = AVAssetImageGenerator(asset: asset)
-    imageGenerator.appliesPreferredTrackTransform = true
-
-    var time = asset.duration
-    time.value = min(time.value, 2)
-
-    do {
-      let imageRef = try imageGenerator.copyCGImage(at: time, actualTime: nil)
-      return UIImage(cgImage: imageRef)
-    } catch {
-      return nil
-    }
-  }
-
-  func playerDidFinishPlaying(note: NSNotification) {
-    setPlayerFinishMode()
-  }
-
-  func setPlayerFinishMode() {
-
-    self.playerLayer?.removeFromSuperlayer()
-    self.playButton.removeFromSuperview()
-    self.cropAreaView.isUserInteractionEnabled = false
-  }
-
 }
 
 extension SelectionViewController: UIScrollViewDelegate {
@@ -713,10 +546,6 @@ extension SelectionViewController: UIScrollViewDelegate {
     return imageView
   }
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
-
-//    if scrollView.contentOffset.x > scrollView.contentSize.width - scrollView.bounds.width {
-//      scrollView.contentOffset.x = scrollView.contentSize.width - scrollView.bounds.width
-//    }
 
     let page = self.baseScrollView.contentOffset.y
 
@@ -739,137 +568,4 @@ extension SelectionViewController: UIScrollViewDelegate {
     scrollView.contentInset = UIEdgeInsets(top: verticalPadding, left: horizontalPadding, bottom: verticalPadding, right: horizontalPadding)
 
   }
-}
-
-extension SelectionViewController: UITableViewDelegate {
-
-  func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-
-    return 100
-  }
-
-  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let AllOptions = PHFetchOptions()
-    AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-
-    switch Section(rawValue: indexPath.section)! {
-
-    case .allPhotos:
-
-      self.fetchResult = self.allPhotos
-
-    case .smartAlbums:
-
-      let collection: PHCollection
-      //collection = smartAlbums.object(at: indexPath.item)
-      collection = smartAlbumsArr[indexPath.item]
-      guard let assetCollection = collection as? PHAssetCollection
-        else { fatalError("expected asset collection") }
-
-      self.assetCollection = assetCollection
-      self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: AllOptions)
-
-    case .userCollections:
-
-      let collection: PHCollection
-      //collection = userCollections.object(at: indexPath.item)
-      collection = userAlbumsArr[indexPath.item]
-      guard let assetCollection = collection as? PHAssetCollection
-        else { fatalError("expected asset collection") }
-
-      self.assetCollection = assetCollection
-      self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: AllOptions)
-    }
-
-    tableViewOffMode()
-
-    self.collectionView.reloadData()
-
-  }
-}
-
-extension SelectionViewController: UITableViewDataSource {
-  func numberOfSections(in tableView: UITableView) -> Int {
-    return Section.count
-  }
-
-  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    switch Section(rawValue: section)! {
-    case .allPhotos: return 1
-    case .smartAlbums: return smartAlbumsArr.count
-    case .userCollections: return userAlbumsArr.count
-    }
-  }
-
-  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let AllOptions = PHFetchOptions()
-    AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-
-    switch Section(rawValue: indexPath.section)! {
-    case .allPhotos:
-      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.allPhotos.rawValue, for: indexPath)
-
-      if fetchResult.count != 0 {
-        cell.textLabel!.text = NSLocalizedString("All Photos", comment: "")
-        let asset = fetchResult.object(at: 0)
-        let scale = UIScreen.main.scale
-        let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
-        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
-          cell.imageView?.image = image
-
-        })
-        return cell
-      } else {
-        return cell
-      }
-
-    case .smartAlbums:
-
-      let collection = smartAlbumsArr[indexPath.row]
-      self.smartAlbumsFetchResult = PHAsset.fetchAssets(in: collection, options: AllOptions)
-
-      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath)
-      cell.textLabel!.text = collection.localizedTitle
-
-      if smartAlbumsFetchResult.count != 0 {
-        let asset = smartAlbumsFetchResult.object(at: 0)
-        let scale = UIScreen.main.scale
-        let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
-        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
-          cell.imageView?.image = image
-
-        })
-        return cell
-      } else {
-        return cell
-      }
-
-    case .userCollections:
-      let collection = userAlbumsArr[indexPath.row]
-      let assetCollection = collection
-      self.userCollectionsFetchResult = PHAsset.fetchAssets(in: assetCollection, options: AllOptions)
-
-      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath)
-      cell.textLabel!.text = collection.localizedTitle
-
-      if userCollectionsFetchResult.count != 0 {
-        let asset = userCollectionsFetchResult.object(at: 0)
-        let scale = UIScreen.main.scale
-        let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
-        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
-          cell.imageView?.image = image
-
-        })
-        return cell
-      } else {
-        return cell
-      }
-
-    }
-  }
-
-  func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-    return sectionLocalizedTitles[section]
-  }
-
 }

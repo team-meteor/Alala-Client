@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Photos
 import Alamofire
 
 struct MultipartService {
@@ -38,4 +39,5 @@ struct MultipartService {
       }
     })
   }
+
 }
