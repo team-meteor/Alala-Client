@@ -270,11 +270,17 @@ extension PersonalViewController: PersonalInfoViewDelegate {
   }
 
   func gridPostMenuButtonTap(sender: UIButton) {
+    if self.posts.count <= 0 {
+      return
+    }
     self.setupPostGrid()
     self.postGridCollectionView.reloadData()
   }
 
   func listPostMenuButtonTap(sender: UIButton) {
+    if self.posts.count <= 0 {
+      return
+    }
     self.setupPostList()
     self.postViewController.updateNewPost(self.posts)
   }

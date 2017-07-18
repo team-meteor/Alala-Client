@@ -45,6 +45,8 @@ class SavedViewController: UIViewController {
   }
 
   func setupUI() {
+    self.view.backgroundColor = UIColor.white
+
     self.view.addSubview(allTabButton)
     self.view.addSubview(collectionTabButton)
 
@@ -89,10 +91,6 @@ class SavedViewController: UIViewController {
 //        make.bottom.equalTo(self.view)
 //      }
 //    }
-
-    /////
-    allTabView.backgroundColor = UIColor.red
-    collectionTabView.backgroundColor = UIColor.blue
 
     allTabButtonTap(sender: allTabButton)
   }
