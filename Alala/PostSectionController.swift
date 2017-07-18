@@ -16,6 +16,7 @@ class PostSectionController: ListSectionController {
   override init() {
     super.init()
     inset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+
   }
   override func numberOfItems() -> Int {
     return 4
@@ -71,11 +72,14 @@ class PostSectionController: ListSectionController {
     } else if let cell = cell as? MultimediaCell {
       cell.configure(post: post)
     } else if let cell = cell as? ButtonGroupCell {
-
+      print("post", post.id)
+      cell.likeButton.isSelected = post.isLiked
+      cell.postID = self.post.id
     } else if let cell = cell as? LikeCountCell, post.isLiked == true {
-      cell.likeCount.text = String(describing: post.likedUsers!.count)
+      cell.configureLikeCountLabel(post: self.post)
     }
 
     return cell
   }
+
 }

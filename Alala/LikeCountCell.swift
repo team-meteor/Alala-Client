@@ -9,7 +9,7 @@
 import UIKit
 
 class LikeCountCell: UICollectionViewCell {
-  let likeCount: UILabel = {
+  let likeCountLabel: UILabel = {
     let label = UILabel()
     label.font = UIFont.systemFont(ofSize: 14)
     return label
@@ -22,7 +22,7 @@ class LikeCountCell: UICollectionViewCell {
   }()
   override init(frame: CGRect) {
     super.init(frame: frame)
-    self.contentView.addSubview(likeCount)
+    self.contentView.addSubview(likeCountLabel)
     self.contentView.addSubview(likesLabel)
   }
 
@@ -32,13 +32,22 @@ class LikeCountCell: UICollectionViewCell {
 
   override func layoutSubviews() {
     super.layoutSubviews()
-    likeCount.snp.makeConstraints { (make) in
+    likeCountLabel.snp.makeConstraints { (make) in
       make.centerY.equalTo(self.contentView)
       make.left.equalTo(self.contentView).offset(10)
     }
     likesLabel.snp.makeConstraints { (make) in
-      make.centerY.equalTo(likeCount)
-      make.left.equalTo(self.likeCount.snp.right).offset(2)
+      make.centerY.equalTo(likeCountLabel)
+      make.left.equalTo(self.likeCountLabel.snp.right).offset(2)
+    }
+  }
+
+  func configureLikeCountLabel(post: Post) {
+    let likeCount = post.likeCount
+    if likeCount! > 0 {
+      self.likeCountLabel.text = "\(likeCount!)명이 좋아합니다."
+    } else {
+      self.likeCountLabel.text = "가장 먼저 좋아요를 눌러보세요."
     }
   }
 }

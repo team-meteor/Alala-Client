@@ -9,10 +9,13 @@
 import UIKit
 
 class ButtonGroupCell: UICollectionViewCell {
-  let heartButton: UIButton = {
+  var postID = String()
+  let likeButton: UIButton = {
     let button = UIButton()
-    let image = UIImage(named: "heart")?.resizeImage(scaledToFit: 30)
-    button.setImage(image, for: .normal)
+    let unlikeImage = UIImage(named: "heart")?.resizeImage(scaledToFit: 30)
+    let likeImage = UIImage(named: "heart-selected")?.resizeImage(scaledToFit: 30)
+    button.setBackgroundImage(unlikeImage, for: .normal)
+    button.setBackgroundImage(likeImage, for: .selected)
     return button
   }()
   let commentButton: UIButton = {
@@ -35,23 +38,24 @@ class ButtonGroupCell: UICollectionViewCell {
   }()
   override init(frame: CGRect) {
     super.init(frame: frame)
-    contentView.addSubview(heartButton)
+    contentView.addSubview(likeButton)
     contentView.addSubview(commentButton)
     contentView.addSubview(sendButton)
     contentView.addSubview(saveButton)
+    self.likeButton.addTarget(self, action: #selector(likeButtonDidTap), for: .touchUpInside)
   }
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
   override func layoutSubviews() {
     super.layoutSubviews()
-    heartButton.snp.makeConstraints { (make) in
+    likeButton.snp.makeConstraints { (make) in
       make.centerY.equalTo(self.contentView)
       make.left.equalTo(self.contentView).offset(10)
     }
     commentButton.snp.makeConstraints { (make) in
-      make.centerY.equalTo(self.heartButton)
-      make.left.equalTo(self.heartButton.snp.right).offset(15)
+      make.centerY.equalTo(self.likeButton)
+      make.left.equalTo(self.likeButton.snp.right).offset(15)
     }
     sendButton.snp.makeConstraints { (make) in
       make.centerY.equalTo(self.commentButton)
@@ -60,6 +64,66 @@ class ButtonGroupCell: UICollectionViewCell {
     saveButton.snp.makeConstraints { (make) in
       make.centerY.equalTo(self.sendButton)
       make.right.equalTo(self.contentView).offset(-10)
+    }
+  }
+
+  func likeButtonDidTap() {
+    if !self.likeButton.isSelected {
+      print("좋아요")
+      self.like()
+    } else {
+      print("좋아요 취소")
+      self.unlike()
+    }
+  }
+
+  func like() {
+    print("like", postID)
+    NotificationCenter.default.post(
+      name: .postDidLike,
+      object: self,
+      userInfo: ["postID": postID]
+    )
+
+    PostService.like(postID: self.postID) { [weak self] response in
+      guard self != nil else { return }
+      switch response.result {
+      case .success:
+        print("좋아요 성공!")
+
+      case .failure:
+        print("좋아요 실패 ㅠㅠ")
+        NotificationCenter.default.post(
+          name: .postDidUnlike,
+          object: self,
+          userInfo: ["postID": self?.postID as Any]
+        )
+      }
+    }
+  }
+
+  func unlike() {
+    print("unlike", postID)
+    NotificationCenter.default.post(
+      name: .postDidUnlike,
+      object: self,
+      userInfo: ["postID": postID]
+    )
+
+    PostService.unlike(postID: self.postID) { [weak self] response in
+      guard self != nil else { return }
+      switch response.result {
+      case .success:
+        print("좋아요 취소 성공!")
+
+      case .failure:
+        print("좋아요 취소 실패 ㅠㅠ")
+        NotificationCenter.default.post(
+          name: .postDidLike,
+          object: self,
+          userInfo: ["postID": self?.postID as Any]
+        )
+      }
     }
   }
 }

@@ -60,6 +60,8 @@ class FeedViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     NotificationCenter.default.addObserver(self, selector: #selector(preparePosting), name: NSNotification.Name(rawValue: "preparePosting"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(postDidLike), name: .postDidLike, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(postDidUnlike), name: .postDidUnlike, object: nil)
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "IowanOldStyle-BoldItalic", size: 20)
       $0.text = "Alala"
@@ -123,7 +125,7 @@ class FeedViewController: UIViewController {
 
     self.getMultipartsIdArr(multipartArr: multipartArr) { idArr in
 
-      PostService.postWithSingleMultipart(idArr: idArr, message: message, progress: nil, completion: { [weak self] response in
+      PostService.postWithMultipart(idArr: idArr, message: message, progress: nil, completion: { [weak self] response in
         guard self != nil else { return }
         switch response.result {
         case .success(let post):
@@ -132,9 +134,7 @@ class FeedViewController: UIViewController {
         case .failure(let error):
           print(error)
 
-        }
-        }
-
+        }}
       )}
   }
 
@@ -156,7 +156,7 @@ class FeedViewController: UIViewController {
       progressView.isHidden = false
       counter += 1
 
-      MultipartService.uploadMultipart(multiPartData: multipart, progressCompletion: { [unowned self] percent in
+      MultipartService.uploadMultipart(multiPartData: multipart, progressCompletion: { percent in
         progressView.setProgress(percent, animated: true)
       }) { imageId in
         multipartsIdArr.append(imageId)
@@ -165,6 +165,40 @@ class FeedViewController: UIViewController {
           completion(multipartsIdArr)
 
         }
+      }
+    }
+  }
+
+  func postDidLike(_ notification: Notification) {
+    print("postdidlike")
+    guard let postID = notification.userInfo?["postID"] as? String else { return }
+    for i in 0..<self.posts.count {
+      let post = self.posts[i]
+      if post.id == postID {
+        post.likeCount! += 1
+        post.isLiked = true
+        self.posts[i] = post
+        print("likeupdate")
+        self.collectionView.reloadData()
+        //self.adapter.performUpdates(animated: true, completion: nil)
+        break
+      }
+    }
+  }
+
+  func postDidUnlike(_ notification: Notification) {
+    print("postdidunlike")
+    guard let postID = notification.userInfo?["postID"] as? String else { return }
+    for i in 0..<self.posts.count {
+      let post = self.posts[i]
+      if post.id == postID {
+        post.likeCount = max(0, post.likeCount - 1)
+        post.isLiked = false
+        self.posts[i] = post
+        print("unlikeupdate")
+        self.collectionView.reloadData()
+        //self.adapter.performUpdates(animated: true, completion: nil)
+        break
       }
     }
   }
