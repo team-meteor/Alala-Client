@@ -85,8 +85,8 @@ class ButtonGroupCell: UICollectionViewCell {
       userInfo: ["postID": postID]
     )
 
-    PostService.like(postID: self.postID) { [weak self] response in
-      guard self != nil else { return }
+    PostService.like(postID: self.postID) { response in
+
       switch response.result {
       case .success:
         print("좋아요 성공!")
@@ -96,7 +96,7 @@ class ButtonGroupCell: UICollectionViewCell {
         NotificationCenter.default.post(
           name: .postDidUnlike,
           object: self,
-          userInfo: ["postID": self?.postID as Any]
+          userInfo: ["postID": self.postID]
         )
       }
     }
@@ -110,8 +110,8 @@ class ButtonGroupCell: UICollectionViewCell {
       userInfo: ["postID": postID]
     )
 
-    PostService.unlike(postID: self.postID) { [weak self] response in
-      guard self != nil else { return }
+    PostService.unlike(postID: self.postID) { response in
+
       switch response.result {
       case .success:
         print("좋아요 취소 성공!")
@@ -121,7 +121,7 @@ class ButtonGroupCell: UICollectionViewCell {
         NotificationCenter.default.post(
           name: .postDidLike,
           object: self,
-          userInfo: ["postID": self?.postID as Any]
+          userInfo: ["postID": self.postID]
         )
       }
     }
