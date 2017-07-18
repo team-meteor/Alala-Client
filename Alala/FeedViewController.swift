@@ -59,7 +59,9 @@ class FeedViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: NSNotification.Name(rawValue: "postDidCreate"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(preparePosting), name: NSNotification.Name(rawValue: "preparePosting"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(postDidLike), name: .postDidLike, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(postDidUnlike), name: .postDidUnlike, object: nil)
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "IowanOldStyle-BoldItalic", size: 20)
       $0.text = "Alala"
@@ -99,7 +101,7 @@ class FeedViewController: UIViewController {
           self.posts.append(contentsOf: newPosts)
         }
         self.nextPage = feed.nextPage
-        print("fetchFeed : ", self.posts)
+
         DispatchQueue.main.async {
           self.adapter.performUpdates(animated: true, completion: nil)
         }
@@ -109,12 +111,96 @@ class FeedViewController: UIViewController {
     }
   }
 
-  func postDidCreate(_ notification: Notification) {
-    guard let post = notification.userInfo?["post"] as? Post else { return }
-    self.posts.insert(post, at: 0)
-    print("create post", post.multipartIds)
-      self.adapter.performUpdates(animated: true, completion: nil)
+  func postDidCreate(post: Post) {
 
+    self.posts.insert(post, at: 0)
+    self.adapter.performUpdates(animated: true, completion: nil)
+  }
+
+  func preparePosting(_ notification: Notification) {
+
+    guard let postDic = notification.userInfo?["postDic"] as? [String:Any] else { return }
+    guard let multipartArr = postDic["multipartArr"] as? [Any] else { return }
+    guard let message = postDic["message"] as? String? else { return }
+
+    self.getMultipartsIdArr(multipartArr: multipartArr) { idArr in
+
+      PostService.postWithMultipart(idArr: idArr, message: message, progress: nil, completion: { [weak self] response in
+        guard self != nil else { return }
+        switch response.result {
+        case .success(let post):
+          self?.postDidCreate(post: post)
+
+        case .failure(let error):
+          print(error)
+
+        }}
+      )}
+  }
+
+  func getMultipartsIdArr(multipartArr: [Any], completion: @escaping (_ idArr: [String]) -> Void) {
+
+    var counter = 0
+    var multipartsIdArr = [String]()
+
+    for multipart in multipartArr {
+      let progressView = UIProgressView()
+      progressView.backgroundColor = UIColor.yellow
+      progressView.frame = CGRect(
+        x: 0,
+        y: (self.navigationController?.navigationBar.frame.height)! + 50 * CGFloat(counter),
+        width: self.view.bounds.width,
+        height: 50)
+      self.collectionView.addSubview(progressView)
+      progressView.progress = 0.0
+      progressView.isHidden = false
+      counter += 1
+
+      MultipartService.uploadMultipart(multiPartData: multipart, progressCompletion: { percent in
+        progressView.setProgress(percent, animated: true)
+      }) { imageId in
+        multipartsIdArr.append(imageId)
+        progressView.isHidden = true
+        if multipartsIdArr.count == multipartArr.count {
+          completion(multipartsIdArr)
+
+        }
+      }
+    }
+  }
+
+  func postDidLike(_ notification: Notification) {
+    print("postdidlike")
+    guard let postID = notification.userInfo?["postID"] as? String else { return }
+    for i in 0..<self.posts.count {
+      let post = self.posts[i]
+      if post.id == postID {
+        post.likeCount! += 1
+        post.isLiked = true
+        self.posts[i] = post
+        print("likeupdate")
+        self.collectionView.reloadData()
+        //self.adapter.performUpdates(animated: true, completion: nil)
+        break
+      }
+    }
+  }
+
+  func postDidUnlike(_ notification: Notification) {
+    print("postdidunlike")
+    guard let postID = notification.userInfo?["postID"] as? String else { return }
+    for i in 0..<self.posts.count {
+      let post = self.posts[i]
+      if post.id == postID {
+        post.likeCount = max(0, post.likeCount - 1)
+        post.isLiked = false
+        self.posts[i] = post
+        print("unlikeupdate")
+        self.collectionView.reloadData()
+        //self.adapter.performUpdates(animated: true, completion: nil)
+        break
+      }
+    }
   }
 }
 

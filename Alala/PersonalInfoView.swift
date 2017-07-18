@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SnapKit
 
 protocol PersonalInfoViewDelegate: class {
   func postsAreaTap()
@@ -43,7 +44,23 @@ class PersonalInfoView: UIView {
     $0.contentMode = .scaleAspectFill
   }
 
+  var profileNameHeightConstraint: Constraint?
   let profileNameLabel = UILabel().then {
+    $0.font = UIFont(name: "HelveticaNeue", size: 16)
+    $0.text = "User Name up to 30 character"
+    $0.sizeToFit()
+  }
+
+  var bioHeightConstraint: Constraint?
+  let bioLabel = UILabel().then {
+    $0.font = UIFont(name: "HelveticaNeue", size: 16)
+    $0.text = "User Name up to 30 character"
+    $0.numberOfLines = 0
+    $0.sizeToFit()
+  }
+
+  var websiteHeightConstraint: Constraint?
+  let websiteLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 16)
     $0.text = "User Name up to 30 character"
     $0.sizeToFit()
@@ -157,6 +174,8 @@ class PersonalInfoView: UIView {
     self.addSubview(infoView)
     infoView.addSubview(profileImageView)
     infoView.addSubview(profileNameLabel)
+    infoView.addSubview(bioLabel)
+    infoView.addSubview(websiteLabel)
 
     infoView.addSubview(postsButton)
     postsButton.addSubview(postsCountLabel)
@@ -186,7 +205,7 @@ class PersonalInfoView: UIView {
       make.right.equalTo(self)
       make.leftMargin.equalTo(10)
       make.rightMargin.equalTo(10)
-      make.bottom.equalTo(profileNameLabel).offset(10)
+      make.bottom.equalTo(websiteLabel).offset(10)
     }
 
     profileImageView.snp.makeConstraints { (make) in
@@ -194,13 +213,6 @@ class PersonalInfoView: UIView {
       make.left.equalTo(infoView.snp.leftMargin)
       make.width.equalTo(70)
       make.height.equalTo(70)
-    }
-
-    profileNameLabel.snp.makeConstraints { (make) in
-      make.top.equalTo(profileImageView.snp.bottom).offset(3)
-      make.left.equalTo(profileImageView.snp.left)
-      make.width.equalTo(infoView).offset(-40)
-      make.height.equalTo(20)
     }
 
     postsButton.snp.makeConstraints { (make) in
@@ -279,6 +291,27 @@ class PersonalInfoView: UIView {
       make.height.equalTo(25)
     }
 
+    profileNameLabel.snp.makeConstraints { (make) in
+      make.top.equalTo(profileImageView.snp.bottom).offset(3)
+      make.left.equalTo(profileImageView.snp.left)
+      make.width.equalTo(infoView).offset(-40)
+      profileNameHeightConstraint = make.height.equalTo(0).constraint
+    }
+
+    bioLabel.snp.makeConstraints { (make) in
+      make.top.equalTo(profileNameLabel.snp.bottom).offset(3)
+      make.left.equalTo(profileNameLabel)
+      make.right.equalTo(profileNameLabel)
+      bioHeightConstraint = make.height.equalTo(0).constraint
+    }
+
+    websiteLabel.snp.makeConstraints { (make) in
+      make.top.equalTo(bioLabel.snp.bottom).offset(3)
+      make.left.equalTo(profileNameLabel)
+      make.right.equalTo(profileNameLabel)
+      websiteHeightConstraint = make.height.equalTo(0).constraint
+    }
+
     subMenuBar.snp.makeConstraints { (make) in
       make.top.equalTo(infoView.snp.bottom)
       make.left.equalTo(self)
@@ -316,11 +349,29 @@ class PersonalInfoView: UIView {
     gridPostMenuButton.isSelected = true
   }
 
+  /**
+   * User객체의 정보를 UIControl들에 설정
+   * @param userInfo 프로필 내용을 설정할 User객체
+   */
   func setupUserInfo(userInfo: User) {
-    profileNameLabel.text = userInfo.email
     if userInfo.profilePhotoId != nil {
-      profileImageView.setImage(with: userInfo.profilePhotoId, size: .small)
+      profileImageView.setImage(with: userInfo.profilePhotoId, size: .medium)
     }
+
+    profileNameLabel.text = userInfo.displayName
+    let profileNameOffset = (profileNameLabel.text?.characters.count==0) ? 0 : 20
+    self.profileNameHeightConstraint?.update(offset: profileNameOffset)
+
+    bioLabel.text = userInfo.bio
+    bioLabel.sizeToFit()
+    let bioOffset = (bioLabel.text?.characters.count==0) ? 0 : bioLabel.frame.height
+    self.bioHeightConstraint?.update(offset: bioOffset)
+
+    websiteLabel.text = userInfo.website
+    let websiteOffset = (websiteLabel.text?.characters.count==0) ? 0 : 20
+    self.websiteHeightConstraint?.update(offset: websiteOffset)
+
+    self.updateConstraints()
   }
 
   /**

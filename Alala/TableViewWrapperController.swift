@@ -17,9 +17,6 @@ class TableViewWrapperController: UIViewController {
     $0.deliveryMode = .fastFormat
   }
   var allPhotos: PHFetchResult<PHAsset>!
-  var smartAlbums: PHFetchResult<PHAssetCollection>!
-  var userCollections: PHFetchResult<PHCollection>!
-
   var smartAlbumsFetchResult: PHFetchResult<PHAsset>!
   var smartAlbumsArr = [PHAssetCollection]()
   var userCollectionsFetchResult: PHFetchResult<PHAsset>!
@@ -40,11 +37,6 @@ class TableViewWrapperController: UIViewController {
     $0.register(GridViewCell.self, forCellReuseIdentifier: CellIdentifier.allPhotos.rawValue)
     $0.register(GridViewCell.self, forCellReuseIdentifier: CellIdentifier.collection.rawValue)
   }
-  var fetchResult: PHFetchResult<PHAsset> = PHFetchResult<PHAsset>() {
-    didSet {
-
-    }
-  }
 
   enum CellIdentifier: String {
     case allPhotos, collection
@@ -52,8 +44,7 @@ class TableViewWrapperController: UIViewController {
 
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-    self.modalPresentationStyle = .popover
-
+    self.modalPresentationStyle = .overCurrentContext
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -66,15 +57,20 @@ class TableViewWrapperController: UIViewController {
     self.allPhotos = photoAlbum.allPhotos
     self.smartAlbumsArr = photoAlbum.smartAlbumsArr
     self.userAlbumsArr = photoAlbum.userAlbumsArr
-
     self.tableView.delegate = self
     self.tableView.dataSource = self
   }
 
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
-    self.view.snp.makeConstraints { (make) in
 
+//    self.view.superview?.snp.makeConstraints { make in
+//      make.width.equalTo(UIScreen.main.bounds.width)
+//      make.height.equalTo(UIScreen.main.bounds.height)
+//      make.centerX.equalTo(UIScreen.main.bounds.width/2)
+//      make.centerY.equalTo(UIScreen.main.bounds.height/2 + 44)
+//    }
+    self.view.snp.makeConstraints { make in
       make.width.equalTo(UIScreen.main.bounds.width)
       make.height.equalTo(UIScreen.main.bounds.height)
       make.centerX.equalTo(UIScreen.main.bounds.width/2)
@@ -186,32 +182,18 @@ extension TableViewWrapperController: UITableViewDelegate {
 
     case .allPhotos:
 
-      self.fetchResult = self.allPhotos
+      photoAlbum.getAllPhotos()
 
     case .smartAlbums:
 
-      let collection: PHCollection
-      //collection = smartAlbums.object(at: indexPath.item)
-      collection = smartAlbumsArr[indexPath.item]
-      guard let assetCollection = collection as? PHAssetCollection
-        else { fatalError("expected asset collection") }
-
-      self.assetCollection = assetCollection
-      self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: AllOptions)
+      photoAlbum.getSmartFetchResult(index: indexPath.item)
 
     case .userCollections:
 
-      let collection: PHCollection
-      //collection = userCollections.object(at: indexPath.item)
-      collection = userAlbumsArr[indexPath.item]
-      guard let assetCollection = collection as? PHAssetCollection
-        else { fatalError("expected asset collection") }
-
-      self.assetCollection = assetCollection
-      self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: AllOptions)
+      photoAlbum.getUserFetchResult(index: indexPath.item)
     }
 
-    self.dismiss(animated: true, completion: nil)
+    NotificationCenter.default.post(name: Notification.Name("tableViewOffMode"), object: nil)
   }
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
 

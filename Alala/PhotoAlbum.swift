@@ -19,6 +19,8 @@ final class PhotoAlbum {
   var userCollections: PHFetchResult<PHCollection>!
   var userAlbumsArr = [PHAssetCollection]()
   let photosLimit: Int = 500
+  var assetCollection: PHAssetCollection?
+  var fetchResult: PHFetchResult<PHAsset>?
 
   func getLimitedPhotos() {
 
@@ -36,6 +38,7 @@ final class PhotoAlbum {
     AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
     allPhotos = PHAsset.fetchAssets(with: AllOptions)
     NotificationCenter.default.post(name: Notification.Name("fetchAllPhotoAlbum"), object: nil)
+    fetchResult = allPhotos
     print("getAllPhotos")
   }
 
@@ -64,5 +67,29 @@ final class PhotoAlbum {
     userAlbumsArr = userArr
     NotificationCenter.default.post(name: Notification.Name("fetchSmartUserAlbums"), object: nil)
     print("getSmartUserAlbums")
+  }
+
+  func getSmartFetchResult(index: Int) {
+    let AllOptions = PHFetchOptions()
+    AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+    let collection: PHCollection
+    collection = smartAlbumsArr[index]
+    guard let assetCollection = collection as? PHAssetCollection
+      else { fatalError("expected asset collection") }
+
+    self.assetCollection = assetCollection
+    self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: AllOptions)
+  }
+
+  func getUserFetchResult(index: Int) {
+    let AllOptions = PHFetchOptions()
+    AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+    let collection: PHCollection
+    collection = userAlbumsArr[index]
+    guard let assetCollection = collection as? PHAssetCollection
+      else { fatalError("expected asset collection") }
+
+    self.assetCollection = assetCollection
+    self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: AllOptions)
   }
 }
