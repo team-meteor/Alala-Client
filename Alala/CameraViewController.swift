@@ -103,6 +103,7 @@ class CameraViewController: UIViewController {
   func photoDoneButtonDidTap() {
     stopSession()
     let postEditorViewController = PostEditorViewController(image: self.capturedImageView.image!)
+    postEditorViewController.multipartArr.append(self.capturedImageView.image!)
     self.navigationController?.pushViewController(postEditorViewController, animated: true)
     self.capturedImageView.removeFromSuperview()
     self.navigationItem.rightBarButtonItem = nil
@@ -111,7 +112,7 @@ class CameraViewController: UIViewController {
   func videoDoneButtonDidTap() {
     stopSession()
     let postEditorViewController = PostEditorViewController(image: self.capturedImageView.image!)
-    postEditorViewController.videoData = self.videoData!
+    postEditorViewController.multipartArr.append(self.videoData!)
     self.navigationController?.pushViewController(postEditorViewController, animated: true)
     self.capturedImageView.removeFromSuperview()
     self.navigationItem.rightBarButtonItem = nil
