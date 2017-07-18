@@ -34,7 +34,7 @@ class CameraViewController: UIViewController {
     $0.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
   }
 
-  private let camPreview = UIView().then {
+  let camPreview = UIView().then {
     $0.backgroundColor = UIColor.black
   }
   private let scrollView = UIScrollView().then {
@@ -137,14 +137,12 @@ class CameraViewController: UIViewController {
     self.camPreview.snp.makeConstraints { make in
       make.left.right.equalTo(self.view)
       make.bottom.equalTo(self.scrollView.snp.top)
+      make.width.equalTo(self.view.bounds.width)
       make.height.equalTo(self.camPreview.snp.width)
     }
 
     self.scrollView.snp.makeConstraints { make in
       make.left.right.equalTo(self.view)
-    }
-
-    self.scrollView.snp.makeConstraints { make in
       make.height.equalTo(667 - 44 - 375 - 50)
     }
 
@@ -462,8 +460,9 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate {
       if let sampleBuffer = photoSampleBuffer, let dataImage = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: sampleBuffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer) {
 
         if let finalImage = UIImage(data: dataImage) {
+          let rotatedImage = finalImage.fixedOrientation()
 
-          self.capturedImageView.image = finalImage
+          self.capturedImageView.image = rotatedImage
           displayCapturPhoto()
           savePhotoToLibrary()
           self.navigationItem.rightBarButtonItem = UIBarButtonItem(
