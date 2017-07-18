@@ -40,7 +40,7 @@ class VideoPlayerViewController: AVPlayerViewController {
   }
 
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-    print("touch")
+
     if player?.rate == 0 {
       player!.play()
 
