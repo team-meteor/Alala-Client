@@ -15,6 +15,8 @@
 		485ABFAD1EF37F5A00949456 /* PostEditingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485ABFAC1EF37F5A00949456 /* PostEditingCell.swift */; };
 		487394021EFE467300B3E1D0 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487394011EFE467300B3E1D0 /* CameraViewController.swift */; };
 		4873940A1F03798B00B3E1D0 /* MultipartService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487394091F03798B00B3E1D0 /* MultipartService.swift */; };
+		48D41E291F1F409000868F58 /* FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D41E281F1F409000868F58 /* FileManager.swift */; };
+		48D41E2B1F1F445300868F58 /* Cropper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D41E2A1F1F445300868F58 /* Cropper.swift */; };
 		48F73CA21EF50FDB00E75022 /* RejectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F73CA11EF50FDB00E75022 /* RejectViewController.swift */; };
 		48F73CA41EF60ABA00E75022 /* LibraryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F73CA31EF60ABA00E75022 /* LibraryViewController.swift */; };
 		48F73CA61EF613F400E75022 /* WrapperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F73CA51EF613F400E75022 /* WrapperViewController.swift */; };
@@ -109,6 +111,8 @@
 		485ABFAC1EF37F5A00949456 /* PostEditingCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostEditingCell.swift; sourceTree = "<group>"; };
 		487394011EFE467300B3E1D0 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		487394091F03798B00B3E1D0 /* MultipartService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultipartService.swift; sourceTree = "<group>"; };
+		48D41E281F1F409000868F58 /* FileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileManager.swift; sourceTree = "<group>"; };
+		48D41E2A1F1F445300868F58 /* Cropper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cropper.swift; sourceTree = "<group>"; };
 		48F73CA11EF50FDB00E75022 /* RejectViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RejectViewController.swift; sourceTree = "<group>"; };
 		48F73CA31EF60ABA00E75022 /* LibraryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LibraryViewController.swift; sourceTree = "<group>"; };
 		48F73CA51EF613F400E75022 /* WrapperViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WrapperViewController.swift; sourceTree = "<group>"; };
@@ -235,6 +239,7 @@
 				6FBD854B1F04C3390097B82A /* NSObject.swift */,
 				99C654F91F0773CD0005AD3E /* UIColor.swift */,
 				992170931F0E2D0600D03E01 /* String.swift */,
+				48D41E281F1F409000868F58 /* FileManager.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -355,6 +360,7 @@
 		6FB7586D1F1F0ED7008C976C /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				48D41E2A1F1F445300868F58 /* Cropper.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -637,6 +643,7 @@
 				992170941F0E2D0600D03E01 /* String.swift in Sources */,
 				99C654E21F015A310005AD3E /* DiscoverPeopleViewController.swift in Sources */,
 				99C654FA1F0773CD0005AD3E /* UIColor.swift in Sources */,
+				48D41E2B1F1F445300868F58 /* Cropper.swift in Sources */,
 				48F857961EF8B6C800957B3A /* PostService.swift in Sources */,
 				6FBD854A1F04B4300097B82A /* NotificationName.swift in Sources */,
 				6F09C8D81EF0113600BCFFEF /* LoginViewController.swift in Sources */,
@@ -658,6 +665,7 @@
 				6F5B854F1EE52B3B009285DD /* DiscoverViewController.swift in Sources */,
 				487394021EFE467300B3E1D0 /* CameraViewController.swift in Sources */,
 				482DBDB81F1A523E00DF355D /* VideoPlayerViewController.swift in Sources */,
+				48D41E291F1F409000868F58 /* FileManager.swift in Sources */,
 				6F5B85551EE52BB9009285DD /* SelectionViewController.swift in Sources */,
 				99C654FC1F0784170005AD3E /* RoundCornerButton.swift in Sources */,
 				99C654E01F0159F30005AD3E /* ArchiveViewController.swift in Sources */,

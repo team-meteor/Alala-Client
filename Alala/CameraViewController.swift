@@ -271,6 +271,7 @@ class CameraViewController: UIViewController {
   func setupPreview() {
     previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
     previewLayer.frame = camPreview.bounds
+
     previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
     camPreview.layer.addSublayer(previewLayer)
     camPreview.bringSubview(toFront: self.buttonBar)
@@ -499,23 +500,26 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
     if error != nil {
       print("Error recording movie: \(error!.localizedDescription)")
     } else {
-      var movieData: Data?
-      do {
-        movieData = try Data(contentsOf: outputFileURL)
-      } catch _ {
-        movieData = nil
-        return
+      Cropper().cropVideo(outputFileURL) { newUrl in
+        var movieData: Data?
+        do {
+          movieData = try Data(contentsOf: newUrl)
+        } catch _ {
+          movieData = nil
+          return
+        }
+        self.videoData = movieData
+        self.capturedImageView.image = self.previewImageFromVideo(videoUrl: outputFileURL)
+        self.displayCapturPhoto()
+        self.saveMovieToLibrary(movieURL: newUrl as URL)
+        self.takeVideoButton.setImage(UIImage(named: "Capture_Butt"), for: .normal)
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+          barButtonSystemItem: .done,
+          target: self,
+          action: #selector(self.videoDoneButtonDidTap)
+        )
       }
-      self.videoData = movieData
-      self.capturedImageView.image = previewImageFromVideo(videoUrl: outputFileURL)
-      displayCapturPhoto()
-      saveMovieToLibrary(movieURL: outputFileURL as URL)
-      takeVideoButton.setImage(UIImage(named: "Capture_Butt"), for: .normal)
-      self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-        barButtonSystemItem: .done,
-        target: self,
-        action: #selector(videoDoneButtonDidTap)
-      )
+
     }
   }
 
