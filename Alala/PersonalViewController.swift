@@ -168,9 +168,11 @@ class PersonalViewController: UIViewController {
   func setupPostList() {
     if postViewController == nil {
       postViewController = PostViewController(posts)
-
-      self.addChildViewController(postViewController)
       postListCollectionView = postViewController.collectionView
+      self.addChildViewController(postViewController)
+
+      postViewController.delegate = self
+      postListCollectionView.isScrollEnabled = false
 
       contentsView.addSubview(postViewController.view)
       postViewController.view.snp.makeConstraints { (make) in
@@ -296,6 +298,17 @@ extension PersonalViewController: PersonalInfoViewDelegate {
   }
 }
 
+/**
+ * PostViewController에서 post그리기가 완료된 후 실행되는 delegate
+ * : 이 때 전체 스크롤뷰의 contentSize를 재구성
+ */
+extension PersonalViewController: PostViewControllerDelegate {
+  func postUpdateFinished() {
+    var size = postViewController.collectionView.contentSize as CGSize
+    size.height += personalInfoView.frame.height
+    self.scrollView.contentSize = size
+  }
+}
 /**
  * 내가 작성한 포스트가 없을 경우 노출되는 NoContentsView에서 'Share your first photo or video' 버튼을 선택했을 때 발생하는 delegate
  */

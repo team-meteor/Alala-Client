@@ -355,11 +355,3 @@ struct ProfileItem {
     self.iconImageName = iconImageName
   }
 }
-
-struct ProfileItemGender {
-  enum genderType {
-    case none
-    case male
-    case female
-  }
-}
