@@ -67,6 +67,11 @@ class ButtonGroupCell: UICollectionViewCell {
     }
   }
 
+  func configure(post: Post) {
+    self.likeButton.isSelected = post.isLiked
+    self.postID = post.id
+  }
+
   func likeButtonDidTap() {
     if !self.likeButton.isSelected {
       print("좋아요")

@@ -338,6 +338,7 @@
 		6F5B85471EE52064009285DD /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				6FB7586D1F1F0ED7008C976C /* Utils */,
 				6FBD855B1F04EF810097B82A /* Types */,
 				6F09C8DD1EF101E800BCFFEF /* Constants.swift */,
 				6F09C8AD1EEA862E00BCFFEF /* Extensions */,
@@ -349,6 +350,13 @@
 				6F5B85441EE52041009285DD /* Views */,
 			);
 			name = Sources;
+			sourceTree = "<group>";
+		};
+		6FB7586D1F1F0ED7008C976C /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Utils;
 			sourceTree = "<group>";
 		};
 		6FBD85501F04CDE20097B82A /* SectionControllers */ = {

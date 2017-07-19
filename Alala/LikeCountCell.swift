@@ -42,12 +42,9 @@ class LikeCountCell: UICollectionViewCell {
     }
   }
 
-  func configureLikeCountLabel(post: Post) {
-    let likeCount = post.likeCount
-    if likeCount! > 0 {
-      self.likeCountLabel.text = "\(likeCount!)명이 좋아합니다."
-    } else {
-      self.likeCountLabel.text = "가장 먼저 좋아요를 눌러보세요."
+  func configure(post: Post) {
+    if post.isLiked == true, let count = post.likeCount {
+      self.likeCountLabel.text = "\(count)명이 좋아합니다."
     }
   }
 }
