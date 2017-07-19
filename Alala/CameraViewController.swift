@@ -427,6 +427,19 @@ class CameraViewController: UIViewController {
     }
   }
 
+  func cropToPreviewLayer(originalImage: UIImage) -> UIImage {
+    let outputRect = previewLayer.metadataOutputRectOfInterest(for: previewLayer.bounds)
+    var cgImage = originalImage.cgImage!
+    let width = CGFloat(cgImage.width)
+    let height = CGFloat(cgImage.height)
+    let cropRect = CGRect(x: outputRect.origin.x * width, y: outputRect.origin.y * height, width: outputRect.size.width * width, height: outputRect.size.height * height)
+
+    cgImage = cgImage.cropping(to: cropRect)!
+    let croppedUIImage = UIImage(cgImage: cgImage, scale: 1.0, orientation: originalImage.imageOrientation)
+
+    return croppedUIImage
+  }
+
 }
 
 extension CameraViewController: UIScrollViewDelegate {
@@ -459,9 +472,9 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate {
 
       if let sampleBuffer = photoSampleBuffer, let dataImage = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: sampleBuffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer) {
 
-        if let finalImage = UIImage(data: dataImage) {
-          let rotatedImage = finalImage.fixedOrientation()
-
+        if let capturedImage = UIImage(data: dataImage) {
+          let croppedImage = cropToPreviewLayer(originalImage: capturedImage)
+          let rotatedImage = croppedImage.fixedOrientation()
           self.capturedImageView.image = rotatedImage
           displayCapturPhoto()
           savePhotoToLibrary()
