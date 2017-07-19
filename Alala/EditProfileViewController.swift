@@ -38,7 +38,7 @@ class EditProfileViewController: UIViewController {
   let pickerDataSource = ["입력되지 않음", "남성", "여성"]
   let genderPicker = UIPickerView()
 
-  var allProfileItemArray: Array<Dictionary<String, Array<ProfileItem>>> = []
+  var allProfileItemArray: [[String:[ProfileItem]]] = []
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -204,8 +204,8 @@ class EditProfileViewController: UIViewController {
 
   func updateCurrentInfoToTempMe() {
     for section in 0..<contentTableView.numberOfSections {
-      let dic: Dictionary<String, Array<ProfileItem>> = allProfileItemArray[section]
-      let arr: Array<ProfileItem> = dic.values.first!
+      let dic: [String:[ProfileItem]] = allProfileItemArray[section]
+      let arr: [ProfileItem] = dic.values.first!
       for row in 0..<contentTableView.numberOfRows(inSection: section) {
         let profileItem: ProfileItem = arr[row]
         let cell = contentTableView.cellForRow(at: IndexPath(row: row, section: section)) as! EditProfileTableViewCell
@@ -237,15 +237,15 @@ extension EditProfileViewController: UITableViewDataSource {
   }
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    let dic: Dictionary<String, Array<ProfileItem>> = allProfileItemArray[section]
-    let arr: Array<ProfileItem> = dic.values.first!
+    let dic: [String:[ProfileItem]] = allProfileItemArray[section]
+    let arr: [ProfileItem] = dic.values.first!
     return arr.count
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     // create a new cell if needed or reuse an old one
-    let dic: Dictionary<String, Array<ProfileItem>> = allProfileItemArray[indexPath.section]
-    let arr: Array<ProfileItem> = dic.values.first!
+    let dic: [String:[ProfileItem]] = allProfileItemArray[indexPath.section]
+    let arr: [ProfileItem] = dic.values.first!
     let profileItem: ProfileItem = arr[indexPath.row]
 
     let cellReuseIdentifier: String

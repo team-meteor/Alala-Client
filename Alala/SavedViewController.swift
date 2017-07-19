@@ -8,6 +8,11 @@
 
 import UIKit
 
+/**
+ * # '저장됨' 화면
+ *
+ * **[PATH]** 내 프로필 화면 > SubMenuBar 네번째 아이콘 탭
+ */
 class SavedViewController: UIViewController {
 
   let allTabButton = UnderlineButton().then {
