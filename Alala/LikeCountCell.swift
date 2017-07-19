@@ -46,8 +46,6 @@ class LikeCountCell: UICollectionViewCell {
     let likeCount = post.likeCount
     if likeCount! > 0 {
       self.likeCountLabel.text = "\(likeCount!)명이 좋아합니다."
-    } else {
-      self.likeCountLabel.text = "가장 먼저 좋아요를 눌러보세요."
     }
   }
 }

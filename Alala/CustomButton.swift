@@ -79,6 +79,5 @@ class MultiSelectButton: UIButton {
     UIColor.black.withAlphaComponent(1.0).setFill()
     upperRectPath.fill()
     upperRectPath.stroke()
-      }
-
+  }
 }
