@@ -9,9 +9,25 @@
 import UIKit
 
 class CommentCell: UICollectionViewCell {
-//  fileprivate let profileNameLabel: UILabel = {
-//    let label = UILabel()
-//    return label
-//  }()
-//  fileprivate let commentContent:
+  override init(frame: CGRect) {
+    super.init(frame: frame)
+    print("override init")
+  }
+
+  required init?(coder aDecoder: NSCoder) {
+    print("coder init")
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  func configure(comments: [Comment]) {
+    print("configure")
+    for comment in comments {
+      print(comment)
+    }
+  }
+
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    print("layoutSubviews")
+  }
 }

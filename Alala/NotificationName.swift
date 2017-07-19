@@ -11,4 +11,5 @@ import Foundation
 extension Notification.Name {
   static var presentMainTabBar: Notification.Name { return .init("presentMainTabBar") }
   static var presentLogin: Notification.Name { return .init("presentLogin") }
+  static var profileUpdated: Notification.Name { return .init("profileUpdated") }
 }

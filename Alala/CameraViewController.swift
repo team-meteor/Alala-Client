@@ -34,7 +34,7 @@ class CameraViewController: UIViewController {
     $0.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
   }
 
-  private let camPreview = UIView().then {
+  let camPreview = UIView().then {
     $0.backgroundColor = UIColor.black
   }
   private let scrollView = UIScrollView().then {
@@ -103,6 +103,7 @@ class CameraViewController: UIViewController {
   func photoDoneButtonDidTap() {
     stopSession()
     let postEditorViewController = PostEditorViewController(image: self.capturedImageView.image!)
+    postEditorViewController.multipartArr.append(self.capturedImageView.image!)
     self.navigationController?.pushViewController(postEditorViewController, animated: true)
     self.capturedImageView.removeFromSuperview()
     self.navigationItem.rightBarButtonItem = nil
@@ -111,7 +112,7 @@ class CameraViewController: UIViewController {
   func videoDoneButtonDidTap() {
     stopSession()
     let postEditorViewController = PostEditorViewController(image: self.capturedImageView.image!)
-    postEditorViewController.videoData = self.videoData!
+    postEditorViewController.multipartArr.append(self.videoData!)
     self.navigationController?.pushViewController(postEditorViewController, animated: true)
     self.capturedImageView.removeFromSuperview()
     self.navigationItem.rightBarButtonItem = nil
@@ -136,14 +137,12 @@ class CameraViewController: UIViewController {
     self.camPreview.snp.makeConstraints { make in
       make.left.right.equalTo(self.view)
       make.bottom.equalTo(self.scrollView.snp.top)
+      make.width.equalTo(self.view.bounds.width)
       make.height.equalTo(self.camPreview.snp.width)
     }
 
     self.scrollView.snp.makeConstraints { make in
       make.left.right.equalTo(self.view)
-    }
-
-    self.scrollView.snp.makeConstraints { make in
       make.height.equalTo(667 - 44 - 375 - 50)
     }
 
@@ -428,6 +427,19 @@ class CameraViewController: UIViewController {
     }
   }
 
+  func cropToPreviewLayer(originalImage: UIImage) -> UIImage {
+    let outputRect = previewLayer.metadataOutputRectOfInterest(for: previewLayer.bounds)
+    var cgImage = originalImage.cgImage!
+    let width = CGFloat(cgImage.width)
+    let height = CGFloat(cgImage.height)
+    let cropRect = CGRect(x: outputRect.origin.x * width, y: outputRect.origin.y * height, width: outputRect.size.width * width, height: outputRect.size.height * height)
+
+    cgImage = cgImage.cropping(to: cropRect)!
+    let croppedUIImage = UIImage(cgImage: cgImage, scale: 1.0, orientation: originalImage.imageOrientation)
+
+    return croppedUIImage
+  }
+
 }
 
 extension CameraViewController: UIScrollViewDelegate {
@@ -460,9 +472,10 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate {
 
       if let sampleBuffer = photoSampleBuffer, let dataImage = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: sampleBuffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer) {
 
-        if let finalImage = UIImage(data: dataImage) {
-
-          self.capturedImageView.image = finalImage
+        if let capturedImage = UIImage(data: dataImage) {
+          let croppedImage = cropToPreviewLayer(originalImage: capturedImage)
+          let rotatedImage = croppedImage.fixedOrientation()
+          self.capturedImageView.image = rotatedImage
           displayCapturPhoto()
           savePhotoToLibrary()
           self.navigationItem.rightBarButtonItem = UIBarButtonItem(

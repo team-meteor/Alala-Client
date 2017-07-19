@@ -5,7 +5,6 @@
 //  Created by hoemoon on 05/06/2017.
 //  Copyright © 2017 team-meteor. All rights reserved.
 //
-
 import UIKit
 import Alamofire
 import ObjectMapper
@@ -16,7 +15,7 @@ import ObjectMapper
  * **[PATH]** 하단 Main Tap Bar > 가장 우측의 Personal 아이콘 선택
  * - Note : '프로필'View는 PersonalInfoView 클래스에 구현되어있고 이곳에서는 유저의 액션을 받아 delegate만 처리
  */
-class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoContentsViewDelegate, UICollectionViewDataSource {
+class PersonalViewController: UIViewController {
 
   // MARK: - UI Objects
   fileprivate var posts: [Post] = []
@@ -65,6 +64,9 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     return view
   }()
 
+  var postViewController: PostViewController!
+  var postListCollectionView: UICollectionView!
+
   // MARK: - Initialize
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -87,7 +89,7 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
 
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = AuthService.instance.currentUser?.email
+      $0.text = AuthService.instance.currentUser?.profileName
       $0.sizeToFit()
     }
     self.navigationController?.navigationBar.topItem?.title = ""
@@ -102,7 +104,6 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
 
     //-- Section 1 : closable notice view (Optional)
     // (todo)
-
     //-- Section 2 : personal infomation view (Required)
     scrollView.addSubview(personalInfoView)
     personalInfoView.snp.makeConstraints { (make) in
@@ -126,6 +127,9 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     }
 
     self.fetchFeedMine(paging: .refresh)
+
+    NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: NSNotification.Name(rawValue: "postDidCreate"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(profileUpdated), name: .profileUpdated, object: nil)
   }
 
   func setupNoContents() {
@@ -151,8 +155,34 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
         make.bottom.equalTo(contentsView)
       }
       postGridCollectionView.dataSource = self
+      postGridCollectionView.delegate = self
       postGridCollectionView.isScrollEnabled = false
     }
+
+    postGridCollectionView.isHidden = false
+    if postViewController != nil {
+      postViewController.view.isHidden = true
+    }
+  }
+
+  func setupPostList() {
+    if postViewController == nil {
+      postViewController = PostViewController(posts)
+
+      self.addChildViewController(postViewController)
+      postListCollectionView = postViewController.collectionView
+
+      contentsView.addSubview(postViewController.view)
+      postViewController.view.snp.makeConstraints { (make) in
+        make.top.equalTo(contentsView)
+        make.left.equalTo(contentsView)
+        make.right.equalTo(contentsView)
+        make.bottom.equalTo(contentsView).offset(-44)
+      }
+    }
+
+    postGridCollectionView.isHidden = true
+    postViewController.view.isHidden = false
   }
 
   fileprivate func fetchFeedMine(paging: Paging) {
@@ -175,13 +205,17 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
         self.nextPage = feed.nextPage
         print("fetchFeed : ", self.posts)
         DispatchQueue.main.async {
-          //self.adapter.performUpdates(animated: true, completion: nil)
           self.personalInfoView.postsCountLabel.text = self.posts.count.description
           if self.posts.count == 0 {
             self.setupNoContents()
           } else {
-            self.setupPostGrid()
-            self.postGridCollectionView.reloadData()
+            if self.personalInfoView.isGridMode {
+              self.setupPostGrid()
+              self.postGridCollectionView.reloadData()
+            } else {
+              self.setupPostList()
+              self.postViewController.updateNewPost(self.posts)
+            }
           }
         }
       case .failure(let error):
@@ -195,7 +229,14 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     self.navigationController?.isNavigationBarHidden = false
   }
 
-  // MARK: - PersonalInfoViewDelegate
+  func profileUpdated(_ notification: Notification) {
+    guard let userInfo = notification.userInfo?["user"] as? User else { return }
+
+    personalInfoView.setupUserInfo(userInfo: userInfo/*AuthService.instance.currentUser!*/)
+  }
+}
+
+extension PersonalViewController: PersonalInfoViewDelegate {
   func discoverPeopleButtonTap() {
     let sampleVC = DiscoverPeopleViewController()
     self.navigationController?.pushViewController(sampleVC, animated: true)
@@ -229,11 +270,13 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
   }
 
   func gridPostMenuButtonTap(sender: UIButton) {
-
+    self.setupPostGrid()
+    self.postGridCollectionView.reloadData()
   }
 
   func listPostMenuButtonTap(sender: UIButton) {
-
+    self.setupPostList()
+    self.postViewController.updateNewPost(self.posts)
   }
 
   func photosForYouMenuButtonTap(sender: UIButton) {
@@ -245,11 +288,38 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     let savedVC = SavedViewController()
     self.navigationController?.pushViewController(savedVC, animated: true)
   }
+}
 
+/**
+ * 내가 작성한 포스트가 없을 경우 노출되는 NoContentsView에서 'Share your first photo or video' 버튼을 선택했을 때 발생하는 delegate
+ */
+extension PersonalViewController: NoContentsViewDelegate {
+  func addContentButtonTap(sender: UIButton) {
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let tabBarVC = appDelegate.window?.rootViewController as! MainTabBarController
+    tabBarVC.presentWrapperViewController()
+  }
+
+  func postDidCreate(_ notification: Notification) {
+    guard let post = notification.userInfo?["post"] as? Post else { return }
+    self.posts.insert(post, at: 0)
+
+    if noContentsGuideView.superview != nil {
+      noContentsGuideView.removeFromSuperview()
+    }
+
+    if self.personalInfoView.isGridMode {
+      self.postGridCollectionView.reloadData()
+    } else {
+      postViewController.adapter.performUpdates(animated: true, completion: nil)
+    }
+  }
+}
+
+extension PersonalViewController: UICollectionViewDataSource {
   public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 
     //personalInfoView.bounds.size.height
-
     let size = CGSize(width: scrollView.frame.size.width, height: scrollView.bounds.size.height)
     scrollView.contentSize = size
 
@@ -259,9 +329,17 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
   public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell: PostGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as! PostGridCell
     let post = posts[indexPath.row] as Post
-    cell.thumbnailImageView.setImage(with: post.multipartIds[0], size: .thumbnail)
+
+    guard post.multipartIds.count > 0 else {
+      return cell
+    }
 
     let filename = post.multipartIds[0] as String
+
+    if filename.characters.count > 0 {
+      cell.thumbnailImageView.setImage(with: post.multipartIds[0], size: .thumbnail)
+    }
+
     if filename.isVideoPathExtension {
       cell.isVideo = true
     } else {
@@ -269,28 +347,14 @@ class PersonalViewController: UIViewController, PersonalInfoViewDelegate, NoCont
     }
     return cell
   }
+}
 
-  // MARK: - NoContentsViewDelegate
-  /**
-   * 내가 작성한 포스트가 없을 경우 노출되는 NoContentsView에서 'Share your first photo or video' 버튼을 선택했을 때 발생하는 delegate
-   */
-  func addContentButtonTap(sender: UIButton) {
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    let tabBarVC = appDelegate.window?.rootViewController as! MainTabBarController
-    tabBarVC.presentWrapperViewController()
+extension PersonalViewController: UICollectionViewDelegate {
+  public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    let postArray = [self.posts[indexPath.row]]
+    let postVC = PostViewController(postArray)
+    self.navigationController?.pushViewController(postVC, animated: true)
   }
-
-  /*
-  func logoutButtonDidTap() {
-    AuthService.instance.logout { (success) in
-      if success {
-        NotificationCenter.default.post(name: .presentLogin, object: nil, userInfo: nil)
-      } else {
-
-      }
-    }
-  }
- */
 }
 
 // MARK: -

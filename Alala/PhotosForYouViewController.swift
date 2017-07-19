@@ -14,6 +14,7 @@ class PhotosForYouViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    self.view.backgroundColor = UIColor.white
 
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)

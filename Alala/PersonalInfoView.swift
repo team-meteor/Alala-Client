@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SnapKit
 
 protocol PersonalInfoViewDelegate: class {
   func postsAreaTap()
@@ -26,6 +27,8 @@ protocol PersonalInfoViewDelegate: class {
 class PersonalInfoView: UIView {
   weak var delegate: PersonalInfoViewDelegate?
 
+  var isGridMode = true
+
   //var userInfo : User
 
   // MARK: - UI Objects
@@ -41,7 +44,23 @@ class PersonalInfoView: UIView {
     $0.contentMode = .scaleAspectFill
   }
 
+  var profileNameHeightConstraint: Constraint?
   let profileNameLabel = UILabel().then {
+    $0.font = UIFont(name: "HelveticaNeue", size: 16)
+    $0.text = "User Name up to 30 character"
+    $0.sizeToFit()
+  }
+
+  var bioHeightConstraint: Constraint?
+  let bioLabel = UILabel().then {
+    $0.font = UIFont(name: "HelveticaNeue", size: 16)
+    $0.text = "User Name up to 30 character"
+    $0.numberOfLines = 0
+    $0.sizeToFit()
+  }
+
+  var websiteHeightConstraint: Constraint?
+  let websiteLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 16)
     $0.text = "User Name up to 30 character"
     $0.sizeToFit()
@@ -119,26 +138,24 @@ class PersonalInfoView: UIView {
   }
 
   let gridPostMenuButton = UIButton().then {
-    $0.setImage(UIImage(named: "grid")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "grid")?.resizeImage(scaledTolength: 25), for: UIControlState.highlighted)
+    $0.setImage(UIImage(named: "grid")?.resizeImage(scaledTolength: 20), for: UIControlState.normal)
+    $0.setImage(UIImage(named: "grid_selected")?.resizeImage(scaledTolength: 20), for: UIControlState.selected)
     $0.addTarget(self, action: #selector(gridPostMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
   let listPostMenuButton = UIButton().then {
-    $0.setImage(UIImage(named: "list")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "list")?.resizeImage(scaledTolength: 25), for: UIControlState.highlighted)
+    $0.setImage(UIImage(named: "list")?.resizeImage(scaledTolength: 20), for: UIControlState.normal)
+    $0.setImage(UIImage(named: "list_selected")?.resizeImage(scaledTolength: 20), for: UIControlState.selected)
     $0.addTarget(self, action: #selector(listPostMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
   let photosForYouMenuButton = UIButton().then {
     $0.setImage(UIImage(named: "my_photo")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "my_photo")?.resizeImage(scaledTolength: 25), for: UIControlState.highlighted)
     $0.addTarget(self, action: #selector(photosForYouMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
   let savedMenuButton = UIButton().then {
     $0.setImage(UIImage(named: "tag")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "tag")?.resizeImage(scaledTolength: 25), for: UIControlState.highlighted)
     $0.addTarget(self, action: #selector(savedMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
@@ -157,6 +174,8 @@ class PersonalInfoView: UIView {
     self.addSubview(infoView)
     infoView.addSubview(profileImageView)
     infoView.addSubview(profileNameLabel)
+    infoView.addSubview(bioLabel)
+    infoView.addSubview(websiteLabel)
 
     infoView.addSubview(postsButton)
     postsButton.addSubview(postsCountLabel)
@@ -186,7 +205,7 @@ class PersonalInfoView: UIView {
       make.right.equalTo(self)
       make.leftMargin.equalTo(10)
       make.rightMargin.equalTo(10)
-      make.bottom.equalTo(profileNameLabel).offset(10)
+      make.bottom.equalTo(websiteLabel).offset(10)
     }
 
     profileImageView.snp.makeConstraints { (make) in
@@ -194,13 +213,6 @@ class PersonalInfoView: UIView {
       make.left.equalTo(infoView.snp.leftMargin)
       make.width.equalTo(70)
       make.height.equalTo(70)
-    }
-
-    profileNameLabel.snp.makeConstraints { (make) in
-      make.top.equalTo(profileImageView.snp.bottom).offset(3)
-      make.left.equalTo(profileImageView.snp.left)
-      make.width.equalTo(infoView).offset(-40)
-      make.height.equalTo(20)
     }
 
     postsButton.snp.makeConstraints { (make) in
@@ -279,6 +291,27 @@ class PersonalInfoView: UIView {
       make.height.equalTo(25)
     }
 
+    profileNameLabel.snp.makeConstraints { (make) in
+      make.top.equalTo(profileImageView.snp.bottom).offset(3)
+      make.left.equalTo(profileImageView.snp.left)
+      make.width.equalTo(infoView).offset(-40)
+      profileNameHeightConstraint = make.height.equalTo(0).constraint
+    }
+
+    bioLabel.snp.makeConstraints { (make) in
+      make.top.equalTo(profileNameLabel.snp.bottom).offset(3)
+      make.left.equalTo(profileNameLabel)
+      make.right.equalTo(profileNameLabel)
+      bioHeightConstraint = make.height.equalTo(0).constraint
+    }
+
+    websiteLabel.snp.makeConstraints { (make) in
+      make.top.equalTo(bioLabel.snp.bottom).offset(3)
+      make.left.equalTo(profileNameLabel)
+      make.right.equalTo(profileNameLabel)
+      websiteHeightConstraint = make.height.equalTo(0).constraint
+    }
+
     subMenuBar.snp.makeConstraints { (make) in
       make.top.equalTo(infoView.snp.bottom)
       make.left.equalTo(self)
@@ -312,12 +345,48 @@ class PersonalInfoView: UIView {
       make.bottom.equalTo(subMenuBar)
       make.width.equalTo(gridPostMenuButton)
     }
+
+    gridPostMenuButton.isSelected = true
   }
 
+  /**
+   * User객체의 정보를 UIControl들에 설정
+   * @param userInfo 프로필 내용을 설정할 User객체
+   */
   func setupUserInfo(userInfo: User) {
-    profileNameLabel.text = userInfo.email
     if userInfo.profilePhotoId != nil {
-      profileImageView.setImage(with: userInfo.profilePhotoId, size: .small)
+      profileImageView.setImage(with: userInfo.profilePhotoId, size: .medium)
+    }
+
+    profileNameLabel.text = userInfo.displayName
+    let profileNameOffset = (profileNameLabel.text?.characters.count==0) ? 0 : 20
+    self.profileNameHeightConstraint?.update(offset: profileNameOffset)
+
+    bioLabel.text = userInfo.bio
+    bioLabel.sizeToFit()
+    let bioOffset = (bioLabel.text?.characters.count==0) ? 0 : bioLabel.frame.height
+    self.bioHeightConstraint?.update(offset: bioOffset)
+
+    websiteLabel.text = userInfo.website
+    let websiteOffset = (websiteLabel.text?.characters.count==0) ? 0 : 20
+    self.websiteHeightConstraint?.update(offset: websiteOffset)
+
+    self.updateConstraints()
+  }
+
+  /**
+   * 컨텐츠 유무에 따른 개인프로필 뷰의 서브메뉴바 아이콘 세팅
+   * @param hasContents - 해당 유저가 작성한 Post가 있는지의 유무
+   *
+   * - Post가 없으면 grid/list 아이콘이 비활성화
+   * - Post가 있으면 grid/list 아이콘 중 기본값 혹은 마지막 선택값이 활성화
+   */
+  func setupNoContentsMode(hasContents: Bool) {
+    gridPostMenuButton.isEnabled = hasContents
+    listPostMenuButton.isEnabled = hasContents
+
+    if hasContents == true {
+      gridPostMenuButton.isSelected = true
     }
   }
 
@@ -343,10 +412,18 @@ class PersonalInfoView: UIView {
   }
 
   func gridPostMenuButtonTap(sender: UIButton) {
+    isGridMode = true
+    gridPostMenuButton.isSelected = isGridMode
+    listPostMenuButton.isSelected = !isGridMode
+
     delegate?.gridPostMenuButtonTap(sender: sender)
   }
 
   func listPostMenuButtonTap(sender: UIButton) {
+    isGridMode = false
+    gridPostMenuButton.isSelected = isGridMode
+    listPostMenuButton.isSelected = !isGridMode
+
     delegate?.listPostMenuButtonTap(sender: sender)
   }
 

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class Button: UIButton {
+class ZoomButton: UIButton {
   override func draw(_ rect: CGRect) {
     let path = UIBezierPath(ovalIn: rect)
     UIColor.black.withAlphaComponent(0.5).setFill()
@@ -53,4 +53,31 @@ class Button: UIButton {
 
   }
 
+}
+
+class MultiSelectButton: UIButton {
+  override func draw(_ rect: CGRect) {
+
+    let path = UIBezierPath(ovalIn: rect)
+    UIColor.black.withAlphaComponent(0.5).setFill()
+    path.fill()
+
+    let lineHeight = frame.height
+    let lineWidth = frame.width
+    let color: UIColor = UIColor.white
+
+    let upperRect = CGRect(x: (lineWidth * 0.25), y: (lineHeight * 0.25), width: (lineWidth * 0.4), height: (lineHeight * 0.4))
+    let lowerRect = CGRect(x: (lineWidth * 0.4), y: (lineHeight * 0.4), width: (lineWidth * 0.4), height: (lineHeight * 0.4))
+    let upperRectPath: UIBezierPath = UIBezierPath(rect: upperRect)
+    let lowerRectPath: UIBezierPath = UIBezierPath(rect: lowerRect)
+    color.set()
+
+    UIColor.black.withAlphaComponent(0.5).setFill()
+    lowerRectPath.stroke()
+    lowerRectPath.fill()
+
+    UIColor.black.withAlphaComponent(1.0).setFill()
+    upperRectPath.fill()
+    upperRectPath.stroke()
+  }
 }

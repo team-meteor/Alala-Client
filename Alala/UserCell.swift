@@ -59,4 +59,8 @@ class UserCell: UICollectionViewCell {
       make.right.equalTo(self.contentView).offset(-15.5)
     }
   }
+  func configure(post: Post) {
+    self.profilePhoto.setImage(with: post.createdBy.profilePhotoId, size: .thumbnail)
+    self.profileNameLabel.text = post.createdBy.profileName
+  }
 }
