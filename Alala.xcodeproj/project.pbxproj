@@ -80,7 +80,7 @@
 		99C654F61F041E930005AD3E /* EditProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654F51F041E930005AD3E /* EditProfileTableViewCell.swift */; };
 		99C654FA1F0773CD0005AD3E /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654F91F0773CD0005AD3E /* UIColor.swift */; };
 		99C654FC1F0784170005AD3E /* RoundCornerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C654FB1F0784170005AD3E /* RoundCornerButton.swift */; };
-		9B39112F1F077094008325E4 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B39112E1F077094008325E4 /* Button.swift */; };
+		9B39112F1F077094008325E4 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B39112E1F077094008325E4 /* CustomButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -182,7 +182,7 @@
 		99C654F51F041E930005AD3E /* EditProfileTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditProfileTableViewCell.swift; sourceTree = "<group>"; };
 		99C654F91F0773CD0005AD3E /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		99C654FB1F0784170005AD3E /* RoundCornerButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundCornerButton.swift; sourceTree = "<group>"; };
-		9B39112E1F077094008325E4 /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
+		9B39112E1F077094008325E4 /* CustomButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -301,7 +301,7 @@
 				6FBD85531F04D0E10097B82A /* UserCell.swift */,
 				6FBD85551F04D0F90097B82A /* MultimediaCell.swift */,
 				6FBD85571F04D10C0097B82A /* ButtonGroupCell.swift */,
-				9B39112E1F077094008325E4 /* Button.swift */,
+				9B39112E1F077094008325E4 /* CustomButton.swift */,
 				99C654E91F015D7A0005AD3E /* NoContentsView.swift */,
 				99C654EB1F017D380005AD3E /* PersonalInfoView.swift */,
 				99C654EF1F0247A10005AD3E /* UIBorderView.swift */,
@@ -338,6 +338,7 @@
 		6F5B85471EE52064009285DD /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				6FB7586D1F1F0ED7008C976C /* Utils */,
 				6FBD855B1F04EF810097B82A /* Types */,
 				6F09C8DD1EF101E800BCFFEF /* Constants.swift */,
 				6F09C8AD1EEA862E00BCFFEF /* Extensions */,
@@ -349,6 +350,13 @@
 				6F5B85441EE52041009285DD /* Views */,
 			);
 			name = Sources;
+			sourceTree = "<group>";
+		};
+		6FB7586D1F1F0ED7008C976C /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Utils;
 			sourceTree = "<group>";
 		};
 		6FBD85501F04CDE20097B82A /* SectionControllers */ = {
@@ -681,7 +689,7 @@
 				99C654E81F015AEC0005AD3E /* FollowViewController.swift in Sources */,
 				6F5B85531EE52B95009285DD /* PersonalViewController.swift in Sources */,
 				6F0A205F1EFA5D6700C71417 /* Comment.swift in Sources */,
-				9B39112F1F077094008325E4 /* Button.swift in Sources */,
+				9B39112F1F077094008325E4 /* CustomButton.swift in Sources */,
 				6F09C8DE1EF101E800BCFFEF /* Constants.swift in Sources */,
 				99C654F61F041E930005AD3E /* EditProfileTableViewCell.swift in Sources */,
 				6F5B854B1EE52520009285DD /* MainTabBarController.swift in Sources */,
