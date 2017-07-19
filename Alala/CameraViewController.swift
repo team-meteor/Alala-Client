@@ -193,7 +193,6 @@ class CameraViewController: UIViewController {
   }
 
   deinit {
-    print("camera deinit")
     NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "photoMode"), object: nil)
     NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "videoMode"), object: nil)
     NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "cameraStop"), object: nil)
@@ -237,7 +236,7 @@ class CameraViewController: UIViewController {
       if captureSession.canAddInput(input) {
         captureSession.addInput(input)
         activeInput = input
-        print("camera input")
+
       }
     } catch {
       print("Error setting device input: \(error)")
@@ -250,7 +249,7 @@ class CameraViewController: UIViewController {
       let micInput = try AVCaptureDeviceInput(device: microphone)
       if captureSession.canAddInput(micInput) {
         captureSession.addInput(micInput)
-        print("mic input")
+
       }
     } catch {
       print("Error setting device audio input: \(error)")
@@ -259,13 +258,13 @@ class CameraViewController: UIViewController {
 
     if captureSession.canAddOutput(imageOutput) {
       captureSession.addOutput(imageOutput)
-      print("add imageoutput")
+
     }
     if captureSession.canAddOutput(movieOutput) {
       captureSession.addOutput(movieOutput)
-      print("add movieoutput")
+
     }
-    //return true
+
   }
 
   func setupPreview() {
@@ -275,7 +274,6 @@ class CameraViewController: UIViewController {
     previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
     camPreview.layer.addSublayer(previewLayer)
     camPreview.bringSubview(toFront: self.buttonBar)
-    print("setup preview")
   }
 
   func startSession() {
@@ -347,7 +345,6 @@ class CameraViewController: UIViewController {
     let settings = AVCapturePhotoSettings()
     settings.flashMode = .off
     imageOutput.capturePhoto(with: settings, delegate: self)
-    print("take picture = \(imageOutput)")
   }
 
   func savePhotoToLibrary() {

@@ -23,7 +23,7 @@ struct Cropper {
     // Rotate to portrait
     let transformer = AVMutableVideoCompositionLayerInstruction( assetTrack: clipVideoTrack )
     let transform1 = CGAffineTransform( translationX: clipVideoTrack.naturalSize.height, y: -( clipVideoTrack.naturalSize.width - clipVideoTrack.naturalSize.height ) / 2 )
-    let transform2 = transform1.rotated(by: CGFloat( M_PI_2 ) )
+    let transform2 = transform1.rotated(by: .pi/2 )
     transformer.setTransform( transform2, at: kCMTimeZero)
 
     let instruction = AVMutableVideoCompositionInstruction()
