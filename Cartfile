@@ -1,5 +1,4 @@
 github "Alamofire/Alamofire" ~> 4.4.0
-github "realm/SwiftLInt" ~> 0.19.0
 github "SnapKit/SnapKit" ~> 3.2.0
 github "devxoul/Then" ~> 2.1
 github "onevcat/Kingfisher" ~> 3.10.1
