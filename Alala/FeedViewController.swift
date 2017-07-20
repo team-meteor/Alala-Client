@@ -170,7 +170,7 @@ class FeedViewController: UIViewController {
   }
 
   func postDidLike(_ notification: Notification) {
-    print("postdidlike")
+
     guard let postID = notification.userInfo?["postID"] as? String else { return }
     for i in 0..<self.posts.count {
       let post = self.posts[i]
@@ -178,7 +178,7 @@ class FeedViewController: UIViewController {
         post.likeCount! += 1
         post.isLiked = true
         self.posts[i] = post
-        print("likeupdate")
+
         self.collectionView.reloadData()
         //self.adapter.performUpdates(animated: true, completion: nil)
         break
@@ -187,7 +187,7 @@ class FeedViewController: UIViewController {
   }
 
   func postDidUnlike(_ notification: Notification) {
-    print("postdidunlike")
+
     guard let postID = notification.userInfo?["postID"] as? String else { return }
     for i in 0..<self.posts.count {
       let post = self.posts[i]
@@ -195,7 +195,6 @@ class FeedViewController: UIViewController {
         post.likeCount = max(0, post.likeCount - 1)
         post.isLiked = false
         self.posts[i] = post
-        print("unlikeupdate")
         self.collectionView.reloadData()
         //self.adapter.performUpdates(animated: true, completion: nil)
         break
