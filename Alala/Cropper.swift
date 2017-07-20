@@ -11,16 +11,14 @@ import AVFoundation
 
 struct Cropper {
   func cropVideo( _ outputFileUrl: URL, callback: @escaping ( _ newUrl: URL ) -> Void ) {
-    // Get input clip
+
     let videoAsset: AVAsset = AVAsset( url: outputFileUrl )
     let clipVideoTrack = videoAsset.tracks( withMediaType: AVMediaTypeVideo ).first! as AVAssetTrack
 
-    // Make video to square
     let videoComposition = AVMutableVideoComposition()
     videoComposition.renderSize = CGSize( width: clipVideoTrack.naturalSize.height, height: clipVideoTrack.naturalSize.height )
     videoComposition.frameDuration = CMTimeMake( 1, 60 )
 
-    // Rotate to portrait
     let transformer = AVMutableVideoCompositionLayerInstruction( assetTrack: clipVideoTrack )
     let transform1 = CGAffineTransform( translationX: clipVideoTrack.naturalSize.height, y: -( clipVideoTrack.naturalSize.width - clipVideoTrack.naturalSize.height ) / 2 )
     let transform2 = transform1.rotated(by: .pi/2 )
@@ -32,7 +30,6 @@ struct Cropper {
     instruction.layerInstructions = [transformer]
     videoComposition.instructions = [instruction]
 
-    // Export
     let fileManager = FileManager()
     let croppedOutputFileUrl = URL(fileURLWithPath: fileManager.getOutputPath(String.randomAlphaNumericString(length: 10)))
     let exporter = AVAssetExportSession(asset: videoAsset, presetName: AVAssetExportPresetHighestQuality)!
