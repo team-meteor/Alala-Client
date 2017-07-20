@@ -59,7 +59,8 @@ class FeedViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    NotificationCenter.default.addObserver(self, selector: #selector(preparePosting), name: NSNotification.Name(rawValue: "preparePosting"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(preparePosting), name: .preparePosting, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: .postDidCreate, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(postDidLike), name: .postDidLike, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(postDidUnlike), name: .postDidUnlike, object: nil)
     self.navigationItem.titleView = UILabel().then {
@@ -111,13 +112,14 @@ class FeedViewController: UIViewController {
     }
   }
 
-  func postDidCreate(post: Post) {
-
+  func postDidCreate(_ notification: Notification) {
+    guard let post = notification.userInfo?["post"] as? Post else { return }
     self.posts.insert(post, at: 0)
     self.adapter.performUpdates(animated: true, completion: nil)
   }
 
   func preparePosting(_ notification: Notification) {
+    self.moveToFeedViewController()
 
     guard let postDic = notification.userInfo?["postDic"] as? [String:Any] else { return }
     guard let multipartArr = postDic["multipartArr"] as? [Any] else { return }
@@ -129,8 +131,11 @@ class FeedViewController: UIViewController {
         guard self != nil else { return }
         switch response.result {
         case .success(let post):
-          self?.postDidCreate(post: post)
-
+          NotificationCenter.default.post(
+            name: .postDidCreate,
+            object: self,
+            userInfo: ["post": post]
+          )
         case .failure(let error):
           print(error)
 
@@ -169,8 +174,21 @@ class FeedViewController: UIViewController {
     }
   }
 
+  /**
+   * TabBarViewController중 피드 화면으로 이동
+   *
+   * - Note : 포스트를 업로드할 때는 무조건 피드VC로 이동되어야 함
+   */
+  func moveToFeedViewController() {
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let tabBarVC = appDelegate.window?.rootViewController as! MainTabBarController
+    if tabBarVC.selectedViewController != self {
+      tabBarVC.selectedIndex = 0
+    }
+  }
+
   func postDidLike(_ notification: Notification) {
-    print("postdidlike")
+
     guard let postID = notification.userInfo?["postID"] as? String else { return }
     for i in 0..<self.posts.count {
       let post = self.posts[i]
@@ -178,7 +196,7 @@ class FeedViewController: UIViewController {
         post.likeCount! += 1
         post.isLiked = true
         self.posts[i] = post
-        print("likeupdate")
+
         self.collectionView.reloadData()
         //self.adapter.performUpdates(animated: true, completion: nil)
         break
@@ -187,7 +205,7 @@ class FeedViewController: UIViewController {
   }
 
   func postDidUnlike(_ notification: Notification) {
-    print("postdidunlike")
+
     guard let postID = notification.userInfo?["postID"] as? String else { return }
     for i in 0..<self.posts.count {
       let post = self.posts[i]
@@ -195,7 +213,6 @@ class FeedViewController: UIViewController {
         post.likeCount = max(0, post.likeCount - 1)
         post.isLiked = false
         self.posts[i] = post
-        print("unlikeupdate")
         self.collectionView.reloadData()
         //self.adapter.performUpdates(animated: true, completion: nil)
         break

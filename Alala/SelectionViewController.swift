@@ -144,41 +144,11 @@ class SelectionViewController: UIViewController {
     NotificationCenter.default.post(name: Notification.Name("dismissWrapperVC"), object: nil)
   }
 
-  func cropImage(image: UIImage) -> UIImage? {
-
-    let factor = image.size.width/view.frame.width
-    let scale = 1/scrollView.zoomScale
-    let imageFrame = imageView.imageFrame(image: image)
-    let imageWidth = image.size.width
-    let imageHeight = image.size.height
-    var rect = CGRect()
-
-    if (imageWidth > imageHeight && scrollView.zoomScale == 1.0) || (imageWidth < imageHeight && scrollView.zoomScale == 1.0) {
-      // 1:1
-      rect.origin.x = (scrollView.contentOffset.x + cropAreaView.frame.origin.x - imageFrame.origin.x) * scale * factor
-      rect.origin.y = (scrollView.contentOffset.y + cropAreaView.frame.origin.y - imageFrame.origin.y) * scale * factor
-      rect.size.width = cropAreaView.frame.size.width * scale * factor
-      rect.size.height = cropAreaView.frame.size.height * scale * factor
-
-    } else if imageWidth < imageHeight && scrollView.zoomScale == 0.8 {
-      // 0.8 좌우 여백
-      rect.origin.x = self.imageView.imageFrame(image: image).origin.x
-      rect.origin.y = (scrollView.contentOffset.y + cropAreaView.frame.origin.y - imageFrame.origin.y) * scale * factor
-      rect.size.width = image.size.width
-      rect.size.height = cropAreaView.frame.size.height * scale * factor
-
-    } else {
-      // 원본
-      return image
-    }
-    return UIImage(cgImage: image.cgImage!.cropping(to: rect)!)
-  }
-
   func doneButtonDidTap() {
     if self.collectionView.indexPathsForSelectedItems?.count != 0 {
       getMultipartArr { multipartArr in
         self.navigationItem.rightBarButtonItem?.isEnabled = false
-        let croppedImage = self.cropImage(image: self.imageView.image!)
+        let croppedImage = Cropper().cropImage(image: self.imageView.image!, scrollView: self.scrollView, imageView: self.imageView, cropAreaView: self.cropAreaView)
         let postEditorViewController = PostEditorViewController(image: croppedImage!)
 
         postEditorViewController.multipartArr = multipartArr
@@ -197,7 +167,7 @@ class SelectionViewController: UIViewController {
 
         let targetSize = CGSize(width: 600 * UIScreen.main.scale, height: 600 * UIScreen.main.scale)
         self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: self.initialRequestOptions, resultHandler: { image, _ in
-          let croppedImage = self.cropImage(image: image!)
+          let croppedImage = Cropper().cropImage(image: image!, scrollView: self.scrollView, imageView: self.imageView, cropAreaView: self.cropAreaView)
           multipartArr.append(croppedImage!)
           counter += 1
           if counter == self.collectionView.indexPathsForSelectedItems?.count {
@@ -209,17 +179,19 @@ class SelectionViewController: UIViewController {
         imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
           if let urlAsset = asset as? AVURLAsset {
             let localVideoUrl: URL = urlAsset.url as URL
-            var movieData: Data?
-            do {
-              movieData = try Data(contentsOf: localVideoUrl)
-            } catch _ {
-              movieData = nil
-              return
-            }
-            multipartArr.append(movieData!)
-            counter += 1
-            if counter == self.collectionView.indexPathsForSelectedItems?.count {
-              completion(multipartArr)
+            Cropper().cropVideo(localVideoUrl) { newUrl in
+              var movieData: Data?
+              do {
+                movieData = try Data(contentsOf: newUrl)
+              } catch _ {
+                movieData = nil
+                return
+              }
+              multipartArr.append(movieData!)
+              counter += 1
+              if counter == self.collectionView.indexPathsForSelectedItems?.count {
+                completion(multipartArr)
+              }
             }
           }
         })
