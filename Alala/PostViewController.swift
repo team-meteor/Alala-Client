@@ -9,7 +9,20 @@
 import UIKit
 import IGListKit
 
+protocol PostViewControllerDelegate: class {
+  func postUpdateFinished()
+}
+
+/**
+ * # Post List 화면
+ *
+ * **[PATH 1]** 내 프로필 화면 > Grid모드에서 아이템 선택 시 이동
+ *
+ * **[PATH 2]** 내 프로필 화면 > List모드에서 내가 작성한 모든 Post를 List로 노출
+ */
 class PostViewController: UIViewController {
+
+  weak var delegate: PostViewControllerDelegate?
 
   lazy var adapter: ListAdapter = {
     return ListAdapter(updater: ListAdapterUpdater(), viewController: self)
@@ -74,7 +87,11 @@ class PostViewController: UIViewController {
 
   func updateNewPost(_ posts: [Post]) {
     self.posts = posts
-    self.adapter.performUpdates(animated: true, completion: nil)
+    self.adapter.performUpdates(animated: true) { (result) in
+      if result == true {
+        self.delegate?.postUpdateFinished()
+      }
+    }
   }
 }
 

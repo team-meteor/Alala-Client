@@ -8,6 +8,11 @@
 
 import UIKit
 
+/**
+ * # '저장됨' 화면
+ *
+ * **[PATH]** 내 프로필 화면 > SubMenuBar 네번째 아이콘 탭
+ */
 class SavedViewController: UIViewController {
 
   let allTabButton = UnderlineButton().then {
@@ -45,6 +50,8 @@ class SavedViewController: UIViewController {
   }
 
   func setupUI() {
+    self.view.backgroundColor = UIColor.white
+
     self.view.addSubview(allTabButton)
     self.view.addSubview(collectionTabButton)
 
@@ -89,10 +96,6 @@ class SavedViewController: UIViewController {
 //        make.bottom.equalTo(self.view)
 //      }
 //    }
-
-    /////
-    allTabView.backgroundColor = UIColor.red
-    collectionTabView.backgroundColor = UIColor.blue
 
     allTabButtonTap(sender: allTabButton)
   }
