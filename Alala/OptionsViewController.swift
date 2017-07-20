@@ -17,7 +17,7 @@ class OptionsViewController: UIViewController {
 
   let contentTableView = UITableView()
 
-  var allOptionItemArray: Array<Dictionary<String, Array<OptionItem>>> = []
+  var allOptionItemArray: [[String:[OptionItem]]] = []
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -95,16 +95,16 @@ extension OptionsViewController: UITableViewDataSource {
   }
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    let dic: Dictionary<String, Array<OptionItem>> = allOptionItemArray[section]
-    let arr: Array<OptionItem> = dic.values.first!
+    let dic: [String:[OptionItem]] = allOptionItemArray[section]
+    let arr: [OptionItem] = dic.values.first!
     return arr.count
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     // create a new cell if needed or reuse an old one
 
-    let dic: Dictionary<String, Array<OptionItem>> = allOptionItemArray[indexPath.section]
-    let arr: Array<OptionItem> = dic.values.first!
+    let dic: [String:[OptionItem]] = allOptionItemArray[indexPath.section]
+    let arr: [OptionItem] = dic.values.first!
     let data: OptionItem = arr[indexPath.row]
 
     let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "cell")
@@ -132,7 +132,7 @@ extension OptionsViewController: UITableViewDataSource {
       make.height.equalTo(18)
     }
 
-    let dic: Dictionary<String, Array<OptionItem>> = allOptionItemArray[section]
+    let dic: [String:[OptionItem]] = allOptionItemArray[section]
     label.text = dic.keys.first
 
     return view
@@ -164,8 +164,8 @@ extension OptionsViewController: UITableViewDataSource {
 
 extension OptionsViewController: UITableViewDelegate {
   public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let dic: Dictionary<String, Array<OptionItem>> = allOptionItemArray[indexPath.section]
-    let arr: Array<OptionItem> = dic.values.first!
+    let dic: [String:[OptionItem]] = allOptionItemArray[indexPath.section]
+    let arr: [OptionItem] = dic.values.first!
     let data: OptionItem = arr[indexPath.row]
 
     performSelector(onMainThread: Selector(data.funcName), with: self, waitUntilDone: true)
