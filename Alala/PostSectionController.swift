@@ -8,7 +8,6 @@
 
 import UIKit
 import IGListKit
-//import ImageIO
 
 class PostSectionController: ListSectionController {
   var post: Post!
@@ -45,7 +44,8 @@ class PostSectionController: ListSectionController {
       guard let comments = post.comments, comments.count > 0 else {
         return CGSize()
       }
-      return CGSize(width: width, height: 50)
+      // TODO : dynamic cell size
+      return CGSize(width: width, height: 500)
 
     default:
       return CGSize()
