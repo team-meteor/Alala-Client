@@ -24,9 +24,12 @@ class VideoPlayerViewController: AVPlayerViewController {
     }
 
     self.showsPlaybackControls = false
-
     self.view.addSubview(playButton)
+  }
 
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillAppear(true)
+    self.player?.pause()
   }
 
   override func viewDidLayoutSubviews() {
@@ -53,14 +56,14 @@ class VideoPlayerViewController: AVPlayerViewController {
   }
 
   func addVideoPlayer(videoUrl: URL, videoView: UIView) {
-    player = AVPlayer(url: videoUrl)
+    self.player = AVPlayer(url: videoUrl)
     self.parent?.addChildViewController(self)
     DispatchQueue.main.async {
       videoView.addSubview(self.view)
       self.view.frame = videoView.frame
     }
     videoView.isUserInteractionEnabled = true
-    player?.play()
+    self.player?.play()
   }
 
   func removeVideoPlayer() {
