@@ -9,8 +9,7 @@
 import UIKit
 
 class CommentCell: UICollectionViewCell {
-  typealias CommentLabelDict = [UILabel: UILabel]
-  var commentsContainer = CommentLabelDict()
+  var labelContainer = [CommentLabel]()
   override init(frame: CGRect) {
     super.init(frame: frame)
     print("override init")
@@ -23,37 +22,33 @@ class CommentCell: UICollectionViewCell {
 
   func configure(comments: [Comment]) {
     for comment in comments {
-      let createdByLabel = UILabel()
-      createdByLabel.text = comment.createdBy.profileName
-      let commentContentLabel = UILabel()
-      commentContentLabel.text = comment.content
-      commentsContainer[createdByLabel] = commentContentLabel
-      addSubview(createdByLabel)
-      addSubview(commentContentLabel)
+      if let profileName = comment.createdBy.profileName, profileName.characters.count > 0 && comment.content.characters.count > 0 {
+        let label = CommentLabel()
+        label.attributedText = NSMutableAttributedString(string: "@@" + profileName + " " + comment.content)
+        label.numberOfLines = 0
+        label.lineBreakMode = .byCharWrapping
+        labelContainer.append(label)
+        self.contentView.addSubview(label)
+      }
     }
   }
 
   override func layoutSubviews() {
     print("layoutSubviews")
     super.layoutSubviews()
-    var commentSize = 0
-    for (createdByLabel, commentContentLabel) in commentsContainer {
-      createdByLabel.sizeToFit()
-      createdByLabel.snp.makeConstraints({ (make) in
-        make.left.equalTo(self.contentView).offset(10)
-        make.right.equalTo(self.contentView).offset(-10)
-        make.centerY.equalTo(self.contentView.snp.centerY).offset(commentSize)
-        // TODO : dynamic comment size
-      })
-//      let exclusionPath = createdByLabel 
-      commentContentLabel.sizeToFit()
-      commentContentLabel.snp.makeConstraints({ (make) in
-        make.left.equalTo(self.contentView).offset(10)
-        make.right.equalTo(self.contentView).offset(-10)
-        make.centerY.equalTo(self.contentView.snp.centerY).offset(commentSize)
-      })
-      commentSize += 20
-      print(commentSize)
+    var preHeight: CGFloat = 0
+    for label in labelContainer {
+      if let text = label.text {
+        let textHeight = TextSize.size(text, font: UIFont.systemFont(ofSize: 17), width: self.contentView.frame.width, insets: UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)).height
+        label.snp.makeConstraints({ (make) in
+          make.top.equalTo(self.contentView).offset(preHeight)
+          make.left.equalTo(self.contentView).offset(10)
+          make.right.equalTo(self.contentView).offset(-10)
+          make.height.equalTo(textHeight)
+        })
+        preHeight += textHeight
+      }
     }
   }
+
 }

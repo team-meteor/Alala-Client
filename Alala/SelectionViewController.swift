@@ -483,7 +483,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
     let cellWidth: CGFloat?
-    if(collectionView.frame.width >= 375) {
+    if collectionView.frame.width >= 375 {
       cellWidth = round((collectionView.frame.width - 5 * tileCellSpacing) / 4)
     } else {
       cellWidth = round((collectionView.frame.width - 4 * tileCellSpacing) / 3)

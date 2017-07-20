@@ -49,7 +49,7 @@
 		6F8887A81F07832200CE9A04 /* LikeCountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8887A71F07832200CE9A04 /* LikeCountCell.swift */; };
 		6F8887AA1F0791DC00CE9A04 /* CommentContainerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8887A91F0791DC00CE9A04 /* CommentContainerCell.swift */; };
 		6F8887AC1F0A02DE00CE9A04 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8887AB1F0A02DE00CE9A04 /* CommentCell.swift */; };
-		6FB758711F1F7F2D008C976C /* UILabel+getPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB758701F1F7F2D008C976C /* UILabel+getPath.swift */; };
+		6FB758731F206E25008C976C /* TextSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB758721F206E25008C976C /* TextSize.swift */; };
 		6FBD854A1F04B4300097B82A /* NotificationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FBD85491F04B4300097B82A /* NotificationName.swift */; };
 		6FBD854C1F04C3390097B82A /* NSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FBD854B1F04C3390097B82A /* NSObject.swift */; };
 		6FBD85521F04CE150097B82A /* PostSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FBD85511F04CE150097B82A /* PostSectionController.swift */; };
@@ -63,6 +63,7 @@
 		6FFC06C21EE3D49000E542BC /* AlalaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06C11EE3D49000E542BC /* AlalaTests.swift */; };
 		6FFC06CD1EE3D49000E542BC /* AlalaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06CC1EE3D49000E542BC /* AlalaUITests.swift */; };
 		6FFC06DC1EE3D78A00E542BC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */; };
+		6FFDBF871F20968A0019EC64 /* CommentLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFDBF861F20968A0019EC64 /* CommentLabel.swift */; };
 		9921706B1F0A33ED00D03E01 /* PhotosForYouViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9921706A1F0A33ED00D03E01 /* PhotosForYouViewController.swift */; };
 		9921706D1F0A374500D03E01 /* SavedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9921706C1F0A374500D03E01 /* SavedViewController.swift */; };
 		992170921F0CA55A00D03E01 /* PostGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 992170911F0CA55900D03E01 /* PostGridCell.swift */; };
@@ -147,7 +148,7 @@
 		6F8887A71F07832200CE9A04 /* LikeCountCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LikeCountCell.swift; sourceTree = "<group>"; };
 		6F8887A91F0791DC00CE9A04 /* CommentContainerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentContainerCell.swift; sourceTree = "<group>"; };
 		6F8887AB1F0A02DE00CE9A04 /* CommentCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
-		6FB758701F1F7F2D008C976C /* UILabel+getPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UILabel+getPath.swift"; sourceTree = "<group>"; };
+		6FB758721F206E25008C976C /* TextSize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextSize.swift; sourceTree = "<group>"; };
 		6FBD85491F04B4300097B82A /* NotificationName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationName.swift; sourceTree = "<group>"; };
 		6FBD854B1F04C3390097B82A /* NSObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSObject.swift; sourceTree = "<group>"; };
 		6FBD85511F04CE150097B82A /* PostSectionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostSectionController.swift; sourceTree = "<group>"; };
@@ -167,6 +168,7 @@
 		6FFC06CC1EE3D49000E542BC /* AlalaUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlalaUITests.swift; sourceTree = "<group>"; };
 		6FFC06CE1EE3D49000E542BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
+		6FFDBF861F20968A0019EC64 /* CommentLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentLabel.swift; sourceTree = "<group>"; };
 		9921706A1F0A33ED00D03E01 /* PhotosForYouViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosForYouViewController.swift; sourceTree = "<group>"; };
 		9921706C1F0A374500D03E01 /* SavedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedViewController.swift; sourceTree = "<group>"; };
 		992170911F0CA55900D03E01 /* PostGridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostGridCell.swift; sourceTree = "<group>"; };
@@ -235,7 +237,6 @@
 				6FBD854B1F04C3390097B82A /* NSObject.swift */,
 				99C654F91F0773CD0005AD3E /* UIColor.swift */,
 				992170931F0E2D0600D03E01 /* String.swift */,
-				6FB758701F1F7F2D008C976C /* UILabel+getPath.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -313,6 +314,7 @@
 				992170911F0CA55900D03E01 /* PostGridCell.swift */,
 				995E81131F1A76970002668E /* UIPlaceholderTextView.swift */,
 				6F8887AB1F0A02DE00CE9A04 /* CommentCell.swift */,
+				6FFDBF861F20968A0019EC64 /* CommentLabel.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -357,6 +359,7 @@
 		6FB7586D1F1F0ED7008C976C /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				6FB758721F206E25008C976C /* TextSize.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -640,7 +643,6 @@
 				48F857961EF8B6C800957B3A /* PostService.swift in Sources */,
 				6F8887AC1F0A02DE00CE9A04 /* CommentCell.swift in Sources */,
 				6FBD854A1F04B4300097B82A /* NotificationName.swift in Sources */,
-				6FB758711F1F7F2D008C976C /* UILabel+getPath.swift in Sources */,
 				6F09C8D81EF0113600BCFFEF /* LoginViewController.swift in Sources */,
 				6F01C29B1EF7996800552782 /* CircleImageView.swift in Sources */,
 				6FBD85521F04CE150097B82A /* PostSectionController.swift in Sources */,
@@ -675,9 +677,11 @@
 				99C654EC1F017D380005AD3E /* PersonalInfoView.swift in Sources */,
 				6FFC06AD1EE3D49000E542BC /* AppDelegate.swift in Sources */,
 				6F0068891EFE161D009EDFBF /* FeedService.swift in Sources */,
+				6FB758731F206E25008C976C /* TextSize.swift in Sources */,
 				485ABFAD1EF37F5A00949456 /* PostEditingCell.swift in Sources */,
 				6F5B85571EE540EF009285DD /* User.swift in Sources */,
 				99C654F01F0247A10005AD3E /* UIBorderView.swift in Sources */,
+				6FFDBF871F20968A0019EC64 /* CommentLabel.swift in Sources */,
 				48F73CA61EF613F400E75022 /* WrapperViewController.swift in Sources */,
 				6FBD854C1F04C3390097B82A /* NSObject.swift in Sources */,
 				6FBD85561F04D0F90097B82A /* MultimediaCell.swift in Sources */,

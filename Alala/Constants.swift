@@ -39,4 +39,5 @@ struct Constants {
 
   // Auth Token
   static let DEFAULTS_TOKEN = "authToken"
+
 }
