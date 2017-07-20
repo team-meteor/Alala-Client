@@ -193,7 +193,6 @@ class CameraViewController: UIViewController {
   }
 
   deinit {
-    print("camera deinit")
     NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "photoMode"), object: nil)
     NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "videoMode"), object: nil)
     NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "cameraStop"), object: nil)
@@ -237,7 +236,7 @@ class CameraViewController: UIViewController {
       if captureSession.canAddInput(input) {
         captureSession.addInput(input)
         activeInput = input
-        print("camera input")
+
       }
     } catch {
       print("Error setting device input: \(error)")
@@ -250,7 +249,7 @@ class CameraViewController: UIViewController {
       let micInput = try AVCaptureDeviceInput(device: microphone)
       if captureSession.canAddInput(micInput) {
         captureSession.addInput(micInput)
-        print("mic input")
+
       }
     } catch {
       print("Error setting device audio input: \(error)")
@@ -259,22 +258,22 @@ class CameraViewController: UIViewController {
 
     if captureSession.canAddOutput(imageOutput) {
       captureSession.addOutput(imageOutput)
-      print("add imageoutput")
+
     }
     if captureSession.canAddOutput(movieOutput) {
       captureSession.addOutput(movieOutput)
-      print("add movieoutput")
+
     }
-    //return true
+
   }
 
   func setupPreview() {
     previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
     previewLayer.frame = camPreview.bounds
+
     previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
     camPreview.layer.addSublayer(previewLayer)
     camPreview.bringSubview(toFront: self.buttonBar)
-    print("setup preview")
   }
 
   func startSession() {
@@ -346,7 +345,6 @@ class CameraViewController: UIViewController {
     let settings = AVCapturePhotoSettings()
     settings.flashMode = .off
     imageOutput.capturePhoto(with: settings, delegate: self)
-    print("take picture = \(imageOutput)")
   }
 
   func savePhotoToLibrary() {
@@ -499,23 +497,26 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
     if error != nil {
       print("Error recording movie: \(error!.localizedDescription)")
     } else {
-      var movieData: Data?
-      do {
-        movieData = try Data(contentsOf: outputFileURL)
-      } catch _ {
-        movieData = nil
-        return
+      Cropper().cropVideo(outputFileURL) { newUrl in
+        var movieData: Data?
+        do {
+          movieData = try Data(contentsOf: newUrl)
+        } catch _ {
+          movieData = nil
+          return
+        }
+        self.videoData = movieData
+        self.capturedImageView.image = self.previewImageFromVideo(videoUrl: outputFileURL)
+        self.displayCapturPhoto()
+        self.saveMovieToLibrary(movieURL: newUrl as URL)
+        self.takeVideoButton.setImage(UIImage(named: "Capture_Butt"), for: .normal)
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+          barButtonSystemItem: .done,
+          target: self,
+          action: #selector(self.videoDoneButtonDidTap)
+        )
       }
-      self.videoData = movieData
-      self.capturedImageView.image = previewImageFromVideo(videoUrl: outputFileURL)
-      displayCapturPhoto()
-      saveMovieToLibrary(movieURL: outputFileURL as URL)
-      takeVideoButton.setImage(UIImage(named: "Capture_Butt"), for: .normal)
-      self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-        barButtonSystemItem: .done,
-        target: self,
-        action: #selector(videoDoneButtonDidTap)
-      )
+
     }
   }
 
