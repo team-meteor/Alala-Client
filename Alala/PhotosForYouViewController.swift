@@ -8,6 +8,11 @@
 
 import UIKit
 
+/**
+ * # '회원님이 나온 사진' 화면
+ *
+ * **[PATH]** 내 프로필 화면 > SubMenuBar 세번째 아이콘 탭
+ */
 class PhotosForYouViewController: UIViewController {
 
   let noContentsGuideView = NoContentsView()

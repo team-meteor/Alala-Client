@@ -8,7 +8,14 @@
 
 import UIKit
 
+/**
+ * Post를 grid형태로 3열 출력할 때 사용하는 콜렉션뷰 셀
+ *
+ * - Note : Use 1. 프로필뷰 Post Grid Mode
+ */
 class PostGridCell: UICollectionViewCell {
+
+  static let cellReuseIdentifier = "gridCell"
 
   let thumbnailImageView = UIImageView().then {
     $0.backgroundColor = .lightGray
