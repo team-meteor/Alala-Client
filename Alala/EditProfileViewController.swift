@@ -356,10 +356,10 @@ struct ProfileItem {
   }
 }
 
-struct ProfileItemGender {
-  enum genderType {
-    case none
-    case male
-    case female
-  }
-}
+//struct ProfileItemGender {
+//  enum genderType {
+//    case none
+//    case male
+//    case female
+//  }
+//}
