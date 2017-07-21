@@ -29,7 +29,7 @@ class PostViewController: UIViewController {
   }()
 
   var posts: [Post] = []
-  fileprivate var nextPage: Int?
+  fileprivate var nextPage: String?
   fileprivate var isLoading: Bool = false
 
   let collectionView: UICollectionView = {

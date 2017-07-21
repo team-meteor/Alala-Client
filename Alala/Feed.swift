@@ -10,7 +10,7 @@ import ObjectMapper
 
 class Feed: NSObject, Mappable {
   var posts: [Post]?
-  var nextPage: Int?
+  var nextPage: String?
 
   required init?(map: Map) {
   }

@@ -17,6 +17,7 @@ class Post: NSObject, Mappable {
   var likeCount: Int!
   var createdAt: Date!
   var comments: [Comment]?
+  var expanded = false
 
   required init?(map: Map) {
   }

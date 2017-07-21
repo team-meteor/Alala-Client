@@ -27,7 +27,7 @@ class FeedViewController: UIViewController {
   )
 
   fileprivate var posts: [Post] = []
-  fileprivate var nextPage: Int?
+  fileprivate var nextPage: String?
   fileprivate var isLoading: Bool = false
 
   fileprivate let refreshControl = UIRefreshControl()
@@ -69,6 +69,7 @@ class FeedViewController: UIViewController {
       $0.sizeToFit()
     }
     self.fetchFeed(paging: .refresh)
+    adapter.scrollViewDelegate = self
     adapter.collectionView = collectionView
     adapter.dataSource = self
     view.addSubview(collectionView)
@@ -81,6 +82,7 @@ class FeedViewController: UIViewController {
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     self.navigationController?.isNavigationBarHidden = false
+    self.tabBarController?.tabBar.isHidden = false
   }
 
   fileprivate func fetchFeed(paging: Paging) {
@@ -188,7 +190,6 @@ class FeedViewController: UIViewController {
   }
 
   func postDidLike(_ notification: Notification) {
-
     guard let postID = notification.userInfo?["postID"] as? String else { return }
     for i in 0..<self.posts.count {
       let post = self.posts[i]
@@ -205,7 +206,6 @@ class FeedViewController: UIViewController {
   }
 
   func postDidUnlike(_ notification: Notification) {
-
     guard let postID = notification.userInfo?["postID"] as? String else { return }
     for i in 0..<self.posts.count {
       let post = self.posts[i]
@@ -236,5 +236,25 @@ extension FeedViewController: ListAdapterDataSource {
   }
   func emptyView(for listAdapter: ListAdapter) -> UIView? {
     return nil
+  }
+}
+
+extension FeedViewController: InteractiveButtonGroupCellDelegate {
+  func commentButtondidTap(_ post: Post) {
+    guard let comments = post.comments else { return }
+    self.navigationController?.pushViewController(CommentViewController(comments: comments), animated: true)
+  }
+}
+
+extension FeedViewController: UICollectionViewDelegateFlowLayout {
+  func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    print("scrollViewDidScroll")
+    let contentOffsetBottom = scrollView.contentOffset.y + scrollView.frame.height
+    let didReachBottom = scrollView.contentSize.height > 0
+      && contentOffsetBottom >= scrollView.contentSize.height - 300
+    if let nextPage = self.nextPage, didReachBottom {
+      print("next!!!!")
+      self.fetchFeed(paging: .next(nextPage))
+    }
   }
 }

@@ -66,6 +66,8 @@
 		6FFC06CD1EE3D49000E542BC /* AlalaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06CC1EE3D49000E542BC /* AlalaUITests.swift */; };
 		6FFC06DC1EE3D78A00E542BC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */; };
 		6FFDBF871F20968A0019EC64 /* CommentLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFDBF861F20968A0019EC64 /* CommentLabel.swift */; };
+		6FFDBF891F21B6DD0019EC64 /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFDBF881F21B6DD0019EC64 /* CommentViewController.swift */; };
+		6FFDBF8B1F21C6A70019EC64 /* CommentTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFDBF8A1F21C6A70019EC64 /* CommentTableCell.swift */; };
 		9921706B1F0A33ED00D03E01 /* PhotosForYouViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9921706A1F0A33ED00D03E01 /* PhotosForYouViewController.swift */; };
 		9921706D1F0A374500D03E01 /* SavedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9921706C1F0A374500D03E01 /* SavedViewController.swift */; };
 		992170921F0CA55A00D03E01 /* PostGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 992170911F0CA55900D03E01 /* PostGridCell.swift */; };
@@ -175,6 +177,8 @@
 		6FFC06CE1EE3D49000E542BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
 		6FFDBF861F20968A0019EC64 /* CommentLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentLabel.swift; sourceTree = "<group>"; };
+		6FFDBF881F21B6DD0019EC64 /* CommentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
+		6FFDBF8A1F21C6A70019EC64 /* CommentTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentTableCell.swift; sourceTree = "<group>"; };
 		9921706A1F0A33ED00D03E01 /* PhotosForYouViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosForYouViewController.swift; sourceTree = "<group>"; };
 		9921706C1F0A374500D03E01 /* SavedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedViewController.swift; sourceTree = "<group>"; };
 		992170911F0CA55900D03E01 /* PostGridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostGridCell.swift; sourceTree = "<group>"; };
@@ -298,6 +302,7 @@
 				992227751F134DB3008DDD59 /* PostViewController.swift */,
 				4828D2791F186320001D2C2C /* TableViewWrapperController.swift */,
 				482DBDB71F1A523E00DF355D /* VideoPlayerViewController.swift */,
+				6FFDBF881F21B6DD0019EC64 /* CommentViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -326,6 +331,7 @@
 				995E81131F1A76970002668E /* UIPlaceholderTextView.swift */,
 				6F8887AB1F0A02DE00CE9A04 /* CommentCell.swift */,
 				6FFDBF861F20968A0019EC64 /* CommentLabel.swift */,
+				6FFDBF8A1F21C6A70019EC64 /* CommentTableCell.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -707,6 +713,7 @@
 				9B8534DB1F19D906006AAFAE /* DiscoverView.swift in Sources */,
 				485647BF1EEE6B4D00834BBB /* TileCell.swift in Sources */,
 				4873940A1F03798B00B3E1D0 /* MultipartService.swift in Sources */,
+				6FFDBF891F21B6DD0019EC64 /* CommentViewController.swift in Sources */,
 				995E81141F1A76970002668E /* UIPlaceholderTextView.swift in Sources */,
 				99C654E81F015AEC0005AD3E /* FollowViewController.swift in Sources */,
 				6F5B85531EE52B95009285DD /* PersonalViewController.swift in Sources */,
@@ -717,6 +724,7 @@
 				6F5B854B1EE52520009285DD /* MainTabBarController.swift in Sources */,
 				99C654EA1F015D7A0005AD3E /* NoContentsView.swift in Sources */,
 				48F73CA21EF50FDB00E75022 /* RejectViewController.swift in Sources */,
+				6FFDBF8B1F21C6A70019EC64 /* CommentTableCell.swift in Sources */,
 				6F5B855B1EE54101009285DD /* Post.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
