@@ -27,7 +27,7 @@ class FeedViewController: UIViewController {
   )
 
   fileprivate var posts: [Post] = []
-  fileprivate var nextPage: Int?
+  fileprivate var nextPage: String?
   fileprivate var isLoading: Bool = false
 
   fileprivate let refreshControl = UIRefreshControl()
@@ -69,6 +69,7 @@ class FeedViewController: UIViewController {
       $0.sizeToFit()
     }
     self.fetchFeed(paging: .refresh)
+    collectionView.delegate = self
     adapter.collectionView = collectionView
     adapter.dataSource = self
     view.addSubview(collectionView)
@@ -242,5 +243,16 @@ extension FeedViewController: InteractiveButtonGroupCellDelegate {
   func commentButtondidTap(_ post: Post) {
     guard let comments = post.comments else { return }
     self.navigationController?.pushViewController(CommentViewController(comments: comments), animated: true)
+  }
+}
+
+extension FeedViewController: UICollectionViewDelegateFlowLayout {
+  func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    let contentOffsetBottom = scrollView.contentOffset.y + scrollView.frame.height
+    let didReachBottom = scrollView.contentSize.height > 0
+      && contentOffsetBottom >= scrollView.contentSize.height - 300
+    if let nextPage = self.nextPage, didReachBottom{
+      self.fetchFeed(paging: .next(nextPage))
+    }
   }
 }
