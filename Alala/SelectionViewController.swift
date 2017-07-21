@@ -724,7 +724,7 @@ extension SelectionViewController: UIScrollViewDelegate {
     }
     self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(page / 600)
   }
-  
+
   func scrollViewDidZoom(_ scrollView: UIScrollView) {
 
     let imageViewSize = imageView.frame.size
