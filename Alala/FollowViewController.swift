@@ -54,6 +54,7 @@ class FollowViewController: UIViewController, UITableViewDelegate, UITableViewDa
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    self.view.backgroundColor = UIColor.white
     self.edgesForExtendedLayout = []
 
     if FollowType.follower.rawValue==currentType {

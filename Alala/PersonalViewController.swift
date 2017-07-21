@@ -41,7 +41,6 @@ class PersonalViewController: UIViewController {
     $0.showsVerticalScrollIndicator = true
     $0.bounces = true
   }
-  let cellReuseIdentifier = "gridCell"
 
   let personalInfoView = PersonalInfoView()
 
@@ -57,7 +56,7 @@ class PersonalViewController: UIViewController {
       sectionInset: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     )
     let view = UICollectionView(frame: .zero, collectionViewLayout: columnLayout)
-    view.register(PostGridCell.self, forCellWithReuseIdentifier: "gridCell")
+    view.register(PostGridCell.self, forCellWithReuseIdentifier: PostGridCell.cellReuseIdentifier)
     view.showsHorizontalScrollIndicator = false
     view.showsVerticalScrollIndicator = false
     view.backgroundColor = UIColor.white
@@ -89,7 +88,7 @@ class PersonalViewController: UIViewController {
 
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = AuthService.instance.currentUser?.email
+      $0.text = AuthService.instance.currentUser?.profileName
       $0.sizeToFit()
     }
     self.navigationController?.navigationBar.topItem?.title = ""
@@ -128,7 +127,8 @@ class PersonalViewController: UIViewController {
 
     self.fetchFeedMine(paging: .refresh)
 
-    NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: NSNotification.Name(rawValue: "postDidCreate"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: .postDidCreate, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(profileUpdated), name: .profileUpdated, object: nil)
   }
 
   func setupNoContents() {
@@ -167,9 +167,11 @@ class PersonalViewController: UIViewController {
   func setupPostList() {
     if postViewController == nil {
       postViewController = PostViewController(posts)
-
-      self.addChildViewController(postViewController)
       postListCollectionView = postViewController.collectionView
+      self.addChildViewController(postViewController)
+
+      postViewController.delegate = self
+      postListCollectionView.isScrollEnabled = false
 
       contentsView.addSubview(postViewController.view)
       postViewController.view.snp.makeConstraints { (make) in
@@ -227,6 +229,27 @@ class PersonalViewController: UIViewController {
     super.viewWillAppear(animated)
     self.navigationController?.isNavigationBarHidden = false
   }
+
+  func profileUpdated(_ notification: Notification) {
+    guard let userInfo = notification.userInfo?["user"] as? User else { return }
+
+    personalInfoView.setupUserInfo(userInfo: userInfo)
+  }
+
+  func postDidCreate(_ notification: Notification) {
+    guard let post = notification.userInfo?["post"] as? Post else { return }
+    self.posts.insert(post, at: 0)
+
+    if noContentsGuideView.superview != nil {
+      noContentsGuideView.removeFromSuperview()
+    }
+
+    if self.personalInfoView.isGridMode {
+      self.postGridCollectionView.reloadData()
+    } else {
+      postViewController.adapter.performUpdates(animated: true, completion: nil)
+    }
+  }
 }
 
 extension PersonalViewController: PersonalInfoViewDelegate {
@@ -237,7 +260,7 @@ extension PersonalViewController: PersonalInfoViewDelegate {
 
   func postsAreaTap() {
     var moveRect = scrollView.frame
-    moveRect.origin.y = personalInfoView.frame.size.height + 64
+    moveRect.origin.y = personalInfoView.frame.size.height - 64
 
     scrollView.setContentOffset(moveRect.origin, animated: true)
   }
@@ -263,12 +286,17 @@ extension PersonalViewController: PersonalInfoViewDelegate {
   }
 
   func gridPostMenuButtonTap(sender: UIButton) {
+    if self.posts.count <= 0 {
+      return
+    }
     self.setupPostGrid()
     self.postGridCollectionView.reloadData()
   }
 
   func listPostMenuButtonTap(sender: UIButton) {
-
+    if self.posts.count <= 0 {
+      return
+    }
     self.setupPostList()
     self.postViewController.updateNewPost(self.posts)
   }
@@ -285,6 +313,17 @@ extension PersonalViewController: PersonalInfoViewDelegate {
 }
 
 /**
+ * PostViewController에서 post그리기가 완료된 후 실행되는 delegate
+ * : 이 때 전체 스크롤뷰의 contentSize를 재구성
+ */
+extension PersonalViewController: PostViewControllerDelegate {
+  func postUpdateFinished() {
+    var size = postViewController.collectionView.contentSize as CGSize
+    size.height += personalInfoView.frame.height
+    self.scrollView.contentSize = size
+  }
+}
+/**
  * 내가 작성한 포스트가 없을 경우 노출되는 NoContentsView에서 'Share your first photo or video' 버튼을 선택했을 때 발생하는 delegate
  */
 extension PersonalViewController: NoContentsViewDelegate {
@@ -292,21 +331,6 @@ extension PersonalViewController: NoContentsViewDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let tabBarVC = appDelegate.window?.rootViewController as! MainTabBarController
     tabBarVC.presentWrapperViewController()
-  }
-
-  func postDidCreate(_ notification: Notification) {
-    guard let post = notification.userInfo?["post"] as? Post else { return }
-    self.posts.insert(post, at: 0)
-
-    if noContentsGuideView.superview != nil {
-      noContentsGuideView.removeFromSuperview()
-    }
-
-    if self.personalInfoView.isGridMode {
-      self.postGridCollectionView.reloadData()
-    } else {
-      postViewController.adapter.performUpdates(animated: true, completion: nil)
-    }
   }
 }
 
@@ -321,7 +345,7 @@ extension PersonalViewController: UICollectionViewDataSource {
   }
 
   public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let cell: PostGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as! PostGridCell
+    let cell: PostGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: PostGridCell.cellReuseIdentifier, for: indexPath) as! PostGridCell
     let post = posts[indexPath.row] as Post
 
     guard post.multipartIds.count > 0 else {

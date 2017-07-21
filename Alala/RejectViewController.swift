@@ -39,7 +39,7 @@ class RejectViewController: UIViewController {
 
   deinit {
     NotificationCenter.default.removeObserver(self)
-    print("reject deinit")
+
   }
 
 	override func viewDidLoad() {

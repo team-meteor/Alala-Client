@@ -7,10 +7,11 @@
 //
 
 import UIKit
+import Photos
 import Alamofire
 
 struct MultipartService {
-  static func uploadMultipart(multiPartData: Any, progress: Progress?, completion: @escaping (_ multipartId: String) -> Void) {
+  static func uploadMultipart(multiPartData: Any, progressCompletion: @escaping (_ percent: Float) -> Void, completion: @escaping (_ multipartId: String) -> Void) {
     let headers = [
       "Content-Type": "multipart/form-data; charset=utf-8; boundary=__X_PAW_BOUNDARY__"
     ]
@@ -23,7 +24,9 @@ struct MultipartService {
     }, to: Constants.BASE_URL + "/multipart", method: .post, headers: headers, encodingCompletion: { result in
       switch result {
       case .success(let upload, _, _):
-
+        upload.uploadProgress { progress in
+          progressCompletion(Float(progress.fractionCompleted))
+        }
         upload.responseJSON { response in
           switch response.result {
           case .success(let multipartId):
@@ -38,4 +41,5 @@ struct MultipartService {
       }
     })
   }
+
 }

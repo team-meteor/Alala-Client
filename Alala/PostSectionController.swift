@@ -8,7 +8,6 @@
 
 import UIKit
 import IGListKit
-//import ImageIO
 
 class PostSectionController: ListSectionController {
   var post: Post!
@@ -16,9 +15,10 @@ class PostSectionController: ListSectionController {
   override init() {
     super.init()
     inset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+
   }
   override func numberOfItems() -> Int {
-    return 4
+    return 5
   }
   override func sizeForItem(at index: Int) -> CGSize {
     let width = collectionContext!.containerSize.width
@@ -40,6 +40,13 @@ class PostSectionController: ListSectionController {
       } else {
         return CGSize()
       }
+    case 4: // comment cell
+      guard let comments = post.comments, comments.count > 0 else {
+        return CGSize()
+      }
+      // TODO : dynamic cell size
+      return CGSize(width: width, height: 500)
+
     default:
       return CGSize()
     }
@@ -60,22 +67,26 @@ class PostSectionController: ListSectionController {
       cellClass = ButtonGroupCell.self
     case 3:
       cellClass = LikeCountCell.self
+    case 4:
+      cellClass = CommentCell.self
     default:
       cellClass = UICollectionViewCell.self
     }
-    let cell = collectionContext!.dequeueReusableCell(of: cellClass, for: self, at: index)
 
+    let cell = collectionContext!.dequeueReusableCell(of: cellClass, for: self, at: index)
     if let cell = cell as? UserCell {
-      cell.profilePhoto.setImage(with: post.createdBy.profilePhotoId, size: .thumbnail)
-      cell.profileNameLabel.text = post.createdBy.profileName
+      cell.configure(post: post)
     } else if let cell = cell as? MultimediaCell {
       cell.configure(post: post)
     } else if let cell = cell as? ButtonGroupCell {
-
-    } else if let cell = cell as? LikeCountCell, post.isLiked == true {
-      cell.likeCount.text = String(describing: post.likedUsers!.count)
+      cell.configure(post: post)
+    } else if let cell = cell as? LikeCountCell {
+      cell.configure(post: post)
+    } else if let cell = cell as? CommentCell, let comments = post.comments {
+      cell.configure(comments: comments)
     }
 
     return cell
   }
+
 }

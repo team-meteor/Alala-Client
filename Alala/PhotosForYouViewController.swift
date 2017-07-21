@@ -8,12 +8,18 @@
 
 import UIKit
 
+/**
+ * # '회원님이 나온 사진' 화면
+ *
+ * **[PATH]** 내 프로필 화면 > SubMenuBar 세번째 아이콘 탭
+ */
 class PhotosForYouViewController: UIViewController {
 
   let noContentsGuideView = NoContentsView()
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    self.view.backgroundColor = UIColor.white
 
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)

@@ -41,7 +41,7 @@ class LibraryViewController: UIViewController {
     NotificationCenter.default.removeObserver(self)
     self.remove(asChildViewController: selectionViewController)
     self.remove(asChildViewController: rejectViewController)
-    print("library deinit")
+
   }
 
   required init?(coder aDecoder: NSCoder) {
