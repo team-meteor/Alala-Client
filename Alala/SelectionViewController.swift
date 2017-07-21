@@ -9,8 +9,10 @@ class SelectionViewController: UIViewController {
   var smartAlbumsArr = [PHAssetCollection]()
   var userAlbumsArr = [PHAssetCollection]()
   let imageManager = PHCachingImageManager()
+  var videoPlayerView: VideoPlayerView?
+  var videoPlayer: AVPlayer?
+
   let tileCellSpacing = CGFloat(1)
-  var videoPlayerVC: VideoPlayerViewController?
   var zoomMode: Bool = false
   var multiSelectMode: Bool = false
   let photosLimit: Int = 500
@@ -395,6 +397,22 @@ class SelectionViewController: UIViewController {
     self.navigationItem.rightBarButtonItem = nil
   }
 
+  func getThumbnailImage(videoUrl: URL) -> UIImage? {
+    let asset = AVAsset(url: videoUrl)
+    let imageGenerator = AVAssetImageGenerator(asset: asset)
+    imageGenerator.appliesPreferredTrackTransform = true
+
+    var time = asset.duration
+    time.value = min(time.value, 2)
+
+    do {
+      let imageRef = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+      return UIImage(cgImage: imageRef)
+    } catch {
+      return nil
+    }
+  }
+
 }
 
 extension SelectionViewController: UICollectionViewDelegate {
@@ -479,25 +497,29 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
     let asset = fetchResult.object(at: indexPath.item)
 
     if asset.mediaType == .video {
-      videoPlayerVC?.removeVideoPlayer()
+      self.videoPlayerView?.removeFromSuperview()
 
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
         if let urlAsset = asset as? AVURLAsset {
+          DispatchQueue.main.async {
+            let localVideoUrl: URL = urlAsset.url as URL
+            let thumbnailImage = self.getThumbnailImage(videoUrl: localVideoUrl)
+            self.imageView.image = thumbnailImage
+            self.scaleAspectFillSize(image: thumbnailImage!, imageView: self.imageView)
+            self.scrollView.contentSize = self.imageView.frame.size
+            self.centerScrollView(animated: false)
 
-          let localVideoUrl: URL = urlAsset.url as URL
-
-          self.scrollView.contentSize = self.imageView.frame.size
-          self.centerScrollView(animated: false)
-
-          self.videoPlayerVC = VideoPlayerViewController()
-          let thumbnailImage = self.videoPlayerVC?.getThumbnailImage(videoUrl: localVideoUrl)
-          self.imageView.image = thumbnailImage
-
-          self.videoPlayerVC?.addVideoPlayer(videoUrl: localVideoUrl, videoView: self.imageView)
+            self.videoPlayer = AVPlayer(url: localVideoUrl)
+            self.videoPlayerView = VideoPlayerView(videoPlayer: self.videoPlayer!)
+            self.videoPlayerView?.frame = self.imageView.frame
+            self.videoPlayerView?.addPlayerLayer()
+            self.imageView.addSubview(self.videoPlayerView!)
+            self.videoPlayerView?.playPlayer()
+          }
         }
       })
     } else {
-      videoPlayerVC?.removeVideoPlayer()
+      self.videoPlayerView?.removeFromSuperview()
 
       self.baseScrollView.setContentOffset(CGPoint(x:0, y:0), animated: true)
 
@@ -547,6 +569,20 @@ extension SelectionViewController: UIScrollViewDelegate {
     let horizontalPadding = imageViewSize.width < scrollViewSize.width ? (scrollViewSize.width - imageViewSize.width) / 2 : 0
 
     scrollView.contentInset = UIEdgeInsets(top: verticalPadding, left: horizontalPadding, bottom: verticalPadding, right: horizontalPadding)
+
+  }
+}
+
+extension SelectionViewController: VideoPlayerViewDelegate {
+  func playButtonDidTap(sender: UIButton) {
+
+    if videoPlayer?.rate == 0 {
+      videoPlayer?.play()
+      sender.setImage(UIImage(named: "pause"), for: .normal)
+    } else {
+      videoPlayer?.pause()
+      sender.setImage(UIImage(named: "play"), for: .normal)
+    }
 
   }
 }
