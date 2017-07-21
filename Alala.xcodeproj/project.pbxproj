@@ -65,6 +65,9 @@
 		6FFC06C21EE3D49000E542BC /* AlalaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06C11EE3D49000E542BC /* AlalaTests.swift */; };
 		6FFC06CD1EE3D49000E542BC /* AlalaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06CC1EE3D49000E542BC /* AlalaUITests.swift */; };
 		6FFC06DC1EE3D78A00E542BC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */; };
+		6FFDBF871F20968A0019EC64 /* CommentLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFDBF861F20968A0019EC64 /* CommentLabel.swift */; };
+		6FFDBF891F21B6DD0019EC64 /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFDBF881F21B6DD0019EC64 /* CommentViewController.swift */; };
+		6FFDBF8B1F21C6A70019EC64 /* CommentTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFDBF8A1F21C6A70019EC64 /* CommentTableCell.swift */; };
 		9905A9951F20B9960063DDB1 /* UIScrollTapMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9905A9941F20B9960063DDB1 /* UIScrollTapMenuViewController.swift */; };
 		9921706B1F0A33ED00D03E01 /* PhotosForYouViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9921706A1F0A33ED00D03E01 /* PhotosForYouViewController.swift */; };
 		9921706D1F0A374500D03E01 /* SavedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9921706C1F0A374500D03E01 /* SavedViewController.swift */; };
@@ -174,6 +177,9 @@
 		6FFC06CC1EE3D49000E542BC /* AlalaUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlalaUITests.swift; sourceTree = "<group>"; };
 		6FFC06CE1EE3D49000E542BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
+		6FFDBF861F20968A0019EC64 /* CommentLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentLabel.swift; sourceTree = "<group>"; };
+		6FFDBF881F21B6DD0019EC64 /* CommentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
+		6FFDBF8A1F21C6A70019EC64 /* CommentTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentTableCell.swift; sourceTree = "<group>"; };
 		9905A9941F20B9960063DDB1 /* UIScrollTapMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIScrollTapMenuViewController.swift; sourceTree = "<group>"; };
 		9921706A1F0A33ED00D03E01 /* PhotosForYouViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosForYouViewController.swift; sourceTree = "<group>"; };
 		9921706C1F0A374500D03E01 /* SavedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedViewController.swift; sourceTree = "<group>"; };
@@ -298,6 +304,7 @@
 				992227751F134DB3008DDD59 /* PostViewController.swift */,
 				4828D2791F186320001D2C2C /* TableViewWrapperController.swift */,
 				482DBDB71F1A523E00DF355D /* VideoPlayerViewController.swift */,
+				6FFDBF881F21B6DD0019EC64 /* CommentViewController.swift */,
 				9905A9941F20B9960063DDB1 /* UIScrollTapMenuViewController.swift */,
 			);
 			name = ViewControllers;
