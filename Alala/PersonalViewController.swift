@@ -373,6 +373,14 @@ extension PersonalViewController: UICollectionViewDelegate {
     let postVC = PostViewController(postArray)
     self.navigationController?.pushViewController(postVC, animated: true)
   }
+
+  public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    if indexPath.row == posts.count - 1 {
+      if self.nextPage != nil {
+        self.fetchFeedMine(paging: .next(String(describing: self.nextPage)))
+      }
+    }
+  }
 }
 
 // MARK: -
