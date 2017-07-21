@@ -40,6 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   func configureAppearance() {
+//    UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).backgroundColor = UIColor(red: 201, green: 201, blue: 206 )
     UINavigationBar.appearance().tintColor = .black
     UIBarButtonItem.appearance().tintColor = .black
     UITabBar.appearance().tintColor = .black
