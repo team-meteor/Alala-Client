@@ -69,7 +69,7 @@ class FeedViewController: UIViewController {
       $0.sizeToFit()
     }
     self.fetchFeed(paging: .refresh)
-    collectionView.delegate = self
+    adapter.scrollViewDelegate = self
     adapter.collectionView = collectionView
     adapter.dataSource = self
     view.addSubview(collectionView)
@@ -248,10 +248,12 @@ extension FeedViewController: InteractiveButtonGroupCellDelegate {
 
 extension FeedViewController: UICollectionViewDelegateFlowLayout {
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    print("scrollViewDidScroll")
     let contentOffsetBottom = scrollView.contentOffset.y + scrollView.frame.height
     let didReachBottom = scrollView.contentSize.height > 0
       && contentOffsetBottom >= scrollView.contentSize.height - 300
-    if let nextPage = self.nextPage, didReachBottom{
+    if let nextPage = self.nextPage, didReachBottom {
+      print("next!!!!")
       self.fetchFeed(paging: .next(nextPage))
     }
   }
