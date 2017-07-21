@@ -8,7 +8,17 @@
 
 import UIKit
 
+protocol InteractiveButtonGroupCellDelegate: class {
+  func commentButtondidTap(_ post: Post)
+}
+
+extension InteractiveButtonGroupCellDelegate {
+  func commentButtondidTap(_ post: Post) {}
+}
+
 class ButtonGroupCell: UICollectionViewCell {
+  weak var delegate: InteractiveButtonGroupCellDelegate?
+  var post: Post!
   var postID = String()
   let likeButton: UIButton = {
     let button = UIButton()
@@ -43,6 +53,7 @@ class ButtonGroupCell: UICollectionViewCell {
     contentView.addSubview(sendButton)
     contentView.addSubview(saveButton)
     self.likeButton.addTarget(self, action: #selector(likeButtonDidTap), for: .touchUpInside)
+    self.commentButton.addTarget(self, action: #selector(commentButtonDidTap), for: .touchUpInside)
   }
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
@@ -70,6 +81,11 @@ class ButtonGroupCell: UICollectionViewCell {
   func configure(post: Post) {
     self.likeButton.isSelected = post.isLiked
     self.postID = post.id
+    self.post = post
+  }
+
+  func commentButtonDidTap() {
+    self.delegate?.commentButtondidTap(post)
   }
 
   func likeButtonDidTap() {
@@ -89,9 +105,7 @@ class ButtonGroupCell: UICollectionViewCell {
       object: self,
       userInfo: ["postID": postID]
     )
-
     PostService.like(postID: self.postID) { response in
-
       switch response.result {
       case .success:
         print("좋아요 성공!")
@@ -120,7 +134,6 @@ class ButtonGroupCell: UICollectionViewCell {
       switch response.result {
       case .success:
         print("좋아요 취소 성공!")
-
       case .failure:
         print("좋아요 취소 실패 ㅠㅠ")
         NotificationCenter.default.post(

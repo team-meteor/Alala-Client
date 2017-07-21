@@ -188,7 +188,6 @@ class FeedViewController: UIViewController {
   }
 
   func postDidLike(_ notification: Notification) {
-
     guard let postID = notification.userInfo?["postID"] as? String else { return }
     for i in 0..<self.posts.count {
       let post = self.posts[i]
@@ -205,7 +204,6 @@ class FeedViewController: UIViewController {
   }
 
   func postDidUnlike(_ notification: Notification) {
-
     guard let postID = notification.userInfo?["postID"] as? String else { return }
     for i in 0..<self.posts.count {
       let post = self.posts[i]
@@ -236,5 +234,12 @@ extension FeedViewController: ListAdapterDataSource {
   }
   func emptyView(for listAdapter: ListAdapter) -> UIView? {
     return nil
+  }
+}
+
+extension FeedViewController: InteractiveButtonGroupCellDelegate {
+  func commentButtondidTap(_ post: Post) {
+    guard let comments = post.comments else { return }
+    self.navigationController?.pushViewController(CommentViewController(comments: comments), animated: true)
   }
 }
