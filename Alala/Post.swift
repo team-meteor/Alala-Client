@@ -12,12 +12,12 @@ class Post: NSObject, Mappable {
   var id: String!
   var multipartIds: [String]!
   var createdBy: User!
-  var postDescription: String?
   var likedUsers: [User]?
   var isLiked: Bool!
   var likeCount: Int!
   var createdAt: Date!
   var comments: [Comment]?
+  var expanded = false
 
   required init?(map: Map) {
   }
@@ -26,7 +26,6 @@ class Post: NSObject, Mappable {
     id <- map["_id"]
     multipartIds <- map["multiparts"]
     createdBy <- map["createdBy"]
-    postDescription <- map["description"]
     likedUsers <- map["likedUsers"]
     isLiked <- map["isLiked"]
     createdAt <- (map["createdAt"], DateTransform())

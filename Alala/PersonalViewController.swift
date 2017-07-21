@@ -19,7 +19,7 @@ class PersonalViewController: UIViewController {
 
   // MARK: - UI Objects
   fileprivate var posts: [Post] = []
-  fileprivate var nextPage: Int?
+  fileprivate var nextPage: String?
   fileprivate var isLoading: Bool = false
 
   let discoverPeopleButton = UIBarButtonItem(

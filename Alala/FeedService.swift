@@ -25,7 +25,7 @@ struct FeedService {
     let body: [String: Any]
     switch paging {
     case .refresh:
-      body = ["page": ""]
+      body = ["page": "1"]
     case .next(let nextpage):
       body = ["page": nextpage]
     }
