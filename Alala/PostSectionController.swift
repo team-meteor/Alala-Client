@@ -82,6 +82,7 @@ class PostSectionController: ListSectionController {
     if let cell = cell as? UserCell {
       cell.configure(post: post)
     } else if let cell = cell as? MultimediaCell {
+      cell.delegate = self.viewController as? VideoPlayButtonDelegate
       cell.configure(post: post)
     } else if let cell = cell as? ButtonGroupCell {
       cell.configure(post: post)

@@ -10,8 +10,7 @@ import UIKit
 import AVFoundation
 
 class MultimediaCell: UICollectionViewCell {
-  var videoPlayer: AVPlayer?
-
+  weak var delegate: VideoPlayButtonDelegate?
   let multimediaScrollView: UIScrollView = {
     let view = UIScrollView()
     view.backgroundColor = UIColor.yellow
@@ -58,35 +57,21 @@ class MultimediaCell: UICollectionViewCell {
       } else { // video
         let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(item)")
 
-        videoPlayer = AVPlayer(url: url!)
-        let videoView = VideoPlayerView(videoPlayer: videoPlayer!)
-        
+        let videoPlayer = AVPlayer(url: url!)
+        let videoView = VideoPlayerView(videoPlayer: videoPlayer)
         videoView.frame = CGRect(
           x: self.contentView.bounds.width * CGFloat(counter),
           y: 0,
           width: self.contentView.bounds.width,
           height: self.contentView.bounds.height)
         videoView.addPlayerLayer()
-        videoView.delegate = self as? VideoPlayerViewDelegate
         multimediaScrollView.addSubview(videoView)
         videoView.playPlayer()
+        videoView.delegate = self.delegate
+        self.contentView.isUserInteractionEnabled = true
       }
       counter += 1
     }
     self.setNeedsLayout()
-  }
-}
-
-extension MultimediaCell: VideoPlayerViewDelegate {
-  func playButtonDidTap(sender: UIButton) {
-
-    if videoPlayer?.rate == 0 {
-      videoPlayer?.play()
-      sender.setImage(UIImage(named: "pause"), for: .normal)
-    } else {
-      videoPlayer?.pause()
-      sender.setImage(UIImage(named: "play"), for: .normal)
-    }
-
   }
 }

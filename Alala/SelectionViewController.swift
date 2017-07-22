@@ -10,7 +10,6 @@ class SelectionViewController: UIViewController {
   var userAlbumsArr = [PHAssetCollection]()
   let imageManager = PHCachingImageManager()
   var videoPlayerView: VideoPlayerView?
-  var videoPlayer: AVPlayer?
 
   let tileCellSpacing = CGFloat(1)
   var zoomMode: Bool = false
@@ -498,7 +497,8 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
 
     if asset.mediaType == .video {
       self.videoPlayerView?.removeFromSuperview()
-      self.cropAreaView.isUserInteractionEnabled = false
+      //self.cropAreaView.isUserInteractionEnabled = false
+      self.imageView.isUserInteractionEnabled = true
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
         if let urlAsset = asset as? AVURLAsset {
           DispatchQueue.main.async {
@@ -509,12 +509,11 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
             self.scrollView.contentSize = self.imageView.frame.size
             self.centerScrollView(animated: false)
 
-            self.videoPlayer = AVPlayer(url: localVideoUrl)
-            self.videoPlayerView = VideoPlayerView(videoPlayer: self.videoPlayer!)
-            
+            let videoPlayer = AVPlayer(url: localVideoUrl)
+            self.videoPlayerView = VideoPlayerView(videoPlayer: videoPlayer)
+            self.videoPlayerView?.delegate = self
             self.videoPlayerView?.frame = self.imageView.frame
             self.videoPlayerView?.addPlayerLayer()
-            self.videoPlayerView?.delegate = self as? VideoPlayerViewDelegate
             self.imageView.addSubview(self.videoPlayerView!)
             self.videoPlayerView?.playPlayer()
           }
@@ -576,16 +575,16 @@ extension SelectionViewController: UIScrollViewDelegate {
   }
 }
 
-extension SelectionViewController: VideoPlayerViewDelegate {
-  func playButtonDidTap(sender: UIButton) {
-
-    if videoPlayer?.rate == 0 {
-      videoPlayer?.play()
-      sender.setImage(UIImage(named: "pause"), for: .normal)
-    } else {
-      videoPlayer?.pause()
+extension SelectionViewController: VideoPlayButtonDelegate {
+  
+  func playButtonDidTap(sender: UIButton, player: AVPlayer) {
+    print("selection tap")
+    if player.rate == 0 {
+      player.play()
       sender.setImage(UIImage(named: "play"), for: .normal)
+    } else {
+      player.pause()
+      sender.setImage(UIImage(named: "pause"), for: .normal)
     }
-
   }
 }

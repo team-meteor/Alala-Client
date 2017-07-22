@@ -9,18 +9,21 @@
 import UIKit
 import AVFoundation
 
-protocol VideoPlayerViewDelegate: class {
-  func playButtonDidTap(sender: UIButton)
+protocol VideoPlayButtonDelegate: class {
+  func playButtonDidTap(sender: UIButton, player: AVPlayer)
+}
+
+extension VideoPlayButtonDelegate {
+  func playButtonDidTap(sender: UIButton, player: AVPlayer) {}
 }
 
 class VideoPlayerView: UIView {
-  weak var delegate: VideoPlayerViewDelegate?
+  weak var delegate: VideoPlayButtonDelegate?
   fileprivate var player = AVPlayer()
   fileprivate var playerLayer = AVPlayerLayer()
 
   fileprivate let playButton = UIButton().then {
     $0.setImage(UIImage(named: "pause"), for: .normal)
-    $0.addTarget(self, action: #selector(playButtonDidTap(sender:)), for: .touchUpInside)
   }
 
   override init(frame: CGRect) {
@@ -30,14 +33,17 @@ class VideoPlayerView: UIView {
   init(videoPlayer: AVPlayer) {
     super.init(frame: CGRect.zero)
     self.player = videoPlayer
-    NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { _ in
-      self.player.seek(to: kCMTimeZero)
-      self.player.play()
-    }
+//    NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { _ in
+//      self.player.seek(to: kCMTimeZero)
+//      self.player.play()
+//    }
   }
 
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+  func playPlayer() {
+    player.play()
   }
 
   func addPlayerLayer() {
@@ -49,15 +55,12 @@ class VideoPlayerView: UIView {
       make.height.width.equalTo(100)
       make.center.equalTo(self)
     }
+    self.playButton.addTarget(self, action: #selector(playButtonDidTap), for: .touchUpInside)
   }
 
-  func playPlayer() {
-    player.play()
-  }
-
-  // MARK: - User Action
-  func playButtonDidTap(sender: UIButton) {
-    delegate?.playButtonDidTap(sender: sender)
+  func playButtonDidTap() {
+    print("play tap")
+    self.delegate?.playButtonDidTap(sender: playButton, player: player)
   }
 
 }
