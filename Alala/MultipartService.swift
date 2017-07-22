@@ -1,0 +1,45 @@
+//
+//  MultipartService.swift
+//  Alala
+//
+//  Created by junwoo on 2017. 6. 28..
+//  Copyright © 2017년 team-meteor. All rights reserved.
+//
+
+import UIKit
+import Photos
+import Alamofire
+
+struct MultipartService {
+  static func uploadMultipart(multiPartData: Any, progressCompletion: @escaping (_ percent: Float) -> Void, completion: @escaping (_ multipartId: String) -> Void) {
+    let headers = [
+      "Content-Type": "multipart/form-data; charset=utf-8; boundary=__X_PAW_BOUNDARY__"
+    ]
+    Alamofire.upload(multipartFormData: { multipartFormData in
+      if let videoData = multiPartData as? Data {
+        multipartFormData.append(videoData, withName: "multipart", fileName: "\(UUID().uuidString).mp4", mimeType: "video/mp4")
+      } else if let image = multiPartData as? UIImage, let imageData = UIImagePNGRepresentation(image) {
+        multipartFormData.append(imageData, withName: "multipart", fileName: "\(UUID().uuidString).png", mimeType: "image/png")
+      }
+    }, to: Constants.BASE_URL + "/multipart", method: .post, headers: headers, encodingCompletion: { result in
+      switch result {
+      case .success(let upload, _, _):
+        upload.uploadProgress { progress in
+          progressCompletion(Float(progress.fractionCompleted))
+        }
+        upload.responseJSON { response in
+          switch response.result {
+          case .success(let multipartId):
+            print("multipart it", multipartId)
+            completion(multipartId as! String)
+          case .failure(let error):
+            print(error)
+          }
+        }
+      case .failure(let encodingError):
+        print(encodingError)
+      }
+    })
+  }
+
+}
