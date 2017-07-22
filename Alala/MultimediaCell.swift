@@ -60,12 +60,14 @@ class MultimediaCell: UICollectionViewCell {
 
         videoPlayer = AVPlayer(url: url!)
         let videoView = VideoPlayerView(videoPlayer: videoPlayer!)
+        
         videoView.frame = CGRect(
           x: self.contentView.bounds.width * CGFloat(counter),
           y: 0,
           width: self.contentView.bounds.width,
           height: self.contentView.bounds.height)
         videoView.addPlayerLayer()
+        videoView.delegate = self as? VideoPlayerViewDelegate
         multimediaScrollView.addSubview(videoView)
         videoView.playPlayer()
       }

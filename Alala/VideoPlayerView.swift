@@ -20,6 +20,7 @@ class VideoPlayerView: UIView {
 
   fileprivate let playButton = UIButton().then {
     $0.setImage(UIImage(named: "pause"), for: .normal)
+    $0.addTarget(self, action: #selector(playButtonDidTap(sender:)), for: .touchUpInside)
   }
 
   override init(frame: CGRect) {
@@ -44,7 +45,6 @@ class VideoPlayerView: UIView {
     playerLayer.frame = self.bounds
     self.layer.addSublayer(playerLayer)
     self.addSubview(self.playButton)
-    self.playButton.addTarget(self, action: #selector(playButtonDidTap(sender:)), for: .touchUpInside)
     self.playButton.snp.makeConstraints { make in
       make.height.width.equalTo(100)
       make.center.equalTo(self)

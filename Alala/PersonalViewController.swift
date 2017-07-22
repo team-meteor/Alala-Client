@@ -19,7 +19,7 @@ class PersonalViewController: UIViewController {
 
   // MARK: - UI Objects
   fileprivate var posts: [Post] = []
-  fileprivate var nextPage: Int?
+  fileprivate var nextPage: String?
   fileprivate var isLoading: Bool = false
 
   let discoverPeopleButton = UIBarButtonItem(
@@ -127,7 +127,7 @@ class PersonalViewController: UIViewController {
 
     self.fetchFeedMine(paging: .refresh)
 
-    NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: NSNotification.Name(rawValue: "postDidCreate"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: .postDidCreate, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(profileUpdated), name: .profileUpdated, object: nil)
   }
 
@@ -235,6 +235,21 @@ class PersonalViewController: UIViewController {
 
     personalInfoView.setupUserInfo(userInfo: userInfo)
   }
+
+  func postDidCreate(_ notification: Notification) {
+    guard let post = notification.userInfo?["post"] as? Post else { return }
+    self.posts.insert(post, at: 0)
+
+    if noContentsGuideView.superview != nil {
+      noContentsGuideView.removeFromSuperview()
+    }
+
+    if self.personalInfoView.isGridMode {
+      self.postGridCollectionView.reloadData()
+    } else {
+      postViewController.adapter.performUpdates(animated: true, completion: nil)
+    }
+  }
 }
 
 extension PersonalViewController: PersonalInfoViewDelegate {
@@ -316,21 +331,6 @@ extension PersonalViewController: NoContentsViewDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let tabBarVC = appDelegate.window?.rootViewController as! MainTabBarController
     tabBarVC.presentWrapperViewController()
-  }
-
-  func postDidCreate(_ notification: Notification) {
-    guard let post = notification.userInfo?["post"] as? Post else { return }
-    self.posts.insert(post, at: 0)
-
-    if noContentsGuideView.superview != nil {
-      noContentsGuideView.removeFromSuperview()
-    }
-
-    if self.personalInfoView.isGridMode {
-      self.postGridCollectionView.reloadData()
-    } else {
-      postViewController.adapter.performUpdates(animated: true, completion: nil)
-    }
   }
 }
 

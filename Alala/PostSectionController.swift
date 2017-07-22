@@ -8,7 +8,6 @@
 
 import UIKit
 import IGListKit
-//import ImageIO
 
 class PostSectionController: ListSectionController {
   var post: Post!
@@ -46,7 +45,12 @@ class PostSectionController: ListSectionController {
       guard let comments = post.comments, comments.count > 0 else {
         return CGSize()
       }
-      return CGSize(width: width, height: 50)
+      if let profileName = comments[0].createdBy.profileName {
+        let firstCommentHeight = TextSize.size(profileName + comments[0].content, font: UIFont.systemFont(ofSize: 17), width: UIScreen.main.bounds.width, insets: UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)).height
+        // TODO : dynamic cell expand
+        return CGSize(width: width, height: firstCommentHeight)
+      }
+      return CGSize()
 
     default:
       return CGSize()
@@ -81,14 +85,15 @@ class PostSectionController: ListSectionController {
       cell.configure(post: post)
     } else if let cell = cell as? ButtonGroupCell {
       cell.configure(post: post)
+      cell.delegate = self.viewController as? InteractiveButtonGroupCellDelegate
     } else if let cell = cell as? LikeCountCell {
       cell.configure(post: post)
     } else if let cell = cell as? CommentCell, let comments = post.comments {
       cell.configure(comments: comments)
     }
-
     return cell
   }
+
 }
 
 extension PostSectionController: ListDisplayDelegate {
@@ -104,4 +109,5 @@ extension PostSectionController: ListDisplayDelegate {
       print(multiCell)
     }
   }
+
 }
