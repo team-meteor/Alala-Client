@@ -250,6 +250,8 @@ extension FeedViewController: UICollectionViewDelegateFlowLayout {
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
     print("scrollViewDidScroll")
     let contentOffsetBottom = scrollView.contentOffset.y + scrollView.frame.height
+    print("contentOffsetBottom", contentOffsetBottom)
+    print("scrollView.contentSize.height", scrollView.contentSize.height)
     let didReachBottom = scrollView.contentSize.height > 0
       && contentOffsetBottom >= scrollView.contentSize.height - 300
     if let nextPage = self.nextPage, didReachBottom {

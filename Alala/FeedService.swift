@@ -29,7 +29,7 @@ struct FeedService {
     case .next(let nextpage):
       body = ["page": nextpage]
     }
-    Alamofire.request(Constants.BASE_URL + "post/feed", method: .post, parameters: body, headers: headers)
+    Alamofire.request(Constants.BASE_URL + "post/feed", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { (response) in
         if let feed = Mapper<Feed>().map(JSONObject: response.result.value) {
