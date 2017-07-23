@@ -123,8 +123,6 @@ class UIScrollTapMenuViewController: UIViewController {
       make.width.equalTo(firstTabView)
       make.height.equalTo(scrollView)
     }
-//    firstTabView.backgroundColor = UIColor.red
-//    secondTabView.backgroundColor = UIColor.yellow
   }
 }
 

@@ -121,7 +121,7 @@ class PersonalInfoView: UIView {
   }
 
   let editProfileButton = RoundCornerButton(type: .buttonColorTypeWhite).then {
-    $0.setTitle("Edit Profile", for: .normal)
+    $0.setTitle(NSLocalizedString("edit_profile", comment: "프로필 수정"), for: .normal)
     $0.addTarget(self, action: #selector(editProfileButtonTap(sender:)), for: .touchUpInside)
   }
 
