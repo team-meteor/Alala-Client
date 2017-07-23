@@ -128,9 +128,7 @@ class ButtonGroupCell: UICollectionViewCell {
       object: self,
       userInfo: ["postID": postID]
     )
-
     PostService.unlike(postID: self.postID) { response in
-
       switch response.result {
       case .success:
         print("좋아요 취소 성공!")
