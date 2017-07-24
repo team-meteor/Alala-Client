@@ -9,6 +9,7 @@
 import UIKit
 import IGListKit
 import Alamofire
+import AVFoundation
 
 class FeedViewController: UIViewController {
 
@@ -123,11 +124,11 @@ class FeedViewController: UIViewController {
   func preparePosting(_ notification: Notification) {
     self.moveToFeedViewController()
 
-    guard let postDic = notification.userInfo?["postDic"] as? [String:Any] else { return }
-    guard let multipartArr = postDic["multipartArr"] as? [Any] else { return }
-    guard let message = postDic["message"] as? String? else { return }
-
-    self.getMultipartsIdArr(multipartArr: multipartArr) { idArr in
+    guard let postDic = notification.userInfo?["postDic"] as? [String:Any],
+      let multipartArr = postDic["multipartArr"] as? [Any],
+      let message = postDic["message"] as? String? else { return }
+    
+    self.getMultipartsIdArr(multipartArray: multipartArr) { idArr in
 
       PostService.postWithMultipart(idArr: idArr, message: message, progress: nil, completion: { [weak self] response in
         guard self != nil else { return }
@@ -145,35 +146,36 @@ class FeedViewController: UIViewController {
       )}
   }
 
-  func getMultipartsIdArr(multipartArr: [Any], completion: @escaping (_ idArr: [String]) -> Void) {
-
-    var counter = 0
-    var multipartsIdArr = [String]()
-
-    for multipart in multipartArr {
-      let progressView = UIProgressView()
-      progressView.backgroundColor = UIColor.yellow
-      progressView.frame = CGRect(
+  func getMultipartsIdArr(multipartArray: [Any], completion: @escaping (_ idArr: [String]) -> Void) {
+    let progressView: UIProgressView = {
+      let view = UIProgressView()
+      view.backgroundColor = UIColor.yellow
+      view.progress = 0.0
+      view.isHidden = false
+      view.frame = CGRect(
         x: 0,
-        y: (self.navigationController?.navigationBar.frame.height)! + 50 * CGFloat(counter),
+        y: (self.navigationController?.navigationBar.frame.height)! + 50,
         width: self.view.bounds.width,
-        height: 50)
-      self.collectionView.addSubview(progressView)
-      progressView.progress = 0.0
-      progressView.isHidden = false
-      counter += 1
+        height: 50
+      )
+      return view
+    }()
+    self.collectionView.addSubview(progressView)
 
-      MultipartService.uploadMultipart(multiPartData: multipart, progressCompletion: { percent in
-        progressView.setProgress(percent, animated: true)
-      }) { imageId in
-        multipartsIdArr.append(imageId)
-        progressView.isHidden = true
-        if multipartsIdArr.count == multipartArr.count {
-          completion(multipartsIdArr)
-
-        }
-      }
+    let progressCompletion: (Float) -> Void = { percent in
+      progressView.setProgress(percent, animated: true)
     }
+    let uploadCompletion: ([String]) -> Void = { multipartIdArray in
+      progressView.isHidden = true
+      progressView.removeFromSuperview()
+      completion(multipartIdArray)
+    }
+
+    MultipartService.uploadMultipart(
+      multiPartDataArray: multipartArray,
+      progressCompletion: progressCompletion,
+      uploadCompletion: uploadCompletion
+    )
   }
 
   /**
@@ -246,14 +248,25 @@ extension FeedViewController: InteractiveButtonGroupCellDelegate {
   }
 }
 
+extension FeedViewController: VideoPlayButtonDelegate {
+  func playButtonDidTap(sender: UIButton, player: AVPlayer) {
+    print("feed tap")
+    if player.rate == 0 {
+      player.play()
+      sender.setImage(nil, for: .normal)
+    } else {
+      player.pause()
+      sender.setImage(UIImage(named: "pause"), for: .normal)
+    }
+  }
+}
+
 extension FeedViewController: UICollectionViewDelegateFlowLayout {
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
-    print("scrollViewDidScroll")
     let contentOffsetBottom = scrollView.contentOffset.y + scrollView.frame.height
     let didReachBottom = scrollView.contentSize.height > 0
       && contentOffsetBottom >= scrollView.contentSize.height - 300
     if let nextPage = self.nextPage, didReachBottom {
-      print("next!!!!")
       self.fetchFeed(paging: .next(nextPage))
     }
   }

@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		4828D27A1F186320001D2C2C /* TableViewWrapperController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4828D2791F186320001D2C2C /* TableViewWrapperController.swift */; };
 		4828D27C1F187776001D2C2C /* PhotoAlbum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4828D27B1F187776001D2C2C /* PhotoAlbum.swift */; };
-		482DBDB81F1A523E00DF355D /* VideoPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 482DBDB71F1A523E00DF355D /* VideoPlayerViewController.swift */; };
 		485647BF1EEE6B4D00834BBB /* TileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485647BE1EEE6B4D00834BBB /* TileCell.swift */; };
 		485ABFAB1EF3735500949456 /* PostEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485ABFAA1EF3735500949456 /* PostEditorViewController.swift */; };
 		485ABFAD1EF37F5A00949456 /* PostEditingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485ABFAC1EF37F5A00949456 /* PostEditingCell.swift */; };
@@ -17,6 +16,7 @@
 		4873940A1F03798B00B3E1D0 /* MultipartService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487394091F03798B00B3E1D0 /* MultipartService.swift */; };
 		48D41E291F1F409000868F58 /* FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D41E281F1F409000868F58 /* FileManager.swift */; };
 		48D41E2B1F1F445300868F58 /* Cropper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D41E2A1F1F445300868F58 /* Cropper.swift */; };
+		48D41E2D1F2108FC00868F58 /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D41E2C1F2108FC00868F58 /* VideoPlayerView.swift */; };
 		48F73CA21EF50FDB00E75022 /* RejectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F73CA11EF50FDB00E75022 /* RejectViewController.swift */; };
 		48F73CA41EF60ABA00E75022 /* LibraryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F73CA31EF60ABA00E75022 /* LibraryViewController.swift */; };
 		48F73CA61EF613F400E75022 /* WrapperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F73CA51EF613F400E75022 /* WrapperViewController.swift */; };
@@ -113,7 +113,6 @@
 /* Begin PBXFileReference section */
 		4828D2791F186320001D2C2C /* TableViewWrapperController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewWrapperController.swift; sourceTree = "<group>"; };
 		4828D27B1F187776001D2C2C /* PhotoAlbum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbum.swift; sourceTree = "<group>"; };
-		482DBDB71F1A523E00DF355D /* VideoPlayerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayerViewController.swift; sourceTree = "<group>"; };
 		485647BE1EEE6B4D00834BBB /* TileCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileCell.swift; sourceTree = "<group>"; };
 		485ABFAA1EF3735500949456 /* PostEditorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostEditorViewController.swift; sourceTree = "<group>"; };
 		485ABFAC1EF37F5A00949456 /* PostEditingCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostEditingCell.swift; sourceTree = "<group>"; };
@@ -121,6 +120,7 @@
 		487394091F03798B00B3E1D0 /* MultipartService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultipartService.swift; sourceTree = "<group>"; };
 		48D41E281F1F409000868F58 /* FileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileManager.swift; sourceTree = "<group>"; };
 		48D41E2A1F1F445300868F58 /* Cropper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cropper.swift; sourceTree = "<group>"; };
+		48D41E2C1F2108FC00868F58 /* VideoPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
 		48F73CA11EF50FDB00E75022 /* RejectViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RejectViewController.swift; sourceTree = "<group>"; };
 		48F73CA31EF60ABA00E75022 /* LibraryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LibraryViewController.swift; sourceTree = "<group>"; };
 		48F73CA51EF613F400E75022 /* WrapperViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WrapperViewController.swift; sourceTree = "<group>"; };
@@ -309,7 +309,6 @@
 				9921706C1F0A374500D03E01 /* SavedViewController.swift */,
 				992227751F134DB3008DDD59 /* PostViewController.swift */,
 				4828D2791F186320001D2C2C /* TableViewWrapperController.swift */,
-				482DBDB71F1A523E00DF355D /* VideoPlayerViewController.swift */,
 				6FFDBF881F21B6DD0019EC64 /* CommentViewController.swift */,
 				9905A9941F20B9960063DDB1 /* UIScrollTapMenuViewController.swift */,
 			);
@@ -341,6 +340,7 @@
 				6F8887AB1F0A02DE00CE9A04 /* CommentCell.swift */,
 				6FFDBF861F20968A0019EC64 /* CommentLabel.swift */,
 				6FFDBF8A1F21C6A70019EC64 /* CommentTableCell.swift */,
+				48D41E2C1F2108FC00868F58 /* VideoPlayerView.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -546,7 +546,7 @@
 				TargetAttributes = {
 					6FFC06A81EE3D49000E542BC = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = QLAGA64KZQ;
+						DevelopmentTeam = TM6U8P8E5J;
 						ProvisioningStyle = Automatic;
 					};
 					6FFC06BC1EE3D49000E542BC = {
@@ -693,7 +693,7 @@
 				6F01C29D1EF7999000552782 /* PostCardCell.swift in Sources */,
 				6F5B854F1EE52B3B009285DD /* DiscoverViewController.swift in Sources */,
 				487394021EFE467300B3E1D0 /* CameraViewController.swift in Sources */,
-				482DBDB81F1A523E00DF355D /* VideoPlayerViewController.swift in Sources */,
+				48D41E2D1F2108FC00868F58 /* VideoPlayerView.swift in Sources */,
 				48D41E291F1F409000868F58 /* FileManager.swift in Sources */,
 				6F5B85551EE52BB9009285DD /* SelectionViewController.swift in Sources */,
 				99C654FC1F0784170005AD3E /* RoundCornerButton.swift in Sources */,
@@ -894,7 +894,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = QLAGA64KZQ;
+				DEVELOPMENT_TEAM = TM6U8P8E5J;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -912,7 +912,7 @@
 					"-weak_framework",
 					RevealServer,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = ctrln.smithLee;
+				PRODUCT_BUNDLE_IDENTIFIER = codesquad.kraa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -922,7 +922,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = QLAGA64KZQ;
+				DEVELOPMENT_TEAM = TM6U8P8E5J;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -940,7 +940,7 @@
 					"-weak_framework",
 					RevealServer,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = ctrln.smithLee;
+				PRODUCT_BUNDLE_IDENTIFIER = codesquad.kraa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};

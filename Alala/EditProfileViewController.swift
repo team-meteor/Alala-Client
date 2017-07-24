@@ -161,9 +161,10 @@ class EditProfileViewController: UIViewController {
     } else {
       // 변경사항 존재
       if self.tempMe?.profilePhotoId?.characters.count == 0 {
-        MultipartService.uploadMultipart(multiPartData: currentProfileImageView.image!, progressCompletion: { _ in
-        }) { (imageId) in
-          self.tempMe?.profilePhotoId = imageId
+        var imageArray = [UIImage]()
+        imageArray.append(currentProfileImageView.image!)
+        MultipartService.uploadMultipart(multiPartDataArray: imageArray, progressCompletion: nil) { (imageId) in
+          self.tempMe?.profilePhotoId = imageId[0]
           self.requestProfileUpdate()
         }
       } else {
