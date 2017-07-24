@@ -15,7 +15,6 @@ class PostSectionController: ListSectionController {
   override init() {
     super.init()
     inset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-    self.displayDelegate = self
 
   }
   override func numberOfItems() -> Int {
@@ -25,7 +24,7 @@ class PostSectionController: ListSectionController {
     let width = collectionContext!.containerSize.width
 
     var multimediaCellRatio: Float = 1.0
-    if post.multipartIds[0].contains("_") && post.multipartIds.count > 0 {
+    if post.multipartIds[0].contains("_") && post.multipartIds.count == 1 {
       multimediaCellRatio = Float(post.multipartIds[0].components(separatedBy: "_")[0])!
     }
     switch index {
@@ -97,18 +96,16 @@ class PostSectionController: ListSectionController {
 
 }
 
-extension PostSectionController: ListDisplayDelegate {
-  func listAdapter(_ listAdapter: ListAdapter, willDisplay sectionController: ListSectionController) {
-  }
-  func listAdapter(_ listAdapter: ListAdapter, didEndDisplaying sectionController: ListSectionController) {
-  }
-  func listAdapter(_ listAdapter: ListAdapter, willDisplay sectionController: ListSectionController, cell: UICollectionViewCell, at index: Int) {
-  }
-  func listAdapter(_ listAdapter: ListAdapter, didEndDisplaying sectionController: ListSectionController, cell: UICollectionViewCell, at index: Int) {
-    if let multiCell = cell as? MultimediaCell {
-
-      print(multiCell)
-    }
-  }
-
-}
+//extension PostSectionController: ListDisplayDelegate {
+//  func listAdapter(_ listAdapter: ListAdapter, willDisplay sectionController: ListSectionController) {
+//  }
+//  func listAdapter(_ listAdapter: ListAdapter, didEndDisplaying sectionController: ListSectionController) {
+//  }
+//  func listAdapter(_ listAdapter: ListAdapter, willDisplay sectionController: ListSectionController, cell: UICollectionViewCell, at index: Int) {
+//  }
+//  func listAdapter(_ listAdapter: ListAdapter, didEndDisplaying sectionController: ListSectionController, cell: UICollectionViewCell, at index: Int) {
+//    if let multiCell = cell as? MultimediaCell {
+//      print(multiCell)
+//    }
+//  }
+//}

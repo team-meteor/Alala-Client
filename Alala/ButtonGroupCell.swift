@@ -100,10 +100,15 @@ class ButtonGroupCell: UICollectionViewCell {
 
   func like() {
     print("like", postID)
+//    NotificationCenter.default.post(
+//      name: .postDidLike,
+//      object: self,
+//      userInfo: ["postID": postID]
+//    )
     NotificationCenter.default.post(
       name: .postDidLike,
       object: self,
-      userInfo: ["postID": postID]
+      userInfo: ["post": post]
     )
     PostService.like(postID: self.postID) { response in
       switch response.result {
@@ -112,10 +117,15 @@ class ButtonGroupCell: UICollectionViewCell {
 
       case .failure:
         print("좋아요 실패 ㅠㅠ")
+//        NotificationCenter.default.post(
+//          name: .postDidUnlike,
+//          object: self,
+//          userInfo: ["postID": self.postID]
+//        )
         NotificationCenter.default.post(
           name: .postDidUnlike,
           object: self,
-          userInfo: ["postID": self.postID]
+          userInfo: ["post": self.post]
         )
       }
     }
@@ -126,7 +136,7 @@ class ButtonGroupCell: UICollectionViewCell {
     NotificationCenter.default.post(
       name: .postDidUnlike,
       object: self,
-      userInfo: ["postID": postID]
+      userInfo: ["post": self.post]
     )
     PostService.unlike(postID: self.postID) { response in
       switch response.result {
@@ -137,7 +147,7 @@ class ButtonGroupCell: UICollectionViewCell {
         NotificationCenter.default.post(
           name: .postDidLike,
           object: self,
-          userInfo: ["postID": self.postID]
+          userInfo: ["post": self.post]
         )
       }
     }

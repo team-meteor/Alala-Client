@@ -75,7 +75,7 @@ class FeedViewController: UIViewController {
     adapter.collectionView = collectionView
     adapter.dataSource = self
     view.addSubview(collectionView)
-    self.fetchFeed(paging: .refresh)
+    self.adapter.reloadData(completion: nil)
   }
 
   override func viewDidLayoutSubviews() {
@@ -107,7 +107,7 @@ class FeedViewController: UIViewController {
           self.posts.append(contentsOf: newPosts)
         }
         self.nextPage = feed.nextPage
-        self.adapter.reloadData(completion: nil)
+        self.adapter.performUpdates(animated: true, completion: nil)
       case .failure(let error):
         print(error)
       }
@@ -121,7 +121,8 @@ class FeedViewController: UIViewController {
   func postDidCreate(_ notification: Notification) {
     guard let post = notification.userInfo?["post"] as? Post else { return }
     self.posts.insert(post, at: 0)
-    self.adapter.reloadData(completion: nil)
+    self.adapter.reloadObjects([post])
+    self.adapter.performUpdates(animated: true, completion: nil)
   }
 
   func preparePosting(_ notification: Notification) {
@@ -144,7 +145,6 @@ class FeedViewController: UIViewController {
           )
         case .failure(let error):
           print(error)
-
         }}
       )}
   }
@@ -195,39 +195,23 @@ class FeedViewController: UIViewController {
   }
 
   func postDidLike(_ notification: Notification) {
-    guard let postID = notification.userInfo?["postID"] as? String else { return }
-    for i in 0..<self.posts.count {
-      let post = self.posts[i]
-      if post.id == postID {
-        post.likeCount! += 1
-        post.isLiked = true
-        self.posts[i] = post
-
-        self.adapter.reloadData(completion: nil)
-        break
-      }
-    }
+    guard let info = notification.userInfo, let post = info["post"] as? Post else { return }
+    post.likeCount! += 1
+    post.isLiked = !post.isLiked
+    self.adapter.reloadObjects([post])
   }
 
   func postDidUnlike(_ notification: Notification) {
-    guard let postID = notification.userInfo?["postID"] as? String else { return }
-    for i in 0..<self.posts.count {
-      let post = self.posts[i]
-      if post.id == postID {
-        post.likeCount = max(0, post.likeCount - 1)
-        post.isLiked = false
-        self.posts[i] = post
-        self.adapter.reloadData(completion: nil)
-        break
-      }
-    }
+    guard let info = notification.userInfo, let post = info["post"] as? Post else { return }
+    post.likeCount! = max(0, post.likeCount - 1)
+    post.isLiked = !post.isLiked
+    self.adapter.reloadObjects([post])
   }
 }
 
 extension FeedViewController: ListAdapterDataSource {
   func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
     let items: [ListDiffable] = self.posts
-
     return items
   }
   func listAdapter(_ listAdapter: ListAdapter, sectionControllerFor object: Any) -> ListSectionController {

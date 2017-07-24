@@ -35,6 +35,7 @@ class AfterRegisterViewController: UIViewController {
 
     self.view.addSubview(profilePhoto)
     self.view.addSubview(usernameTextField)
+    self.view.backgroundColor = UIColor.white
 
     profilePhoto.snp.makeConstraints { (make) in
       make.centerX.equalTo(self.view)
@@ -67,6 +68,7 @@ class AfterRegisterViewController: UIViewController {
     }
     var imageArray = [UIImage]()
     imageArray.append(profileImage)
+    doneButton.isEnabled = false
     MultipartService.uploadMultipart(multiPartDataArray: imageArray, progressCompletion: nil) { (multipartIds) in
       AuthService.instance.updateProfile(profileName: username, profileImageId: multipartIds[0], completion: { (success) in
         if success {
