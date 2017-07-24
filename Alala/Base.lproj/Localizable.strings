@@ -4,7 +4,9 @@
 
   Copyright © 2017 team-meteor. All rights reserved.
 */
-"edit_profile" = "Edit Profile";
+"cancel" = "Cancel";
+"done" = "Done";
+
 "posts" = "posts";
 "following" = "following";
 "followers" = "followers";
@@ -15,7 +17,10 @@
 "friends_from_facebook" = "Facebook Friends";
 "invite" = "invite";
 "id" = "id";
-"name" = "name";
+
+"share_photos_and_videos" = "Share Photos and Videos";
+"share_photos_and_videos_guide" = "When you share photos and videos, they'll appear on your profile.";
+"share_photos_and_videos_button" = "Share your first photo or video";
 
 "photos_for_you" = "Photos for you";
 "photos_for_you_guide" = "When people tag you in photos, they'll appear here.";
@@ -26,3 +31,15 @@
 "saved_collection_guide" = "Collections group things you save together. Tap + to start your first collection.";
 "all" = "All";
 "collection" = "Collection";
+
+"edit_profile" = "Edit Profile";
+"change_profile_photo" = "Change Profile Photo";
+"name" = "name";
+"username" = "User name";
+"website" = "Website";
+"bio" = "Bio";
+"email" = "Email";
+"phone" = "Phone";
+"gender_none" = "Not Specified";
+"gender_male" = "Male";
+"gender_female" = "Female";
