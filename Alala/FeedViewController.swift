@@ -9,6 +9,7 @@
 import UIKit
 import IGListKit
 import Alamofire
+import AVFoundation
 
 class FeedViewController: UIViewController {
 
@@ -244,6 +245,19 @@ extension FeedViewController: InteractiveButtonGroupCellDelegate {
   func commentButtondidTap(_ post: Post) {
     guard let comments = post.comments else { return }
     self.navigationController?.pushViewController(CommentViewController(comments: comments), animated: true)
+  }
+}
+
+extension FeedViewController: VideoPlayButtonDelegate {
+  func playButtonDidTap(sender: UIButton, player: AVPlayer) {
+    print("feed tap")
+    if player.rate == 0 {
+      player.play()
+      sender.setImage(nil, for: .normal)
+    } else {
+      player.pause()
+      sender.setImage(UIImage(named: "pause"), for: .normal)
+    }
   }
 }
 

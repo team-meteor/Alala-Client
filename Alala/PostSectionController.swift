@@ -15,6 +15,7 @@ class PostSectionController: ListSectionController {
   override init() {
     super.init()
     inset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+    self.displayDelegate = self
 
   }
   override func numberOfItems() -> Int {
@@ -81,6 +82,7 @@ class PostSectionController: ListSectionController {
     if let cell = cell as? UserCell {
       cell.configure(post: post)
     } else if let cell = cell as? MultimediaCell {
+      cell.delegate = self.viewController as? VideoPlayButtonDelegate
       cell.configure(post: post)
     } else if let cell = cell as? ButtonGroupCell {
       cell.configure(post: post)
@@ -92,4 +94,21 @@ class PostSectionController: ListSectionController {
     }
     return cell
   }
+
+}
+
+extension PostSectionController: ListDisplayDelegate {
+  func listAdapter(_ listAdapter: ListAdapter, willDisplay sectionController: ListSectionController) {
+  }
+  func listAdapter(_ listAdapter: ListAdapter, didEndDisplaying sectionController: ListSectionController) {
+  }
+  func listAdapter(_ listAdapter: ListAdapter, willDisplay sectionController: ListSectionController, cell: UICollectionViewCell, at index: Int) {
+  }
+  func listAdapter(_ listAdapter: ListAdapter, didEndDisplaying sectionController: ListSectionController, cell: UICollectionViewCell, at index: Int) {
+    if let multiCell = cell as? MultimediaCell {
+
+      print(multiCell)
+    }
+  }
+
 }

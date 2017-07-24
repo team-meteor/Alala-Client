@@ -7,15 +7,15 @@
 //
 
 import UIKit
-import AVKit
+import AVFoundation
 
 class MultimediaCell: UICollectionViewCell {
-
+  weak var delegate: VideoPlayButtonDelegate?
   let multimediaScrollView: UIScrollView = {
     let view = UIScrollView()
     view.backgroundColor = UIColor.yellow
     view.isPagingEnabled = true
-    view.alwaysBounceHorizontal = true
+    view.bounces = false
     return view
   }()
 
@@ -43,6 +43,7 @@ class MultimediaCell: UICollectionViewCell {
       height: self.contentView.frame.height
     )
     for item in post.multipartIds {
+
       if item.contains("_") {
         let imageView = UIImageView()
         imageView.setImage(with: item, size: .hd)
@@ -52,18 +53,21 @@ class MultimediaCell: UICollectionViewCell {
           width: self.contentView.bounds.width,
           height: self.contentView.bounds.height)
         multimediaScrollView.addSubview(imageView)
+
       } else { // video
         let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(item)")
-        let videoView = UIView()
 
+        let videoView = VideoPlayerView(videoURL: url!)
         videoView.frame = CGRect(
           x: self.contentView.bounds.width * CGFloat(counter),
           y: 0,
           width: self.contentView.bounds.width,
           height: self.contentView.bounds.height)
+        videoView.addPlayerLayer()
         multimediaScrollView.addSubview(videoView)
-        let videoPlayerVC = VideoPlayerViewController()
-        videoPlayerVC.addVideoPlayer(videoUrl: url!, videoView: videoView)
+        videoView.playPlayer()
+        videoView.delegate = self.delegate
+        self.contentView.isUserInteractionEnabled = true
       }
       counter += 1
     }
