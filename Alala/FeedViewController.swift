@@ -121,8 +121,9 @@ class FeedViewController: UIViewController {
   func postDidCreate(_ notification: Notification) {
     guard let post = notification.userInfo?["post"] as? Post else { return }
     self.posts.insert(post, at: 0)
-    self.adapter.reloadObjects([post])
-    self.adapter.performUpdates(animated: true, completion: nil)
+    self.adapter.performUpdates(animated: true) { _ in
+      self.adapter.reloadObjects([post])
+    }
   }
 
   func preparePosting(_ notification: Notification) {
