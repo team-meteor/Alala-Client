@@ -65,9 +65,10 @@ class AfterRegisterViewController: UIViewController {
     guard let profileImage = profilePhoto.image, let username = usernameTextField.text, !username.isEmpty else {
       return
     }
-    MultipartService.uploadMultipart(multiPartData: profileImage, progressCompletion: { _ in
-    }) { (imageId) in
-      AuthService.instance.updateProfile(profileName: username, profileImageId: imageId, completion: { (success) in
+    var imageArray = [UIImage]()
+    imageArray.append(profileImage)
+    MultipartService.uploadMultipart(multiPartDataArray: imageArray, progressCompletion: nil) { (multipartIds) in
+      AuthService.instance.updateProfile(profileName: username, profileImageId: multipartIds[0], completion: { (success) in
         if success {
           AuthService.instance.me(completion: { (user) in
             if user != nil {

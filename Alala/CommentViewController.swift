@@ -10,16 +10,43 @@ import UIKit
 
 class CommentViewController: UIViewController {
   let comments: [Comment]!
-  init(comments: [Comment]) {
-    self.comments = comments
-    super.init(nibName: nil, bundle: nil)
-  }
 
   let tableView: UITableView = {
     let view = UITableView()
     view.register(CommentTableCell.self, forCellReuseIdentifier: "commentCell")
     return view
   }()
+
+  let commentInputView: UIView = {
+    let view = UIView()
+    return view
+  }()
+
+  let sendButton: UIButton = {
+    let button = UIButton()
+    return button
+  }()
+
+  let textView: UITextView = {
+    let view = UITextView()
+    return view
+  }()
+
+  let postButton: UIButton = {
+    let button = UIButton()
+    button.setTitle("Post", for: .normal)
+    return button
+  }()
+
+  init(comments: [Comment]) {
+    self.comments = comments
+    super.init(nibName: nil, bundle: nil)
+    self.view.addSubview(tableView)
+    self.view.addSubview(commentInputView)
+    self.commentInputView.addSubview(sendButton)
+    self.commentInputView.addSubview(textView)
+    self.commentInputView.addSubview(postButton)
+  }
 
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
@@ -31,15 +58,27 @@ class CommentViewController: UIViewController {
     self.tableView.delegate = self
     self.tableView.dataSource = self
     self.tableView.allowsSelection = false
-    self.view.addSubview(tableView)
     self.tabBarController?.tabBar.isHidden = true
   }
 
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     tableView.snp.makeConstraints { (make) in
-      make.edges.equalTo(self.view)
+      make.left.right.top.equalTo(self.view)
+      make.height.equalTo(self.tableViewHeight(comments: self.comments))
     }
+  }
+  func tableViewHeight(comments: [Comment]) -> CGFloat {
+    var height = CGFloat()
+    for comment in comments {
+      height += TextSize.size(
+        comment.createdBy.profileName! + comment.content,
+        font: UIFont.systemFont(ofSize: 15),
+        width: self.view.frame.width,
+        insets: UIEdgeInsets(top: 0, left: 45, bottom: 0, right: 10)
+        ).height + 10
+    }
+    return height + 64
   }
 }
 
