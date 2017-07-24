@@ -14,11 +14,11 @@ class User: NSObject, Mappable, NSCoding {
   var createdAt: Date!
   var profileName: String?
   var profilePhotoId: String?
-  var displayName: String?
-  var website: String?
-  var bio: String?
-  var Phone: String?
-  var gender: String?
+  var displayName: String? = ""
+  var website: String? = ""
+  var bio: String? = ""
+  var Phone: String? = ""
+  var gender: String? = ""
   var following: [User]?
   var followers: [User]?
 

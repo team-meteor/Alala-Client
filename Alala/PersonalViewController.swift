@@ -8,6 +8,7 @@
 import UIKit
 import Alamofire
 import ObjectMapper
+import AVFoundation
 
 /**
  * '내 프로필 & 포스트' 화면
@@ -141,6 +142,9 @@ class PersonalViewController: UIViewController {
         make.bottom.equalTo(contentsView)
       }
       noContentsGuideView.delegate = self
+
+      personalInfoView.gridPostMenuButton.isEnabled = false
+      personalInfoView.listPostMenuButton.isEnabled = false
     }
   }
 
@@ -153,9 +157,13 @@ class PersonalViewController: UIViewController {
         make.right.equalTo(contentsView)
         make.bottom.equalTo(contentsView)
       }
+
       postGridCollectionView.dataSource = self
       postGridCollectionView.delegate = self
       postGridCollectionView.isScrollEnabled = false
+
+      personalInfoView.gridPostMenuButton.isEnabled = true
+      personalInfoView.listPostMenuButton.isEnabled = true
     }
 
     postGridCollectionView.isHidden = false
@@ -169,10 +177,6 @@ class PersonalViewController: UIViewController {
       postViewController = PostViewController(posts)
       postListCollectionView = postViewController.collectionView
       self.addChildViewController(postViewController)
-
-      postViewController.delegate = self
-      postListCollectionView.isScrollEnabled = false
-
       contentsView.addSubview(postViewController.view)
       postViewController.view.snp.makeConstraints { (make) in
         make.top.equalTo(contentsView)
@@ -180,6 +184,12 @@ class PersonalViewController: UIViewController {
         make.right.equalTo(contentsView)
         make.bottom.equalTo(contentsView).offset(-44)
       }
+
+      postViewController.delegate = self
+      postListCollectionView.isScrollEnabled = false
+
+      personalInfoView.gridPostMenuButton.isEnabled = true
+      personalInfoView.listPostMenuButton.isEnabled = true
     }
 
     postGridCollectionView.isHidden = true
@@ -249,6 +259,20 @@ class PersonalViewController: UIViewController {
     } else {
       postViewController.adapter.performUpdates(animated: true, completion: nil)
     }
+  }
+
+  func getThumbnailImage(forUrl url: URL) -> UIImage? {
+    let asset: AVAsset = AVAsset(url: url)
+    let imageGenerator = AVAssetImageGenerator(asset: asset)
+
+    do {
+      let thumbnailImage = try imageGenerator.copyCGImage(at: CMTimeMake(1, 60), actualTime: nil)
+      return UIImage(cgImage: thumbnailImage)
+    } catch let error {
+      print(error)
+    }
+
+    return nil
   }
 }
 
@@ -348,19 +372,26 @@ extension PersonalViewController: UICollectionViewDataSource {
     let cell: PostGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: PostGridCell.cellReuseIdentifier, for: indexPath) as! PostGridCell
     let post = posts[indexPath.row] as Post
 
-    guard post.multipartIds.count > 0 else {
-      return cell
-    }
+    guard post.multipartIds.count > 0 else { return cell }
 
     let filename = post.multipartIds[0] as String
 
-    if filename.characters.count > 0 {
-      cell.thumbnailImageView.setImage(with: post.multipartIds[0], size: .thumbnail)
-    }
+    guard filename.characters.count > 0 else { return cell }
 
     if filename.isVideoPathExtension {
       cell.isVideo = true
+      DispatchQueue.global(qos: .default).async {
+        let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(post.multipartIds[0])")
+        if let thumbnailImage = self.getThumbnailImage(forUrl: url!) {
+          DispatchQueue.main.async { [weak cell] in
+            guard let strongCell = cell else { return }
+            strongCell.thumbnailImageView.image = thumbnailImage
+            strongCell.thumbnailImageView.layoutIfNeeded()
+          }
+        }
+      }
     } else {
+      cell.thumbnailImageView.setImage(with: post.multipartIds[0], size: .thumbnail)
       cell.isMultiPhotos = post.multipartIds.count > 1 ? true : false
     }
     return cell
@@ -372,6 +403,14 @@ extension PersonalViewController: UICollectionViewDelegate {
     let postArray = [self.posts[indexPath.row]]
     let postVC = PostViewController(postArray)
     self.navigationController?.pushViewController(postVC, animated: true)
+  }
+
+  public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    if indexPath.row == posts.count - 1 {
+      if self.nextPage != nil {
+        self.fetchFeedMine(paging: .next(String(describing: self.nextPage)))
+      }
+    }
   }
 }
 

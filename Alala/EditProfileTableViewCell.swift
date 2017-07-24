@@ -27,7 +27,6 @@ class EditProfileTableViewCell: UITableViewCell {
   }
 
   let textView = UIPlaceholderTextView().then {
-    $0.text = ""
     $0.font = UIFont(name: "HelveticaNeue", size: 16)
   }
 
