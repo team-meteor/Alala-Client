@@ -1,0 +1,28 @@
+/* 
+  Localizable.strings
+  Alala
+
+  Copyright © 2017 team-meteor. All rights reserved.
+*/
+"edit_profile" = "Edit Profile";
+"posts" = "posts";
+"following" = "following";
+"followers" = "followers";
+
+"Archive" = "Archive";
+"DiscoverPeople" = "DiscoverPeople";
+"private_information" = "PRIVATE INFORMATION";
+"friends_from_facebook" = "Facebook Friends";
+"invite" = "invite";
+"id" = "id";
+"name" = "name";
+
+"photos_for_you" = "Photos for you";
+"photos_for_you_guide" = "When people tag you in photos, they'll appear here.";
+
+"saved" = "Saved";
+"saved_guide" = "Save photos and videos that you want to see again. No one is notified, and only you can see what you've saved.";
+"saved_collection" = "Save Collections";
+"saved_collection_guide" = "Collections group things you save together. Tap + to start your first collection.";
+"all" = "All";
+"collection" = "Collection";

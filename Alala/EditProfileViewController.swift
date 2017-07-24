@@ -295,7 +295,7 @@ extension EditProfileViewController: UITableViewDataSource {
       let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 40))
       let label = UILabel()
       label.font = UIFont.systemFont(ofSize: 10)
-      label.text = "PRIVATE INFORMATION"
+      label.text = LS("private_information")
       view.addSubview(label)
       view.backgroundColor = UIColor(rgb: 0xeeeeee)
       label.snp.makeConstraints { (make) in

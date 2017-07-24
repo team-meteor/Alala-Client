@@ -23,7 +23,7 @@ class PhotosForYouViewController: UIViewController {
 
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = "Photos for you"
+      $0.text = LS("photos_for_you")
       $0.sizeToFit()
     }
 
@@ -39,8 +39,8 @@ class PhotosForYouViewController: UIViewController {
         make.bottom.equalTo(self.view)
       }
 
-      noContentsGuideView.guideTitleLabel.text = "회원님이 나온 사진"
-      noContentsGuideView.guideDescLabel.text = "사람들이 회원님을 사진에 태그하면 태그된 사진이 여기에 표시됩니다."
+      noContentsGuideView.guideTitleLabel.text = LS("photos_for_you")
+      noContentsGuideView.guideDescLabel.text = LS("photos_for_you_guide")
       noContentsGuideView.addContentButton.isHidden = true
     }
   }

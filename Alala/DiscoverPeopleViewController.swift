@@ -14,7 +14,7 @@ class DiscoverPeopleViewController: UIViewController {
 
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = "DiscoverPeople"
+      $0.text = LS("DiscoverPeople")
       $0.sizeToFit()
     }
   }

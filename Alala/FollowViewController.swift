@@ -70,7 +70,7 @@ class FollowViewController: UIViewController, UITableViewDelegate, UITableViewDa
   func setupUIForFollowerType() {
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = "Followers"
+      $0.text = LS("Followers")
       $0.sizeToFit()
     }
   }
@@ -78,7 +78,7 @@ class FollowViewController: UIViewController, UITableViewDelegate, UITableViewDa
   func setupUIForFollowingType() {
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = "Following"
+      $0.text = LS("Following")
       $0.sizeToFit()
     }
   }
@@ -134,7 +134,7 @@ class FollowViewController: UIViewController, UITableViewDelegate, UITableViewDa
 
     if indexPath.section == 0 {
       let cell: EditProfileTableViewCell = tableView.dequeueReusableCell(withIdentifier: EditProfileTableViewCell.cellReuseIdentifier) as! EditProfileTableViewCell
-      cell.textView.text = "Facebook친구"
+      cell.textView.text = LS("friends_from_facebook")
       cell.textView.isEditable = false
       cell.rightButton.setImage(UIImage(named: "foward")?.resizeImage(scaledTolength: 15), for: .normal)
       cell.rightButtonWidthConstraint?.constant = 20
@@ -174,9 +174,9 @@ class FollowViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
 
     if section == 0 {
-      label.text = "초대"
+      label.text = LS("invite")
     } else {
-      label.text = "팔로잉"
+      label.text = LS("following")
     }
 
     return view
@@ -205,13 +205,13 @@ class FollowTableViewCell: UITableViewCell {
 
   let userIDLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 10)
-    $0.text = "아이디"
+    $0.text = LS("id")
     $0.sizeToFit()
   }
 
   let userNameLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 10)
-    $0.text = "이름"
+    $0.text = LS("name")
     $0.sizeToFit()
   }
 

@@ -89,8 +89,8 @@ class NoContentsView: UIView {
 
     guideDescLabel.snp.makeConstraints { (make) in
       make.top.equalTo(guideTitleLabel.snp.bottom).offset(10)
-      make.left.equalTo(innerView)
-      make.right.equalTo(innerView)
+      make.left.equalTo(innerView).offset(20)
+      make.right.equalTo(innerView).offset(-20)
     }
     addContentButton.snp.makeConstraints { (make) in
       make.top.equalTo(guideDescLabel.snp.bottom).offset(30)
