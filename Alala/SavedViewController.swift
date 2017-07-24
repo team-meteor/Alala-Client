@@ -23,7 +23,7 @@ class SavedViewController: UIScrollTapMenuViewController {
     self.edgesForExtendedLayout = []
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = "Saved"
+      $0.text = LS("saved")
       $0.sizeToFit()
     }
 
@@ -32,12 +32,12 @@ class SavedViewController: UIScrollTapMenuViewController {
     // super.viewDidLoad()보다 navigationItem.titleView가 먼저 선행되어야 함
     super.viewDidLoad()
 
-    self.firstButton.setTitle("모두", for: .normal)
-    self.secondButton.setTitle("컬렉션", for: .normal)
+    self.firstButton.setTitle(LS("all"), for: .normal)
+    self.secondButton.setTitle(LS("collection"), for: .normal)
 
     noContentsViewForAll = NoContentsView()
-    noContentsViewForAll.guideTitleLabel.text = "저장"
-    noContentsViewForAll.guideDescLabel.text = "다시 보고 싶은 사진과 동영상을 저장하세요. 콘텐츠를 저장해도 다른 사람에게 알림이 전송되지 않으며, 저장된 콘텐츠는 회원님만 볼 수 있습니다."
+    noContentsViewForAll.guideTitleLabel.text = LS("saved")
+    noContentsViewForAll.guideDescLabel.text = LS("saved_guide")
     noContentsViewForAll.addContentButton.isHidden = true
     self.firstTabView.addSubview(noContentsViewForAll)
     noContentsViewForAll.snp.makeConstraints { (make) in
@@ -46,8 +46,8 @@ class SavedViewController: UIScrollTapMenuViewController {
     }
 
     noContentsViewForCollection = NoContentsView()
-    noContentsViewForCollection.guideTitleLabel.text = "컬렉션 저장"
-    noContentsViewForCollection.guideDescLabel.text = "컬렉션을 만들어 저장하는 항목을 분류해보세요. 첫 컬렉션을 시작하려면 + 기호를 누르세요."
+    noContentsViewForCollection.guideTitleLabel.text = LS("saved_collection")
+    noContentsViewForCollection.guideDescLabel.text = LS("saved_collection_guide")
     self.secondTabView.addSubview(noContentsViewForCollection)
     noContentsViewForCollection.snp.makeConstraints { (make) in
       make.size.equalTo(self.secondTabView)

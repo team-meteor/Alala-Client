@@ -47,14 +47,12 @@ class PersonalInfoView: UIView {
   var profileNameHeightConstraint: Constraint?
   let profileNameLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 16)
-    $0.text = "User Name up to 30 character"
     $0.sizeToFit()
   }
 
   var bioHeightConstraint: Constraint?
   let bioLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 16)
-    $0.text = "User Name up to 30 character"
     $0.numberOfLines = 0
     $0.sizeToFit()
   }
@@ -62,7 +60,6 @@ class PersonalInfoView: UIView {
   var websiteHeightConstraint: Constraint?
   let websiteLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 16)
-    $0.text = "User Name up to 30 character"
     $0.sizeToFit()
   }
 
@@ -79,7 +76,7 @@ class PersonalInfoView: UIView {
 
   let postsTextLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 12)
-    $0.text = "posts"
+    $0.text = LS("posts")
     $0.textAlignment = .center
     $0.sizeToFit()
   }
@@ -97,7 +94,7 @@ class PersonalInfoView: UIView {
 
   let followersTextLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 12)
-    $0.text = "followers"
+    $0.text = LS("followers")
     $0.textAlignment = .center
     $0.sizeToFit()
   }
@@ -115,13 +112,13 @@ class PersonalInfoView: UIView {
 
   let followingTextLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 12)
-    $0.text = "following"
+    $0.text = LS("following")
     $0.textAlignment = .center
     $0.sizeToFit()
   }
 
   let editProfileButton = RoundCornerButton(type: .buttonColorTypeWhite).then {
-    $0.setTitle(NSLocalizedString("edit_profile", comment: "프로필 수정"), for: .normal)
+    $0.setTitle(LS("edit_profile"), for: .normal)
     $0.addTarget(self, action: #selector(editProfileButtonTap(sender:)), for: .touchUpInside)
   }
 
