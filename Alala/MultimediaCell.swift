@@ -42,6 +42,7 @@ class MultimediaCell: UICollectionViewCell {
       width: self.contentView.frame.width * CGFloat(post.multipartIds.count),
       height: self.contentView.frame.height
     )
+    print(post.multipartIds)
     for item in post.multipartIds {
       if item.contains("_") {
         let imageView = UIImageView()

@@ -63,16 +63,18 @@ class FeedViewController: UIViewController {
     NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: .postDidCreate, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(postDidLike), name: .postDidLike, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(postDidUnlike), name: .postDidUnlike, object: nil)
+    self.refreshControl.addTarget(self, action: #selector(self.refreshControlDidChangeValue), for: .valueChanged)
+    self.collectionView.addSubview(self.refreshControl)
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "IowanOldStyle-BoldItalic", size: 20)
       $0.text = "Alala"
       $0.sizeToFit()
     }
-    self.fetchFeed(paging: .refresh)
     adapter.scrollViewDelegate = self
     adapter.collectionView = collectionView
     adapter.dataSource = self
     view.addSubview(collectionView)
+    self.fetchFeed(paging: .refresh)
   }
 
   override func viewDidLayoutSubviews() {
@@ -104,20 +106,21 @@ class FeedViewController: UIViewController {
           self.posts.append(contentsOf: newPosts)
         }
         self.nextPage = feed.nextPage
-
-        DispatchQueue.main.async {
-          self.adapter.performUpdates(animated: true, completion: nil)
-        }
+        self.adapter.reloadData(completion: nil)
       case .failure(let error):
         print(error)
       }
     }
   }
 
+  func refreshControlDidChangeValue() {
+    self.fetchFeed(paging: .refresh)
+  }
+
   func postDidCreate(_ notification: Notification) {
     guard let post = notification.userInfo?["post"] as? Post else { return }
     self.posts.insert(post, at: 0)
-    self.adapter.performUpdates(animated: true, completion: nil)
+    self.adapter.reloadData(completion: nil)
   }
 
   func preparePosting(_ notification: Notification) {
@@ -126,7 +129,7 @@ class FeedViewController: UIViewController {
     guard let postDic = notification.userInfo?["postDic"] as? [String:Any],
       let multipartArr = postDic["multipartArr"] as? [Any],
       let message = postDic["message"] as? String? else { return }
-    
+
     self.getMultipartsIdArr(multipartArray: multipartArr) { idArr in
 
       PostService.postWithMultipart(idArr: idArr, message: message, progress: nil, completion: { [weak self] response in
@@ -199,8 +202,7 @@ class FeedViewController: UIViewController {
         post.isLiked = true
         self.posts[i] = post
 
-        self.collectionView.reloadData()
-        //self.adapter.performUpdates(animated: true, completion: nil)
+        self.adapter.reloadData(completion: nil)
         break
       }
     }
@@ -214,8 +216,7 @@ class FeedViewController: UIViewController {
         post.likeCount = max(0, post.likeCount - 1)
         post.isLiked = false
         self.posts[i] = post
-        self.collectionView.reloadData()
-        //self.adapter.performUpdates(animated: true, completion: nil)
+        self.adapter.reloadData(completion: nil)
         break
       }
     }
