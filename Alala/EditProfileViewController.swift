@@ -29,13 +29,13 @@ class EditProfileViewController: UIViewController {
   }
 
   let changePhotoButton = UIButton().then {
-    $0.setTitle("Change Profile Photo", for: .normal)
+    $0.setTitle(LS("change_profile_photo"), for: .normal)
     $0.addTarget(self, action: #selector(changePhotoButtonTap), for: .touchUpInside)
     $0.setTitleColor(UIColor.blue, for: .normal)
   }
   let contentTableView = UITableView()
 
-  let pickerDataSource = ["입력되지 않음", "남성", "여성"]
+  let pickerDataSource = [LS("gender_none"), LS("gender_male"), LS("gender_female")]
   let genderPicker = UIPickerView()
 
   var allProfileItemArray: [[String:[ProfileItem]]] = []
@@ -58,15 +58,15 @@ class EditProfileViewController: UIViewController {
    * Setup NavigationItem
    */
   func setupNavigation() {
-    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel",
+    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: LS("cancel"),
                                                             style: UIBarButtonItemStyle.plain,
                                                             target: self,
                                                             action: #selector(backNaviButtonTap))
-    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done",
+    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: LS("done"),
                                                              style: UIBarButtonItemStyle.done,
                                                              target: self,
                                                              action: #selector(doneNaviButtonTap))
-    self.title = "EditProfile"
+    self.title = LS("edit_profile")
   }
 
   /**
@@ -74,14 +74,14 @@ class EditProfileViewController: UIViewController {
    */
   func setupProfileItem() {
     allProfileItemArray = [
-      ["": [ProfileItem(key: "displayName", iconImageName: "nametag", placeHolder: "Name"),
-            ProfileItem(key: "profileName", iconImageName: "personal", placeHolder: "Username"),
-            ProfileItem(key: "website", iconImageName: "website", placeHolder: "Website"),
-            ProfileItem(key: "bio", iconImageName: "information", placeHolder: "Bio")]],
+      ["": [ProfileItem(key: "displayName", iconImageName: "nametag", placeHolder: LS("name")),
+            ProfileItem(key: "profileName", iconImageName: "personal", placeHolder: LS("username")),
+            ProfileItem(key: "website", iconImageName: "website", placeHolder: LS("website")),
+            ProfileItem(key: "bio", iconImageName: "information", placeHolder: LS("bio"))]],
       ["PRIVATE INFORMATION":
-           [ProfileItem(key: "email", iconImageName: "email", placeHolder: "Email"),
-            ProfileItem(key: "Phone", iconImageName: "phone", placeHolder: "Phone"),
-            ProfileItem(key: "gender", iconImageName: "gender", placeHolder: "Gender")]]
+           [ProfileItem(key: "email", iconImageName: "email", placeHolder: LS("email")),
+            ProfileItem(key: "Phone", iconImageName: "phone", placeHolder: LS("phone")),
+            ProfileItem(key: "gender", iconImageName: "gender", placeHolder: LS("gender"))]]
     ]
   }
 

@@ -142,6 +142,9 @@ class PersonalViewController: UIViewController {
         make.bottom.equalTo(contentsView)
       }
       noContentsGuideView.delegate = self
+
+      personalInfoView.gridPostMenuButton.isEnabled = false
+      personalInfoView.listPostMenuButton.isEnabled = false
     }
   }
 
@@ -154,9 +157,13 @@ class PersonalViewController: UIViewController {
         make.right.equalTo(contentsView)
         make.bottom.equalTo(contentsView)
       }
+
       postGridCollectionView.dataSource = self
       postGridCollectionView.delegate = self
       postGridCollectionView.isScrollEnabled = false
+
+      personalInfoView.gridPostMenuButton.isEnabled = true
+      personalInfoView.listPostMenuButton.isEnabled = true
     }
 
     postGridCollectionView.isHidden = false
@@ -170,10 +177,6 @@ class PersonalViewController: UIViewController {
       postViewController = PostViewController(posts)
       postListCollectionView = postViewController.collectionView
       self.addChildViewController(postViewController)
-
-      postViewController.delegate = self
-      postListCollectionView.isScrollEnabled = false
-
       contentsView.addSubview(postViewController.view)
       postViewController.view.snp.makeConstraints { (make) in
         make.top.equalTo(contentsView)
@@ -181,6 +184,12 @@ class PersonalViewController: UIViewController {
         make.right.equalTo(contentsView)
         make.bottom.equalTo(contentsView).offset(-44)
       }
+
+      postViewController.delegate = self
+      postListCollectionView.isScrollEnabled = false
+
+      personalInfoView.gridPostMenuButton.isEnabled = true
+      personalInfoView.listPostMenuButton.isEnabled = true
     }
 
     postGridCollectionView.isHidden = true
