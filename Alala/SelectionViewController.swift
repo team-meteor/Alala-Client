@@ -411,6 +411,22 @@ class SelectionViewController: UIViewController {
       return nil
     }
   }
+  
+  func videoMode() {
+    self.imageView.isUserInteractionEnabled = true
+    self.scrollView.setZoomScale(1.0, animated: true)
+    self.scrollView.maximumZoomScale = 1.0
+    self.scrollView.minimumZoomScale = 1.0
+    self.scrollView.bounces = false
+    self.scrollView.isScrollEnabled = false
+  }
+  
+  func photoMode() {
+    self.scrollView.maximumZoomScale = 3.0
+    self.scrollView.minimumZoomScale = 0.8
+    self.scrollView.bounces = true
+    self.scrollView.isScrollEnabled = true
+  }
 
 }
 
@@ -497,8 +513,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
 
     if asset.mediaType == .video {
       self.videoPlayerView?.removeFromSuperview()
-      //self.cropAreaView.isUserInteractionEnabled = false
-      self.imageView.isUserInteractionEnabled = true
+      videoMode()
       imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
         if let urlAsset = asset as? AVURLAsset {
           DispatchQueue.main.async {
@@ -509,8 +524,7 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
             self.scrollView.contentSize = self.imageView.frame.size
             self.centerScrollView(animated: false)
 
-            let videoPlayer = AVPlayer(url: localVideoUrl)
-            self.videoPlayerView = VideoPlayerView(videoPlayer: videoPlayer)
+            self.videoPlayerView = VideoPlayerView(videoURL: localVideoUrl)
             self.videoPlayerView?.delegate = self
             self.videoPlayerView?.frame = self.imageView.frame
             self.videoPlayerView?.addPlayerLayer()
@@ -521,11 +535,9 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
       })
     } else {
       self.videoPlayerView?.removeFromSuperview()
-
+      photoMode()
       self.baseScrollView.setContentOffset(CGPoint(x:0, y:0), animated: true)
-
       let targetSize = CGSize(width: 600 * UIScreen.main.scale, height: 600 * UIScreen.main.scale)
-
       imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
 
         self.scrollView.zoomScale = 1.0
@@ -581,10 +593,10 @@ extension SelectionViewController: VideoPlayButtonDelegate {
     print("selection tap")
     if player.rate == 0 {
       player.play()
-      sender.setImage(UIImage(named: "play"), for: .normal)
+      sender.setImage(nil, for: .normal)
     } else {
       player.pause()
-      sender.setImage(UIImage(named: "pause"), for: .normal)
+      sender.setImage(UIImage(named: "play"), for: .normal)
     }
   }
 }

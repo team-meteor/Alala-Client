@@ -252,7 +252,7 @@ extension FeedViewController: VideoPlayButtonDelegate {
     print("feed tap")
     if player.rate == 0 {
       player.play()
-      sender.setImage(UIImage(named: "play"), for: .normal)
+      sender.setImage(nil, for: .normal)
     } else {
       player.pause()
       sender.setImage(UIImage(named: "pause"), for: .normal)

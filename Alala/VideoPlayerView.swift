@@ -22,21 +22,22 @@ class VideoPlayerView: UIView {
   fileprivate var player = AVPlayer()
   fileprivate var playerLayer = AVPlayerLayer()
 
-  fileprivate let playButton = UIButton().then {
-    $0.setImage(UIImage(named: "pause"), for: .normal)
-  }
+  fileprivate let playButton = UIButton()
 
   override init(frame: CGRect) {
     super.init(frame: frame)
   }
 
-  init(videoPlayer: AVPlayer) {
+  init(videoURL: URL) {
     super.init(frame: CGRect.zero)
-    self.player = videoPlayer
-//    NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { _ in
-//      self.player.seek(to: kCMTimeZero)
-//      self.player.play()
-//    }
+    self.player = AVPlayer(url: videoURL)
+    NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { _ in
+      if self.player.rate != 0 {
+        self.player.seek(to: kCMTimeZero)
+        self.player.play()
+        print("endtime")
+      }
+    }
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -44,6 +45,16 @@ class VideoPlayerView: UIView {
   }
   func playPlayer() {
     player.play()
+  }
+  
+  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    if player.rate == 0 {
+      player.play()
+      playButton.setImage(nil, for: .normal)
+    } else {
+      player.pause()
+      playButton.setImage(UIImage(named: "play"), for: .normal)
+    }
   }
 
   func addPlayerLayer() {

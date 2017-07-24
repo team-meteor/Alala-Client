@@ -57,8 +57,7 @@ class MultimediaCell: UICollectionViewCell {
       } else { // video
         let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(item)")
 
-        let videoPlayer = AVPlayer(url: url!)
-        let videoView = VideoPlayerView(videoPlayer: videoPlayer)
+        let videoView = VideoPlayerView(videoURL: url!)
         videoView.frame = CGRect(
           x: self.contentView.bounds.width * CGFloat(counter),
           y: 0,
