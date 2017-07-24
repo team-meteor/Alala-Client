@@ -46,7 +46,7 @@ class PostSectionController: ListSectionController {
         return CGSize()
       }
       if let profileName = comments[0].createdBy.profileName {
-        let firstCommentHeight = TextSize.size(profileName + comments[0].content, font: UIFont.systemFont(ofSize: 17), width: UIScreen.main.bounds.width, insets: UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)).height
+        let firstCommentHeight = TextSize.size(profileName + comments[0].content, font: UIFont.systemFont(ofSize: 15), width: UIScreen.main.bounds.width, insets: UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)).height
         // TODO : dynamic cell expand
         return CGSize(width: width, height: firstCommentHeight)
       }
