@@ -22,18 +22,15 @@ class MultimediaCell: UICollectionViewCell {
   override init(frame: CGRect) {
     super.init(frame: frame)
     self.contentView.addSubview(multimediaScrollView)
-  }
-
-  required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
-  override func layoutSubviews() {
-    super.layoutSubviews()
     multimediaScrollView.snp.makeConstraints { (make) in
       make.size.equalTo(self.contentView)
       make.centerY.equalTo(self.contentView)
       make.centerX.equalTo(self.contentView)
     }
+  }
+
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
   }
 
   func configure(post: Post) {
