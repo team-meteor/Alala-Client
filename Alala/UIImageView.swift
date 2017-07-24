@@ -17,6 +17,7 @@ extension UIImageView {
       return
     }
     let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(size.pixel)_\(photoId)")
+    self.kf.indicatorType = .activity
     self.kf.setImage(with: url, placeholder: placeholder)
   }
 

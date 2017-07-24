@@ -29,6 +29,13 @@ class MultimediaCell: UICollectionViewCell {
     }
   }
 
+  override func prepareForReuse() {
+    super.prepareForReuse()
+    for view in self.multimediaScrollView.subviews {
+      view.removeFromSuperview()
+    }
+  }
+
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
@@ -39,6 +46,7 @@ class MultimediaCell: UICollectionViewCell {
       width: self.contentView.frame.width * CGFloat(post.multipartIds.count),
       height: self.contentView.frame.height
     )
+    print(post.multipartIds)
     for item in post.multipartIds {
 
       if item.contains("_") {
@@ -68,6 +76,7 @@ class MultimediaCell: UICollectionViewCell {
       }
       counter += 1
     }
-    self.setNeedsLayout()
+//    self.setNeedsLayout()
+    self.setNeedsDisplay()
   }
 }
