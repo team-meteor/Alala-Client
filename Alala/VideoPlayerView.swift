@@ -46,7 +46,6 @@ class VideoPlayerView: UIView {
   func playPlayer() {
     player.play()
   }
-  
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     if player.rate == 0 {
       player.play()

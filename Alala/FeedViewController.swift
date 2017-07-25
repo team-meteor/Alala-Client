@@ -127,9 +127,7 @@ class FeedViewController: UIViewController {
     guard let postDic = notification.userInfo?["postDic"] as? [String:Any],
       let multipartArr = postDic["multipartArr"] as? [Any],
       let message = postDic["message"] as? String? else { return }
-    
     self.getMultipartsIdArr(multipartArray: multipartArr) { idArr in
-
       PostService.postWithMultipart(idArr: idArr, message: message, progress: nil, completion: { [weak self] response in
         guard self != nil else { return }
         switch response.result {
@@ -141,7 +139,6 @@ class FeedViewController: UIViewController {
           )
         case .failure(let error):
           print(error)
-
         }}
       )}
   }
@@ -199,9 +196,8 @@ class FeedViewController: UIViewController {
         post.likeCount! += 1
         post.isLiked = true
         self.posts[i] = post
-
-        self.collectionView.reloadData()
-        //self.adapter.performUpdates(animated: true, completion: nil)
+        //i번째 post만 업데이트
+        self.collectionView.reloadSections(IndexSet(integersIn: i...i))
         break
       }
     }
@@ -215,8 +211,8 @@ class FeedViewController: UIViewController {
         post.likeCount = max(0, post.likeCount - 1)
         post.isLiked = false
         self.posts[i] = post
-        self.collectionView.reloadData()
-        //self.adapter.performUpdates(animated: true, completion: nil)
+        //i번째 post만 업데이트
+        self.collectionView.reloadSections(IndexSet(integersIn: i...i))
         break
       }
     }

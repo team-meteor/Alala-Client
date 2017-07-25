@@ -82,6 +82,7 @@ class ButtonGroupCell: UICollectionViewCell {
     self.likeButton.isSelected = post.isLiked
     self.postID = post.id
     self.post = post
+    self.setNeedsLayout()
   }
 
   func commentButtonDidTap() {

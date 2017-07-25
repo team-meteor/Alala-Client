@@ -16,7 +16,6 @@ class PostSectionController: ListSectionController {
     super.init()
     inset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     self.displayDelegate = self
-
   }
   override func numberOfItems() -> Int {
     return 5
@@ -25,7 +24,7 @@ class PostSectionController: ListSectionController {
     let width = collectionContext!.containerSize.width
 
     var multimediaCellRatio: Float = 1.0
-    if post.multipartIds[0].contains("_") && post.multipartIds.count > 0 {
+    if post.multipartIds[0].contains("_") && post.multipartIds.count == 1 {
       multimediaCellRatio = Float(post.multipartIds[0].components(separatedBy: "_")[0])!
     }
     switch index {
