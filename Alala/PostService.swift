@@ -57,9 +57,7 @@ struct PostService {
     Alamofire.request(Constants.BASE_URL + "post/like", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { response in
-        print("like response", response)
         if let post = Mapper<Post>().map(JSONObject: response.result.value) {
-          print("like post", post)
           let response = DataResponse(request: response.request, response: response.response, data: response.data, result: Result.success(post))
           completion(response)
         }
@@ -83,9 +81,7 @@ struct PostService {
     Alamofire.request(Constants.BASE_URL + "post/unlike", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { response in
-        print("unlike response", response)
         if let post = Mapper<Post>().map(JSONObject: response.result.value) {
-          print("unlike", post)
           let response = DataResponse(request: response.request, response: response.response, data: response.data, result: Result.success(post))
           completion(response)
         }

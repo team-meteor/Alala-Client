@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ActivityViewController: UIViewController {
+class ActivityViewController: UIScrollTapMenuViewController {
 
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -26,5 +26,7 @@ class ActivityViewController: UIViewController {
     super.viewDidLoad()
 
     // Do any additional setup after loading the view.
+    self.firstButton.setTitle("팔로잉", for: .normal)
+    self.secondButton.setTitle("내 소식", for: .normal)
   }
 }

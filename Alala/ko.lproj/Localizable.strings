@@ -1,0 +1,45 @@
+/* 
+  Localizable.strings
+  Alala
+
+  Copyright © 2017 team-meteor. All rights reserved.
+*/
+"cancel" = "취소";
+"done" = "완료";
+
+"posts" = "게시물";
+"following" = "팔로잉";
+"followers" = "팔로워";
+
+"Archive" = "보관";
+"DiscoverPeople" = "사람 찾아보기";
+"private_information" = "개인 정보";
+"friends_from_facebook" = "Facebook 친구";
+"invite" = "초대";
+"id" = "아이디";
+
+"share_photos_and_videos" = "사진 및 동영상 공유";
+"share_photos_and_videos_guide" = "사진과 동영상을 공유하면 프로필에 표시됩니다.";
+"share_photos_and_videos_button" = "첫 번째 사진이나 동영상을 공유해보세요";
+
+"photos_for_you" = "회원님이 나온 사진";
+"photos_for_you_guide" = "사람들이 회원님을 사진에 태그하면 태그된 사진이 여기에 표시됩니다.";
+
+"saved" = "저장";
+"saved_guide" = "다시 보고 싶은 사진과 동영상을 저장하세요. 콘텐츠를 저장해도 다른 사람에게 알림이 전송되지 않으며, 저장된 콘텐츠는 회원님만 볼 수 있습니다.";
+"saved_collection" = "컬렉션 저장";
+"saved_collection_guide" = "컬렉션을 만들어 저장하는 항목을 분류해보세요. 첫 컬렉션을 시작하려면 + 기호를 누르세요.";
+"all" = "모두";
+"collection" = "컬렉션";
+
+"edit_profile" = "프로필 수정";
+"change_profile_photo" = "프로필 사진 바꾸기";
+"name" = "이름";
+"username" = "사용자 이름";
+"website" = "웹사이트";
+"bio" = "소개";
+"email" = "이메일";
+"phone" = "전화";
+"gender_none" = "입력되지 않음";
+"gender_male" = "남성";
+"gender_female" = "여성";

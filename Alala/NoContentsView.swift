@@ -27,21 +27,21 @@ class NoContentsView: UIView {
 
   let guideTitleLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 30)
-    $0.text = "Share Photos and Videos"
+    $0.text = LS("share_photos_and_videos")
     $0.textAlignment = .center
     $0.sizeToFit()
   }
 
   let guideDescLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 16)
-    $0.text = "When you share photos and videos, they'll appear on your profile."
+    $0.text = LS("share_photos_and_videos_guide")
     $0.textAlignment = .center
     $0.numberOfLines = 0
     $0.sizeToFit()
   }
 
   let addContentButton = UIButton().then {
-    $0.setTitle("Share your first photo or video", for: .normal)
+    $0.setTitle(LS("share_photos_and_videos_button"), for: .normal)
     $0.addTarget(self, action: #selector(addContentButtonTap(sender:)), for: .touchUpInside)
     $0.setTitleColor(UIColor.blue, for: .normal)
   }
@@ -89,8 +89,8 @@ class NoContentsView: UIView {
 
     guideDescLabel.snp.makeConstraints { (make) in
       make.top.equalTo(guideTitleLabel.snp.bottom).offset(10)
-      make.left.equalTo(innerView)
-      make.right.equalTo(innerView)
+      make.left.equalTo(innerView).offset(20)
+      make.right.equalTo(innerView).offset(-20)
     }
     addContentButton.snp.makeConstraints { (make) in
       make.top.equalTo(guideDescLabel.snp.bottom).offset(30)

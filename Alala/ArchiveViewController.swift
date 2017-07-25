@@ -14,7 +14,7 @@ class ArchiveViewController: UIViewController {
 
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = "Archive"
+      $0.text = LS("Archive")
       $0.sizeToFit()
     }
   }

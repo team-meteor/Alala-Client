@@ -146,7 +146,7 @@ class SelectionViewController: UIViewController {
   }
 
   func doneButtonDidTap() {
-    
+
   }
 
   func getMultipartArr(completion: @escaping (_ multipartArr: [Any]) -> Void) {
@@ -402,6 +402,7 @@ class SelectionViewController: UIViewController {
       return nil
     }
   }
+
   func videoMode() {
     self.imageView.isUserInteractionEnabled = true
     self.scrollView.setZoomScale(1.0, animated: true)
@@ -410,6 +411,7 @@ class SelectionViewController: UIViewController {
     self.scrollView.bounces = false
     self.scrollView.isScrollEnabled = false
   }
+
   func photoMode() {
     self.scrollView.maximumZoomScale = 3.0
     self.scrollView.minimumZoomScale = 0.8
@@ -577,6 +579,7 @@ extension SelectionViewController: UIScrollViewDelegate {
 }
 
 extension SelectionViewController: VideoPlayButtonDelegate {
+
   func playButtonDidTap(sender: UIButton, player: AVPlayer) {
     print("selection tap")
     if player.rate == 0 {
