@@ -36,14 +36,11 @@ class Post: NSObject, Mappable {
 }
 
 extension Notification.Name {
-  static var postDidLike: Notification.Name { return .init("postDidLike") }
-  static var postDidUnlike: Notification.Name { return .init("postDidUnlike") }
   static var preparePosting: Notification.Name { return .init("preparePosting") }
   static var postDidCreate: Notification.Name { return .init("postDidCreate") }
 }
 
 extension Post {
-
   override func diffIdentifier() -> NSObjectProtocol {
     return id as NSObjectProtocol
   }
