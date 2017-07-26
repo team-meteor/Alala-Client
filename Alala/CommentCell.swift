@@ -20,6 +20,13 @@ class CommentCell: UICollectionViewCell {
     fatalError("init(coder:) has not been implemented")
   }
 
+  override func prepareForReuse() {
+    super.prepareForReuse()
+    for label in labelContainer {
+      label.text = nil
+    }
+  }
+
   func configure(comments: [Comment]) {
     for comment in comments {
       if let profileName = comment.createdBy.profileName, profileName.characters.count > 0 && comment.content.characters.count > 0 {

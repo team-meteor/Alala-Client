@@ -39,6 +39,7 @@ class MultimediaCell: UICollectionViewCell {
   }
 
   func configure(post: Post) {
+
     self.post = post
     for item in post.multipartIds {
       if item.contains("_") {
@@ -56,6 +57,7 @@ class MultimediaCell: UICollectionViewCell {
         viewContainer.append(videoView)
       }
     }
+
     self.setNeedsLayout()
   }
 
