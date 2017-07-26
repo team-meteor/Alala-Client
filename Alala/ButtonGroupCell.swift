@@ -10,16 +10,17 @@ import UIKit
 
 protocol InteractiveButtonGroupCellDelegate: class {
   func commentButtondidTap(_ post: Post)
+  func likeButtonDidTap(_ post: Post)
 }
 
 extension InteractiveButtonGroupCellDelegate {
   func commentButtondidTap(_ post: Post) {}
+  func likeButtonDidTap(_ post: Post) {}
 }
 
 class ButtonGroupCell: UICollectionViewCell {
   weak var delegate: InteractiveButtonGroupCellDelegate?
   var post: Post!
-  var postID = String()
   let likeButton: UIButton = {
     let button = UIButton()
     let unlikeImage = UIImage(named: "heart")?.resizeImage(scaledToFit: 30)
@@ -80,7 +81,6 @@ class ButtonGroupCell: UICollectionViewCell {
 
   func configure(post: Post) {
     self.likeButton.isSelected = post.isLiked
-    self.postID = post.id
     self.post = post
   }
 
@@ -89,57 +89,13 @@ class ButtonGroupCell: UICollectionViewCell {
   }
 
   func likeButtonDidTap() {
-    if !self.likeButton.isSelected {
-      print("좋아요")
-      self.like()
+    self.likeButton.isSelected = !likeButton.isSelected
+    if self.post.isLiked == true {
+      post.likeCount! = max(0, post.likeCount - 1)
     } else {
-      print("좋아요 취소")
-      self.unlike()
+      post.likeCount! += 1
     }
-  }
-
-  func like() {
-    print("like", postID)
-    NotificationCenter.default.post(
-      name: .postDidLike,
-      object: self,
-      userInfo: ["post": post]
-    )
-    PostService.like(postID: self.postID) { response in
-      switch response.result {
-      case .success:
-        print("좋아요 성공!")
-
-      case .failure:
-        print("좋아요 실패 ㅠㅠ")
-        NotificationCenter.default.post(
-          name: .postDidUnlike,
-          object: self,
-          userInfo: ["post": self.post]
-        )
-      }
-    }
-  }
-
-  func unlike() {
-    print("unlike", postID)
-    NotificationCenter.default.post(
-      name: .postDidUnlike,
-      object: self,
-      userInfo: ["post": self.post]
-    )
-    PostService.unlike(postID: self.postID) { response in
-      switch response.result {
-      case .success:
-        print("좋아요 취소 성공!")
-      case .failure:
-        print("좋아요 취소 실패 ㅠㅠ")
-        NotificationCenter.default.post(
-          name: .postDidLike,
-          object: self,
-          userInfo: ["post": self.post]
-        )
-      }
-    }
+    self.post.isLiked = !post.isLiked
+    self.delegate?.likeButtonDidTap(self.post)
   }
 }
