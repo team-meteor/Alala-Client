@@ -14,6 +14,8 @@ class CommentViewController: UIViewController {
   let tableView: UITableView = {
     let view = UITableView()
     view.register(CommentTableCell.self, forCellReuseIdentifier: "commentCell")
+    view.allowsSelection = false
+
     return view
   }()
 
@@ -57,15 +59,16 @@ class CommentViewController: UIViewController {
     self.view.backgroundColor = UIColor.white
     self.tableView.delegate = self
     self.tableView.dataSource = self
-    self.tableView.allowsSelection = false
-    self.tabBarController?.tabBar.isHidden = true
+  }
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
   }
 
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     tableView.snp.makeConstraints { (make) in
       make.left.right.top.equalTo(self.view)
-      make.height.equalTo(self.tableViewHeight(comments: self.comments))
+      make.height.equalTo(max(50 + 64, self.tableViewHeight(comments: self.comments)))
     }
   }
   func tableViewHeight(comments: [Comment]) -> CGFloat {
@@ -96,11 +99,12 @@ extension CommentViewController: UITableViewDataSource {
 extension CommentViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
     let comment = comments[indexPath.row]
-    return TextSize.size(
+    let size = TextSize.size(
       comment.createdBy.profileName! + comment.content,
       font: UIFont.systemFont(ofSize: 15),
       width: self.view.frame.width,
       insets: UIEdgeInsets(top: 0, left: 45, bottom: 0, right: 10)
       ).height + 10
+    return max(size, 50)
   }
 }

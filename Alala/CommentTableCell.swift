@@ -33,16 +33,16 @@ class CommentTableCell: UITableViewCell {
 
   override func layoutSubviews() {
     super.layoutSubviews()
-    commentLabel.snp.makeConstraints({ (make) in
-      make.left.equalTo(self.profilePhoto.snp.right).offset(5)
-      make.right.equalTo(self.contentView.snp.right).offset(-10)
-      make.centerY.equalTo(self.contentView)
-//      make.top.bottom.equalTo(self.contentView)
-    })
     profilePhoto.snp.makeConstraints { (make) in
-      make.top.equalTo(self.commentLabel)
+      make.top.equalTo(self.contentView).offset(10)
       make.left.equalTo(self.contentView).offset(10)
       make.width.height.equalTo(30)
     }
+
+    commentLabel.snp.makeConstraints({ (make) in
+      make.left.equalTo(self.profilePhoto.snp.right).offset(10)
+      make.right.equalTo(self.contentView.snp.right).offset(-10)
+      make.top.equalTo(self.profilePhoto)
+    })
   }
 }
