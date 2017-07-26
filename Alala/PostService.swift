@@ -25,7 +25,7 @@ struct PostService {
     ]
 
     let body: [String : Any] = [
-      "content": message,
+      "content": message as Any,
       "multiparts": idArr
     ]
     Alamofire.request(Constants.BASE_URL + "post/add", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
