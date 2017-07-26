@@ -10,7 +10,9 @@ import UIKit
 import AVFoundation
 
 class MultimediaCell: UICollectionViewCell {
+  var post: Post!
   weak var delegate: VideoPlayButtonDelegate?
+  var viewContainer = [UIView]()
   let multimediaScrollView: UIScrollView = {
     let view = UIScrollView()
     view.backgroundColor = UIColor.yellow
@@ -22,15 +24,11 @@ class MultimediaCell: UICollectionViewCell {
   override init(frame: CGRect) {
     super.init(frame: frame)
     self.contentView.addSubview(multimediaScrollView)
-    multimediaScrollView.snp.makeConstraints { (make) in
-      make.size.equalTo(self.contentView)
-      make.centerY.equalTo(self.contentView)
-      make.centerX.equalTo(self.contentView)
-    }
   }
 
   override func prepareForReuse() {
     super.prepareForReuse()
+    viewContainer = [UIView]()
     for view in self.multimediaScrollView.subviews {
       view.removeFromSuperview()
     }
@@ -41,44 +39,43 @@ class MultimediaCell: UICollectionViewCell {
   }
 
   func configure(post: Post) {
-    var counter = 0
-    //scrollview 초기화
-    multimediaScrollView.subviews.forEach({$0.removeFromSuperview()})
-    multimediaScrollView.contentSize = CGSize(
-      width: self.contentView.frame.width * CGFloat(post.multipartIds.count),
-      height: self.contentView.frame.height
-    )
-    print(post.multipartIds)
+    self.post = post
     for item in post.multipartIds {
-
       if item.contains("_") {
         let imageView = UIImageView()
         imageView.setImage(with: item, size: .hd)
-        imageView.frame = CGRect(
-          x: self.contentView.bounds.width * CGFloat(counter),
-          y: 0,
-          width: self.contentView.bounds.width,
-          height: self.contentView.bounds.height)
         multimediaScrollView.addSubview(imageView)
-
+        viewContainer.append(imageView)
       } else { // video
         let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(item)")
-
         let videoView = VideoPlayerView(videoURL: url!)
-        videoView.frame = CGRect(
-          x: self.contentView.bounds.width * CGFloat(counter),
-          y: 0,
-          width: self.contentView.bounds.width,
-          height: self.contentView.bounds.height)
         videoView.addPlayerLayer()
-        multimediaScrollView.addSubview(videoView)
         videoView.playPlayer()
         videoView.delegate = self.delegate
-        self.contentView.isUserInteractionEnabled = true
+        multimediaScrollView.addSubview(videoView)
+        viewContainer.append(videoView)
       }
-      counter += 1
     }
-//    self.setNeedsLayout()
-    self.setNeedsDisplay()
+    self.setNeedsLayout()
+  }
+
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    print("layoutSubviews")
+    self.multimediaScrollView.frame = self.contentView.frame
+    let frame = self.multimediaScrollView.frame
+    multimediaScrollView.contentSize = CGSize(
+      width: frame.width * CGFloat(post.multipartIds.count),
+      height: frame.height
+    )
+    for (index, view) in viewContainer.enumerated() {
+      view.frame = CGRect(
+        x: frame.width * CGFloat(index),
+        y: 0,
+        width: frame.width,
+        height: frame.height
+      )
+    }
+    self.contentView.isUserInteractionEnabled = true
   }
 }
