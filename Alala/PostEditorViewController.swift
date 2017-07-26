@@ -33,10 +33,8 @@ class PostEditorViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-
     self.tableView.dataSource = self
     self.tableView.delegate = self
-
     self.view.addSubview(self.tableView)
   }
 
@@ -65,18 +63,15 @@ class PostEditorViewController: UIViewController {
       object: self,
       userInfo: ["postDic": postDic]
     )
-
     self.dismiss(animated: true, completion: nil)
   }
 
   deinit {
     NotificationCenter.default.removeObserver(self)
   }
-
 }
 
 extension PostEditorViewController: UITableViewDataSource {
-
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return 1
   }
@@ -96,7 +91,6 @@ extension PostEditorViewController: UITableViewDataSource {
 }
 
 extension PostEditorViewController: UITableViewDelegate {
-
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
     if indexPath.row == 0 { return 100 }
     return 0
