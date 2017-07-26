@@ -133,6 +133,7 @@ class FeedViewController: UIViewController {
       let multipartArr = postDic["multipartArr"] as? [Any],
       let message = postDic["message"] as? String? else { return }
     self.getMultipartsIdArr(multipartArray: multipartArr) { idArr in
+      print("prepare", idArr)
       PostService.postWithMultipart(idArr: idArr, message: message, progress: nil, completion: { [weak self] response in
         guard self != nil else { return }
         switch response.result {
@@ -195,7 +196,7 @@ class FeedViewController: UIViewController {
 
   func postDidLike(_ notification: Notification) {
     guard let info = notification.userInfo, let post = info["post"] as? Post else { return }
-        post.likeCount! += 1
+    post.likeCount! += 1
     post.isLiked = !post.isLiked
     self.adapter.reloadObjects([post])
   }

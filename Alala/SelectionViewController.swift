@@ -146,7 +146,17 @@ class SelectionViewController: UIViewController {
   }
 
   func doneButtonDidTap() {
+    if self.collectionView.indexPathsForSelectedItems?.count != 0 {
+      getMultipartArr { multipartArr in
+        
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
+        let croppedImage = Cropper().cropImage(image: self.imageView.image!, scrollView: self.scrollView, imageView: self.imageView, cropAreaView: self.cropAreaView)
+        let postEditorViewController = PostEditorViewController(image: croppedImage!)
 
+        postEditorViewController.multipartArr = multipartArr
+        self.navigationController?.pushViewController(postEditorViewController, animated: true)
+      }
+    }
   }
 
   func getMultipartArr(completion: @escaping (_ multipartArr: [Any]) -> Void) {

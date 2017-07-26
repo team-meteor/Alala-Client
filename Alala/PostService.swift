@@ -25,7 +25,7 @@ struct PostService {
     ]
 
     let body: [String : Any] = [
-      "description": message as Any,
+      "comments": message as Any,
       "multiparts": idArr
     ]
 
