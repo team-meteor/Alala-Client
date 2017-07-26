@@ -62,8 +62,6 @@ class FeedViewController: UIViewController {
     super.viewDidLoad()
     NotificationCenter.default.addObserver(self, selector: #selector(preparePosting), name: .preparePosting, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: .postDidCreate, object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(postDidLike), name: .postDidLike, object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(postDidUnlike), name: .postDidUnlike, object: nil)
     self.refreshControl.addTarget(self, action: #selector(self.refreshControlDidChangeValue), for: .valueChanged)
     self.collectionView.addSubview(self.refreshControl)
     self.navigationItem.titleView = UILabel().then {
@@ -193,20 +191,6 @@ class FeedViewController: UIViewController {
       tabBarVC.selectedIndex = 0
     }
   }
-
-  func postDidLike(_ notification: Notification) {
-    guard let info = notification.userInfo, let post = info["post"] as? Post else { return }
-    post.likeCount! += 1
-    post.isLiked = !post.isLiked
-    self.adapter.reloadObjects([post])
-  }
-
-  func postDidUnlike(_ notification: Notification) {
-    guard let info = notification.userInfo, let post = info["post"] as? Post else { return }
-    post.likeCount! = max(0, post.likeCount - 1)
-    post.isLiked = !post.isLiked
-    self.adapter.reloadObjects([post])
-  }
 }
 
 extension FeedViewController: ListAdapterDataSource {
@@ -230,6 +214,21 @@ extension FeedViewController: InteractiveButtonGroupCellDelegate {
   func commentButtondidTap(_ post: Post) {
     guard let comments = post.comments else { return }
     self.navigationController?.pushViewController(CommentViewController(comments: comments), animated: true)
+  }
+  func likeButtonDidTap(_ post: Post) {
+    let post = post
+    PostService.like(post: post) { response in
+      switch response.result {
+      case .success(let resultPost):
+        post.likeCount = resultPost.likeCount
+        post.isLiked = resultPost.isLiked
+        self.adapter.performUpdates(animated: false, completion: { _ in
+          self.adapter.reloadObjects([post])
+        })
+      case .failure:
+        print("failure")
+      }
+    }
   }
 }
 

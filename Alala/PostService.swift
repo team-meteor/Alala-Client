@@ -38,45 +38,25 @@ struct PostService {
     }
   }
 
-  static func like(postID: String, completion: @escaping (DataResponse<Post>) -> Void) {
-    guard let token = AuthService.instance.authToken else {
-      return
-    }
-
+  static func like(post: Post, completion: @escaping (DataResponse<Post>) -> Void) {
+    guard let token = AuthService.instance.authToken else { return }
     let headers = [
       "Authorization": "Bearer " + token,
       "Content-Type": "application/json; charset=utf-8"
     ]
 
     let body: [String : Any] = [
-      "id": postID
+      "id": post.id!
     ]
 
-    Alamofire.request(Constants.BASE_URL + "post/like", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
-      .validate(statusCode: 200..<300)
-      .responseJSON { response in
-        if let post = Mapper<Post>().map(JSONObject: response.result.value) {
-          let response = DataResponse(request: response.request, response: response.response, data: response.data, result: Result.success(post))
-          completion(response)
-        }
-    }
-  }
-
-  static func unlike(postID: String, completion: @escaping (DataResponse<Post>) -> Void) {
-    guard let token = AuthService.instance.authToken else {
-      return
+    var url = ""
+    if post.isLiked {
+      url = "like"
+    } else {
+      url = "unlike"
     }
 
-    let headers = [
-      "Authorization": "Bearer " + token,
-      "Content-Type": "application/json; charset=utf-8"
-    ]
-
-    let body: [String : Any] = [
-      "id": postID
-    ]
-
-    Alamofire.request(Constants.BASE_URL + "post/unlike", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
+    Alamofire.request(Constants.BASE_URL + "post/" + url, method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { response in
         if let post = Mapper<Post>().map(JSONObject: response.result.value) {
