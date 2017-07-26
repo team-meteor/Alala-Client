@@ -40,7 +40,7 @@ class PostSectionController: ListSectionController {
         return CGSize()
       }
     case 4: // comment cell
-      guard let comments = post.comments, comments.count > 0 else {
+      guard let comments = post.comments, comments.count > 0, comments[0].createdBy != nil else {
         return CGSize()
       }
       if let profileName = comments[0].createdBy.profileName {

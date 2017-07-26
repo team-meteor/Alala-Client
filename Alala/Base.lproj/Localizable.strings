@@ -43,3 +43,11 @@
 "gender_none" = "Not Specified";
 "gender_male" = "Male";
 "gender_female" = "Female";
+
+"activity_from_follow_menu" = "Following";
+"activity_you_menu" = "You";
+"activity_from_follow_title" = "Activity From People You Follow";
+"activity_from_follow_guide" = "When someone you follow comments on or likes someone else's post, you'll see it here.";
+"activity_from_follow_button" = "Find People to Follow";
+"activity_you_title" = "Activity On Your Posts";
+"activity_you_guide" = "When someone likes or comments on one of your posts, you'll see it here.";
