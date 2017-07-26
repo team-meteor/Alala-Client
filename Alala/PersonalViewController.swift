@@ -23,6 +23,8 @@ class PersonalViewController: UIViewController {
   fileprivate var nextPage: String?
   fileprivate var isLoading: Bool = false
 
+  fileprivate var profileUser: User?
+
   let discoverPeopleButton = UIBarButtonItem(
     image: UIImage(named: "add_user")?.resizeImage(scaledTolength: 25),
     style: .plain,
@@ -71,17 +73,29 @@ class PersonalViewController: UIViewController {
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
 
-    self.tabBarItem.image = UIImage(named: "personal")?.resizeImage(scaledTolength: 25)
-    self.tabBarItem.selectedImage = UIImage(named: "personal-selected")?.resizeImage(scaledTolength: 25)
-    self.tabBarItem.imageInsets.top = 5
-    self.tabBarItem.imageInsets.bottom = -5
+    if profileUser == nil {
+      profileUser = AuthService.instance.currentUser
 
-    self.navigationItem.leftBarButtonItem = discoverPeopleButton
-    self.navigationItem.rightBarButtonItem = archiveButton
+      self.tabBarItem.image = UIImage(named: "personal")?.resizeImage(scaledTolength: 25)
+      self.tabBarItem.selectedImage = UIImage(named: "personal-selected")?.resizeImage(scaledTolength: 25)
+      self.tabBarItem.imageInsets.top = 5
+      self.tabBarItem.imageInsets.bottom = -5
+
+      self.navigationItem.leftBarButtonItem = discoverPeopleButton
+      self.navigationItem.rightBarButtonItem = archiveButton
+    } else {
+
+    }
   }
 
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+
+  init(user: User) {
+    super.init(nibName: nil, bundle: nil)
+
+    profileUser = user
   }
 
   override func viewDidLoad() {
@@ -89,7 +103,7 @@ class PersonalViewController: UIViewController {
 
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = AuthService.instance.currentUser?.profileName
+      $0.text = profileUser?.profileName
       $0.sizeToFit()
     }
     self.navigationController?.navigationBar.topItem?.title = ""
@@ -115,7 +129,7 @@ class PersonalViewController: UIViewController {
       make.width.equalTo(scrollView)
     }
     personalInfoView.delegate = self
-    personalInfoView.setupUserInfo(userInfo: AuthService.instance.currentUser!)
+    personalInfoView.setupUserInfo(userInfo: profileUser!)
 
     //-- Section 3 : personal post list or no contents view (one of both)
     scrollView.addSubview(contentsView)

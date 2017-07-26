@@ -43,3 +43,11 @@
 "gender_none" = "입력되지 않음";
 "gender_male" = "남성";
 "gender_female" = "여성";
+
+"activity_from_follow_menu" = "팔로잉";
+"activity_you_menu" = "내 소식";
+"activity_from_follow_title" = "내가 팔로우 하는 사람들의 소식";
+"activity_from_follow_guide" = "팔로우하는 사람이 다른 사람의 게시물에 댓글을 달거나 좋아요를 누르면 여기에 표시됩니다.";
+"activity_from_follow_button" = "팔로우할 사람 찾기";
+"activity_you_title" = "내 게시물의 활동";
+"activity_you_guide" = "다른 사람이 회원님의 게시물을 좋아하거나 댓글을 남기면 여기에 표시됩니다.";
