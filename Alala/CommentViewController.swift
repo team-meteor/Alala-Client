@@ -14,6 +14,8 @@ class CommentViewController: UIViewController {
   let tableView: UITableView = {
     let view = UITableView()
     view.register(CommentTableCell.self, forCellReuseIdentifier: "commentCell")
+    view.allowsSelection = false
+
     return view
   }()
 
@@ -24,17 +26,22 @@ class CommentViewController: UIViewController {
 
   let sendButton: UIButton = {
     let button = UIButton()
+    button.imageView?.image = UIImage(named: "send")
     return button
   }()
 
-  let textView: UITextView = {
+  let textInputView: UITextView = {
     let view = UITextView()
+    view.text = "Add a comment..."
+    view.textColor = UIColor.lightGray
+    view.font = UIFont.boldSystemFont(ofSize: 17)
     return view
   }()
 
   let postButton: UIButton = {
     let button = UIButton()
     button.setTitle("Post", for: .normal)
+    button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
     return button
   }()
 
@@ -44,7 +51,7 @@ class CommentViewController: UIViewController {
     self.view.addSubview(tableView)
     self.view.addSubview(commentInputView)
     self.commentInputView.addSubview(sendButton)
-    self.commentInputView.addSubview(textView)
+    self.commentInputView.addSubview(textInputView)
     self.commentInputView.addSubview(postButton)
   }
 
@@ -57,15 +64,40 @@ class CommentViewController: UIViewController {
     self.view.backgroundColor = UIColor.white
     self.tableView.delegate = self
     self.tableView.dataSource = self
-    self.tableView.allowsSelection = false
-    self.tabBarController?.tabBar.isHidden = true
+    self.textInputView.delegate = self
+//    self.textInputView.becomeFirstResponder()
+  }
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
   }
 
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     tableView.snp.makeConstraints { (make) in
       make.left.right.top.equalTo(self.view)
-      make.height.equalTo(self.tableViewHeight(comments: self.comments))
+      make.height.equalTo(max(50 + 64, self.tableViewHeight(comments: self.comments)))
+    }
+    commentInputView.snp.makeConstraints { (make) in
+      make.width.equalTo(self.view)
+      make.height.equalTo(51.5)
+      make.centerX.equalTo(self.view)
+      make.bottom.equalTo(self.view)
+    }
+    sendButton.snp.makeConstraints { (make) in
+      make.width.height.equalTo(30)
+      make.centerY.equalTo(self.commentInputView)
+      make.left.equalTo(self.commentInputView).offset(10)
+    }
+    postButton.snp.makeConstraints { (make) in
+      make.width.height.equalTo(30)
+      make.centerY.equalTo(self.commentInputView)
+      make.right.equalTo(self.commentInputView)
+    }
+    textInputView.snp.makeConstraints { (make) in
+      make.left.equalTo(sendButton.snp.right)
+      make.right.equalTo(postButton.snp.left)
+      make.centerY.equalTo(commentInputView)
+      make.height.equalTo(commentInputView)
     }
   }
   func tableViewHeight(comments: [Comment]) -> CGFloat {
@@ -96,11 +128,26 @@ extension CommentViewController: UITableViewDataSource {
 extension CommentViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
     let comment = comments[indexPath.row]
-    return TextSize.size(
+    let size = TextSize.size(
       comment.createdBy.profileName! + comment.content,
       font: UIFont.systemFont(ofSize: 15),
       width: self.view.frame.width,
       insets: UIEdgeInsets(top: 0, left: 45, bottom: 0, right: 10)
       ).height + 10
+    return max(size, 50)
+  }
+}
+
+extension CommentViewController: UITextViewDelegate {
+  func textViewDidBeginEditing(_ textView: UITextView) {
+    textView.text = nil
+    textView.textColor = UIColor.black
+  }
+
+  func textViewDidEndEditing(_ textView: UITextView) {
+    if textView.text.isEmpty {
+      textView.text = "Placeholder"
+      textView.textColor = UIColor.lightGray
+    }
   }
 }

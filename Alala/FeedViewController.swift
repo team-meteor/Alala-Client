@@ -214,6 +214,7 @@ extension FeedViewController: ListAdapterDataSource {
 extension FeedViewController: InteractiveButtonGroupCellDelegate {
   func commentButtondidTap(_ post: Post) {
     guard let comments = post.comments else { return }
+    self.tabBarController?.tabBar.isHidden = true
     self.navigationController?.pushViewController(CommentViewController(comments: comments), animated: true)
   }
   func likeButtonDidTap(_ post: Post) {
