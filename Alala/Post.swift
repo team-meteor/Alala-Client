@@ -48,7 +48,9 @@ extension Post {
   override func isEqual(toDiffableObject object: ListDiffable?) -> Bool {
     guard self !== object else { return true }
     guard let object = object as? Post else { return false }
+    if let objectComments = object.comments, let comments = comments {
+      return id == object.id && multipartIds == object.multipartIds && comments == objectComments
+    }
     return id == object.id && multipartIds == object.multipartIds
   }
-
 }

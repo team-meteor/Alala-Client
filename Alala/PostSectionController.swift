@@ -15,7 +15,6 @@ class PostSectionController: ListSectionController {
   override init() {
     super.init()
     inset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-
   }
   override func numberOfItems() -> Int {
     return 5
@@ -44,6 +43,7 @@ class PostSectionController: ListSectionController {
       guard let comments = post.comments, comments.count > 0 else {
         return CGSize()
       }
+      print("comments.count", comments.count)
       if let profileName = comments[0].createdBy.profileName {
         let firstCommentHeight = TextSize.size(profileName + comments[0].content, font: UIFont.systemFont(ofSize: 15), width: UIScreen.main.bounds.width, insets: UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)).height
         // TODO : dynamic cell expand
@@ -88,8 +88,8 @@ class PostSectionController: ListSectionController {
       cell.delegate = self.viewController as? InteractiveButtonGroupCellDelegate
     } else if let cell = cell as? LikeCountCell {
       cell.configure(post: post)
-    } else if let cell = cell as? CommentCell, let comments = post.comments {
-      cell.configure(comments: comments)
+    } else if let cell = cell as? CommentCell {
+      cell.configure(post: post)
     }
     return cell
   }
