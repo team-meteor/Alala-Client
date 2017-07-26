@@ -105,12 +105,12 @@ class FeedViewController: UIViewController {
           self.posts.append(contentsOf: newPosts)
         }
         self.nextPage = feed.nextPage
-        self.adapter.performUpdates(animated: true, completion: nil)
+          self.adapter.performUpdates(animated: true, completion: nil)
       case .failure(let error):
         print(error)
+  }
       }
     }
-  }
 
   func refreshControlDidChangeValue() {
     self.fetchFeed(paging: .refresh)
@@ -130,9 +130,8 @@ class FeedViewController: UIViewController {
     guard let postDic = notification.userInfo?["postDic"] as? [String:Any],
       let multipartArr = postDic["multipartArr"] as? [Any],
       let message = postDic["message"] as? String? else { return }
-
     self.getMultipartsIdArr(multipartArray: multipartArr) { idArr in
-
+      print("prepare", idArr)
       PostService.postWithMultipart(idArr: idArr, message: message, progress: nil, completion: { [weak self] response in
         guard self != nil else { return }
         switch response.result {
