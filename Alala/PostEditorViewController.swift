@@ -33,6 +33,7 @@ class PostEditorViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
     self.tableView.dataSource = self
     self.tableView.delegate = self
     self.view.addSubview(self.tableView)
