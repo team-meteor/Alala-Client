@@ -42,6 +42,8 @@ class MultimediaCell: UICollectionViewCell {
 
   func configure(post: Post) {
     var counter = 0
+    //scrollview 초기화
+    multimediaScrollView.subviews.forEach({$0.removeFromSuperview()})
     multimediaScrollView.contentSize = CGSize(
       width: self.contentView.frame.width * CGFloat(post.multipartIds.count),
       height: self.contentView.frame.height
