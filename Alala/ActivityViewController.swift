@@ -36,6 +36,7 @@ class ActivityViewController: UIScrollTapMenuViewController {
     noContentsViewForFollowing.guideTitleLabel.text = LS("activity_from_follow_title")
     noContentsViewForFollowing.guideDescLabel.text = LS("activity_from_follow_guide")
     noContentsViewForFollowing.addContentButton.setTitle(LS("activity_from_follow_button"), for: .normal)
+    noContentsViewForFollowing.addContentButton.addTarget(self, action: #selector(moveToFindPeopleToFollow), for: .touchUpInside)
     self.firstTabView.addSubview(noContentsViewForFollowing)
     noContentsViewForFollowing.snp.makeConstraints { (make) in
       make.size.equalTo(self.firstTabView)
@@ -46,10 +47,21 @@ class ActivityViewController: UIScrollTapMenuViewController {
     noContentsViewForMe.guideTitleLabel.text = LS("activity_you_title")
     noContentsViewForMe.guideDescLabel.text = LS("activity_you_guide")
     noContentsViewForMe.addContentButton.setTitle(LS("share_photos_and_videos_button"), for: .normal)
+    noContentsViewForMe.addContentButton.addTarget(self, action: #selector(moveToCreateFirstPost), for: .touchUpInside)
     self.secondTabView.addSubview(noContentsViewForMe)
     noContentsViewForMe.snp.makeConstraints { (make) in
       make.size.equalTo(self.secondTabView)
       make.center.equalTo(self.secondTabView)
     }
+  }
+
+  func moveToFindPeopleToFollow() {
+    // todo
+  }
+
+  func moveToCreateFirstPost() {
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let tabBarVC = appDelegate.window?.rootViewController as! MainTabBarController
+    tabBarVC.presentWrapperViewController()
   }
 }
