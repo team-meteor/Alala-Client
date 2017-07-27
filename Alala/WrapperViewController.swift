@@ -201,6 +201,7 @@ extension WrapperViewController: UIScrollViewDelegate {
 			self.photoButton.setTitleColor(UIColor.lightGray, for: .normal)
 			self.videoButton.setTitleColor(UIColor.lightGray, for: .normal)
       NotificationCenter.default.post(name: Notification.Name("cameraStop"), object: nil)
+      NotificationCenter.default.post(name: Notification.Name("selectionViewScrollEnable"), object: nil)
 		} else if page == 1 {
 			photoModeOnTabBar()
 			NotificationCenter.default.post(name: Notification.Name("photoMode"), object: nil)
