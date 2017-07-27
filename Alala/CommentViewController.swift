@@ -39,12 +39,19 @@ class CommentViewController: UIViewController {
 
   let textInputView: UITextView = {
     let view = UITextView()
-    view.text = "Add a comment..."
-    view.textColor = UIColor(red:0.86, green:0.86, blue:0.86, alpha:1.00)
+    view.backgroundColor = UIColor.clear
     view.textContainerInset = UIEdgeInsets.zero
     view.textContainer.lineFragmentPadding = 0
     view.font = UIFont.systemFont(ofSize: 15)
     return view
+  }()
+
+  let placeholderLabel: UILabel = {
+    let label = UILabel()
+    label.text = "Add a comment..."
+    label.textColor = UIColor(red:0.86, green:0.86, blue:0.86, alpha:1.00)
+    label.font = UIFont.systemFont(ofSize: 15)
+    return label
   }()
 
   let postButton: UIButton = {
@@ -53,6 +60,7 @@ class CommentViewController: UIViewController {
     button.setTitle("Post", for: .normal)
     button.setTitleColor(UIColor(red:0.71, green:0.86, blue:0.99, alpha:1.00), for: .normal)
     button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
+    button.isEnabled = false
     return button
   }()
 
@@ -63,6 +71,7 @@ class CommentViewController: UIViewController {
     self.view.addSubview(commentInputView)
     self.commentInputView.addSubview(topBorder)
     self.commentInputView.addSubview(sendButton)
+    self.commentInputView.addSubview(placeholderLabel)
     self.commentInputView.addSubview(textInputView)
     self.commentInputView.addSubview(postButton)
   }
@@ -87,17 +96,10 @@ class CommentViewController: UIViewController {
 
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
-    print("viewDidLayoutSubviews !!!!!")
     tableView.snp.makeConstraints { (make) in
       make.left.right.top.equalTo(self.view)
       make.height.equalTo(max(50 + 64, self.tableViewHeight(comments: self.comments)))
     }
-//    commentInputView.snp.makeConstraints { (make) in
-//      make.width.equalTo(self.view)
-//      make.height.equalTo(51.5)
-//      make.centerX.equalTo(self.view)
-//      make.bottom.equalTo(self.view)
-//    }
     topBorder.snp.makeConstraints { (make) in
       make.width.equalTo(self.commentInputView)
       make.height.equalTo(1)
@@ -121,7 +123,12 @@ class CommentViewController: UIViewController {
       make.centerY.equalTo(commentInputView)
       make.height.equalTo(inputViewHeight)
     }
-
+    placeholderLabel.sizeToFit()
+    placeholderLabel.snp.makeConstraints { (make) in
+      make.left.equalTo(sendButton.snp.right).offset(10)
+      make.right.equalTo(postButton.snp.left)
+      make.centerY.equalTo(commentInputView)
+    }
   }
 
   func tableViewHeight(comments: [Comment]) -> CGFloat {
@@ -138,7 +145,6 @@ class CommentViewController: UIViewController {
   }
 
   func keyboardWillShow(_ notification: Notification) {
-    print("show")
     if let keyboardFrame: NSValue = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue {
       let keyboardRectangle = keyboardFrame.cgRectValue
       UIView.animate(withDuration: 10, animations: {
@@ -152,7 +158,6 @@ class CommentViewController: UIViewController {
     }
   }
   func keyboardWillHide(_ notification: Notification) {
-    print("hide")
     UIView.animate(withDuration: 10, animations: {
       self.commentInputView.snp.remakeConstraints({ (make) in
         make.width.equalTo(self.view)
@@ -194,15 +199,15 @@ extension CommentViewController: UITableViewDelegate {
 }
 
 extension CommentViewController: UITextViewDelegate {
-  func textViewDidBeginEditing(_ textView: UITextView) {
-    textView.text = nil
-    textView.textColor = UIColor.black
-  }
-
-  func textViewDidEndEditing(_ textView: UITextView) {
-    if textView.text.isEmpty {
-      textView.text = "Placeholder"
-      textView.textColor = UIColor.lightGray
+  func textViewDidChange(_ textView: UITextView) {
+    if textView.text.characters.count > 0 {
+      self.placeholderLabel.isHidden = true
+      postButton.isEnabled = true
+      postButton.setTitleColor(UIColor(red:0.24, green:0.60, blue:0.93, alpha:1.00), for: .normal)
+    } else {
+      self.placeholderLabel.isHidden = false
+      postButton.isEnabled = false
+      postButton.setTitleColor(UIColor(red:0.71, green:0.86, blue:0.99, alpha:1.00), for: .normal)
     }
   }
 }
