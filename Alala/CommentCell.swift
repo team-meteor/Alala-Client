@@ -9,6 +9,7 @@
 import UIKit
 
 class CommentCell: UICollectionViewCell {
+  var comments = [Comment]()
   var labelContainer = [CommentLabel]()
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -22,9 +23,9 @@ class CommentCell: UICollectionViewCell {
 
   override func prepareForReuse() {
     super.prepareForReuse()
-    for label in labelContainer {
-      label.text = nil
-    }
+    comments = [Comment]()
+    labelContainer = [CommentLabel]()
+    self.contentView.subviews.forEach({$0.removeFromSuperview()})
   }
 
   func configure(comments: [Comment]) {
@@ -38,6 +39,7 @@ class CommentCell: UICollectionViewCell {
         self.contentView.addSubview(label)
       }
     }
+    self.setNeedsLayout()
   }
 
   override func layoutSubviews() {

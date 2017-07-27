@@ -5,7 +5,6 @@
 //  Created by hoemoon on 29/06/2017.
 //  Copyright © 2017 team-meteor. All rights reserved.
 //
-
 import UIKit
 import AVFoundation
 
@@ -50,8 +49,6 @@ class MultimediaCell: UICollectionViewCell {
       } else { // video
         let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(item)")
         let videoView = VideoPlayerView(videoURL: url!)
-        videoView.addPlayerLayer()
-        videoView.playPlayer()
         videoView.delegate = self.delegate
         multimediaScrollView.addSubview(videoView)
         viewContainer.append(videoView)
@@ -77,6 +74,10 @@ class MultimediaCell: UICollectionViewCell {
         width: frame.width,
         height: frame.height
       )
+      if let video = view as? VideoPlayerView {
+        video.addPlayerLayer()
+        video.playPlayer()
+      }
     }
     self.contentView.isUserInteractionEnabled = true
   }

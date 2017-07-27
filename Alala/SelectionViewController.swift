@@ -327,9 +327,23 @@ class SelectionViewController: UIViewController {
       make.centerY.equalTo(self.buttonBarView)
       make.right.equalTo(self.buttonBarView).offset(-10)
     }
+    let tap = UIPanGestureRecognizer(target: self, action: #selector(buttonBarViewGesture))
+    buttonBarView.addGestureRecognizer(tap)
     self.scrollViewZoomButton.addTarget(self, action: #selector(scrollViewZoom), for: .touchUpInside)
     self.multiSelectButton.addTarget(self, action: #selector(multiSelectButtonDidTap), for: .touchUpInside)
     self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
+  }
+
+  func buttonBarViewGesture(_ recognizer: UIPanGestureRecognizer) {
+    if recognizer.state == .began {
+      print("begin")
+      NotificationCenter.default.post(name: Notification.Name("changeIsScrollEnabled"), object: nil)
+    }
+
+    if recognizer.state == .ended {
+      print("end")
+      NotificationCenter.default.post(name: Notification.Name("changeIsScrollEnabled"), object: nil)
+    }
   }
 
   func scrollViewZoom() {

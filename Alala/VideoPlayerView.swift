@@ -32,11 +32,11 @@ class VideoPlayerView: UIView {
     super.init(frame: CGRect.zero)
     self.player = AVPlayer(url: videoURL)
     NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { _ in
-      if self.player.rate != 0 {
-        self.player.seek(to: kCMTimeZero)
-        self.player.play()
-        print("endtime")
-      }
+
+      self.player.seek(to: kCMTimeZero)
+      self.player.play()
+      print("endtime")
+
     }
   }
 
