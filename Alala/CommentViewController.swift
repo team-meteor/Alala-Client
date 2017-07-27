@@ -7,15 +7,16 @@
 //
 
 import UIKit
+import SnapKit
 
 class CommentViewController: UIViewController {
   let comments: [Comment]!
+  var commentInputBottomConstraint: Constraint!
 
   let tableView: UITableView = {
     let view = UITableView()
     view.register(CommentTableCell.self, forCellReuseIdentifier: "commentCell")
     view.allowsSelection = false
-
     return view
   }()
 
@@ -24,23 +25,34 @@ class CommentViewController: UIViewController {
     return view
   }()
 
+  let topBorder: UIView = {
+    let view = UIView()
+    view.layer.borderColor = UIColor(red:0.86, green:0.86, blue:0.86, alpha:1.00).cgColor
+    view.layer.borderWidth = 1
+    return view
+  }()
+
   let sendButton: UIButton = {
     let button = UIButton()
-    button.imageView?.image = UIImage(named: "send")
+    button.setImage(UIImage(named: "send-gray"), for: .normal)
     return button
   }()
 
   let textInputView: UITextView = {
     let view = UITextView()
     view.text = "Add a comment..."
-    view.textColor = UIColor.lightGray
-    view.font = UIFont.boldSystemFont(ofSize: 17)
+    view.textColor = UIColor(red:0.86, green:0.86, blue:0.86, alpha:1.00)
+    view.textContainerInset = UIEdgeInsets.zero
+    view.textContainer.lineFragmentPadding = 0
+    view.font = UIFont.systemFont(ofSize: 15)
     return view
   }()
 
   let postButton: UIButton = {
     let button = UIButton()
+    button.contentEdgeInsets = UIEdgeInsets.zero
     button.setTitle("Post", for: .normal)
+    button.setTitleColor(UIColor(red:0.71, green:0.86, blue:0.99, alpha:1.00), for: .normal)
     button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
     return button
   }()
@@ -50,6 +62,7 @@ class CommentViewController: UIViewController {
     super.init(nibName: nil, bundle: nil)
     self.view.addSubview(tableView)
     self.view.addSubview(commentInputView)
+    self.commentInputView.addSubview(topBorder)
     self.commentInputView.addSubview(sendButton)
     self.commentInputView.addSubview(textInputView)
     self.commentInputView.addSubview(postButton)
@@ -65,10 +78,12 @@ class CommentViewController: UIViewController {
     self.tableView.delegate = self
     self.tableView.dataSource = self
     self.textInputView.delegate = self
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
+    self.view.addGestureRecognizer(
+      UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+    )
+
 //    self.textInputView.becomeFirstResponder()
-  }
-  override func viewDidAppear(_ animated: Bool) {
-    super.viewDidAppear(animated)
   }
 
   override func viewDidLayoutSubviews() {
@@ -81,7 +96,13 @@ class CommentViewController: UIViewController {
       make.width.equalTo(self.view)
       make.height.equalTo(51.5)
       make.centerX.equalTo(self.view)
-      make.bottom.equalTo(self.view)
+      commentInputBottomConstraint = make.bottom.equalTo(self.view).offset(0).constraint
+    }
+    topBorder.snp.makeConstraints { (make) in
+      make.width.equalTo(self.commentInputView)
+      make.height.equalTo(1)
+      make.top.equalTo(self.commentInputView)
+      make.centerX.equalTo(self.commentInputView)
     }
     sendButton.snp.makeConstraints { (make) in
       make.width.height.equalTo(30)
@@ -89,15 +110,16 @@ class CommentViewController: UIViewController {
       make.left.equalTo(self.commentInputView).offset(10)
     }
     postButton.snp.makeConstraints { (make) in
-      make.width.height.equalTo(30)
       make.centerY.equalTo(self.commentInputView)
-      make.right.equalTo(self.commentInputView)
+      make.right.equalTo(self.commentInputView).offset(-10)
     }
+    let inputViewHeight = TextSize.size(textInputView.text, font: UIFont.systemFont(ofSize: 17), width: commentInputView.frame.width - sendButton.frame.width - postButton.frame.height - 20).height
+
     textInputView.snp.makeConstraints { (make) in
-      make.left.equalTo(sendButton.snp.right)
+      make.left.equalTo(sendButton.snp.right).offset(10)
       make.right.equalTo(postButton.snp.left)
       make.centerY.equalTo(commentInputView)
-      make.height.equalTo(commentInputView)
+      make.height.equalTo(inputViewHeight)
     }
   }
   func tableViewHeight(comments: [Comment]) -> CGFloat {
@@ -112,6 +134,20 @@ class CommentViewController: UIViewController {
     }
     return height + 64
   }
+
+  func keyboardWillShow(_ notification: Notification) {
+    if let keyboardFrame: NSValue = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue {
+      let keyboardRectangle = keyboardFrame.cgRectValue
+//      commentInputBottomConstraint.deactivate()
+      commentInputBottomConstraint.update(offset: -keyboardRectangle.height)
+    }
+  }
+
+  func dismissKeyboard(recognizer: UITapGestureRecognizer) {
+    print(recognizer)
+//    view.endEditing(true)
+  }
+
 }
 
 extension CommentViewController: UITableViewDataSource {
