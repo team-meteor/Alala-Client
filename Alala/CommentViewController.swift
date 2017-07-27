@@ -11,7 +11,6 @@ import SnapKit
 
 class CommentViewController: UIViewController {
   let comments: [Comment]!
-  var commentInputBottomConstraint: Constraint!
 
   let tableView: UITableView = {
     let view = UITableView()
@@ -79,25 +78,26 @@ class CommentViewController: UIViewController {
     self.tableView.dataSource = self
     self.textInputView.delegate = self
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: .UIKeyboardWillHide, object: nil)
     self.view.addGestureRecognizer(
       UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
     )
-
-//    self.textInputView.becomeFirstResponder()
+    self.textInputView.becomeFirstResponder()
   }
 
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
+    print("viewDidLayoutSubviews !!!!!")
     tableView.snp.makeConstraints { (make) in
       make.left.right.top.equalTo(self.view)
       make.height.equalTo(max(50 + 64, self.tableViewHeight(comments: self.comments)))
     }
-    commentInputView.snp.makeConstraints { (make) in
-      make.width.equalTo(self.view)
-      make.height.equalTo(51.5)
-      make.centerX.equalTo(self.view)
-      commentInputBottomConstraint = make.bottom.equalTo(self.view).offset(0).constraint
-    }
+//    commentInputView.snp.makeConstraints { (make) in
+//      make.width.equalTo(self.view)
+//      make.height.equalTo(51.5)
+//      make.centerX.equalTo(self.view)
+//      make.bottom.equalTo(self.view)
+//    }
     topBorder.snp.makeConstraints { (make) in
       make.width.equalTo(self.commentInputView)
       make.height.equalTo(1)
@@ -121,7 +121,9 @@ class CommentViewController: UIViewController {
       make.centerY.equalTo(commentInputView)
       make.height.equalTo(inputViewHeight)
     }
+
   }
+
   func tableViewHeight(comments: [Comment]) -> CGFloat {
     var height = CGFloat()
     for comment in comments {
@@ -136,16 +138,33 @@ class CommentViewController: UIViewController {
   }
 
   func keyboardWillShow(_ notification: Notification) {
+    print("show")
     if let keyboardFrame: NSValue = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue {
       let keyboardRectangle = keyboardFrame.cgRectValue
-//      commentInputBottomConstraint.deactivate()
-      commentInputBottomConstraint.update(offset: -keyboardRectangle.height)
+      UIView.animate(withDuration: 10, animations: {
+        self.commentInputView.snp.remakeConstraints({ (make) in
+          make.width.equalTo(self.view)
+          make.height.equalTo(51.5)
+          make.centerX.equalTo(self.view)
+          make.bottom.equalTo(self.view).offset(-keyboardRectangle.height)
+        })
+      })
     }
+  }
+  func keyboardWillHide(_ notification: Notification) {
+    print("hide")
+    UIView.animate(withDuration: 10, animations: {
+      self.commentInputView.snp.remakeConstraints({ (make) in
+        make.width.equalTo(self.view)
+        make.height.equalTo(51.5)
+        make.centerX.equalTo(self.view)
+        make.bottom.equalTo(self.view)
+      })
+    })
   }
 
   func dismissKeyboard(recognizer: UITapGestureRecognizer) {
-    print(recognizer)
-//    view.endEditing(true)
+    view.endEditing(true)
   }
 
 }
