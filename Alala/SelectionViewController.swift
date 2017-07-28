@@ -70,7 +70,7 @@ class SelectionViewController: UIViewController {
     $0.layer.borderColor = UIColor.lightGray.cgColor
     $0.layer.borderWidth = 1 / UIScreen.main.scale
   }
-  fileprivate let buttonBarView = UIView().then {
+  fileprivate let buttonBarView = PassThroughView().then {
     $0.backgroundColor = UIColor.clear
   }
   fileprivate let scrollViewZoomButton = ZoomButton()
@@ -603,5 +603,18 @@ extension SelectionViewController: VideoPlayButtonDelegate {
       player.pause()
       sender.setImage(UIImage(named: "play"), for: .normal)
     }
+  }
+}
+
+/**
+ * superView에서의 터치는 무효화하는 커스텀 뷰
+ *
+ * - Note : SelectionViewController의 buttonBarView영역을 스크롤하면 다른 페이지로 이동하는 것을 방지하면서 subView 버튼들의 액션을 유지하기 위해 사용
+ */
+class PassThroughView: UIView {
+  override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    let result = super.hitTest(point, with: event)
+    if result == self { return nil }
+    return result
   }
 }
