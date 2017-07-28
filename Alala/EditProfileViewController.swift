@@ -35,10 +35,13 @@ class EditProfileViewController: UIViewController {
   }
   let contentTableView = UITableView()
 
-  let pickerDataSource = [LS("gender_none"), LS("gender_male"), LS("gender_female")]
-  let genderPicker = UIPickerView()
+  var genderPicker: UIPickerView?
+  var pickerDataSource: [String]?
 
   var allProfileItemArray: [[String:[ProfileItem]]] = []
+
+  let tableViewDefaultHeight: CGFloat = 44.0
+  var placeholderTextViewHeight: CGFloat = 44.0
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -70,7 +73,9 @@ class EditProfileViewController: UIViewController {
   }
 
   /**
-   * 각 row에 출력될 프로필 아이템 설정
+   * 테이블에 출력될 프로필 아이템 설정
+   *
+   * - Note : e.g. ["Section1":[Section1의 Row1,Section1의 Row2...],"Section2":[Section2의 Row1,Section1의 Row2...]]
    */
   func setupProfileItem() {
     allProfileItemArray = [
@@ -123,8 +128,6 @@ class EditProfileViewController: UIViewController {
       make.height.equalTo(20)
     }
     contentTableView.tableHeaderView = tableHeaderView
-
-    genderPicker.dataSource = self
   }
 
   func setupMyUserData() {
@@ -155,11 +158,18 @@ class EditProfileViewController: UIViewController {
 
     updateCurrentInfoToTempMe()
 
+    if (tempMe?.profileName?.characters.count)! <= 0 {
+      let alertView = UIAlertController(title: "", message: LS("username_needed"), preferredStyle: UIAlertControllerStyle.alert)
+      alertView.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+      self.present(alertView, animated: true, completion: nil)
+      return
+    }
+
     if User.isEqual(l:me!, r:tempMe!) {
-      // 변경사항 없음
+      //--- 변경사항 없음
       self.backNaviButtonTap()
     } else {
-      // 변경사항 존재
+      //--- 변경사항 존재
       if self.tempMe?.profilePhotoId?.characters.count == 0 {
         var imageArray = [UIImage]()
         imageArray.append(currentProfileImageView.image!)
@@ -194,6 +204,7 @@ class EditProfileViewController: UIViewController {
       }
     })
   }
+
   /**
    * 프로필 사진 ImageView Touch 혹은 프로필 사진 변경 버튼 선택 시
    */
@@ -251,6 +262,7 @@ extension EditProfileViewController: UITableViewDataSource {
 
     let cellReuseIdentifier: String
     if profileItem.key=="bio" {
+      ProfileItemBio.indexPath = indexPath
       cellReuseIdentifier = EditProfileTableViewCell.textViewCell
     } else {
       cellReuseIdentifier = EditProfileTableViewCell.textFieldCell
@@ -258,13 +270,14 @@ extension EditProfileViewController: UITableViewDataSource {
 
     let cell: EditProfileTableViewCell = contentTableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier) as! EditProfileTableViewCell
 
+    if cell.textView.superview != nil {
+      cell.textView.placeholderDelgate = self
+    }
+
     if profileItem.key=="gender" {
-      let gender = tempMe?.value(forKey: profileItem.key as String) as? String
-      if gender?.characters.count == 0 {
-        cell.setText(text: "입력되지 않음")
-      } else {
-        cell.setText(text: gender=="M" ? "남성" : "여성")
-      }
+      ProfileItemGender.indexPath = indexPath
+      let gender = tempMe?.value(forKey: profileItem.key as String) as! String
+      cell.setText(text: ProfileItemGender.getGenderValue(gender))
       cell.isEnable = false
     } else {
       let text: String? = tempMe?.value(forKey: profileItem.key) as? String
@@ -325,9 +338,43 @@ extension EditProfileViewController: UITableViewDataSource {
 }
 
 extension EditProfileViewController: UITableViewDelegate {
-  // method to run when table view cell is tapped
+  func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    if ProfileItemBio.indexPath == indexPath {
+      return max(tableViewDefaultHeight, placeholderTextViewHeight)
+    } else {
+      return tableViewDefaultHeight
+    }
+
+  }
+
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    print("You tapped cell number \(indexPath.row).")
+    //print("You tapped cell number \(indexPath.row).")
+    let dic: [String:[ProfileItem]] = allProfileItemArray[indexPath.section]
+    let arr: [ProfileItem] = dic.values.first!
+    let profileItem: ProfileItem = arr[indexPath.row]
+
+    if profileItem.key=="gender" {
+      self.pickerDataSource = ProfileItemGender.getGenderList()
+      self.genderPicker = UIPickerView()
+      self.genderPicker?.backgroundColor = UIColor.gray
+      self.genderPicker?.dataSource = self
+      self.genderPicker?.delegate = self
+      self.view.addSubview(self.genderPicker!)
+      self.genderPicker?.snp.makeConstraints({ (make) in
+        make.height.equalTo(200)
+        make.left.equalTo(self.view)
+        make.right.equalTo(self.view)
+        make.bottom.equalTo(self.view)
+      })
+    }
+  }
+}
+
+extension EditProfileViewController: UIPlaceholderTextViewDelegate {
+  func placeholderTextViewHeightChanged(_ height: CGFloat) {
+    placeholderTextViewHeight = height + 8 // textview height + margin 8
+    self.contentTableView.beginUpdates()
+    self.contentTableView.endUpdates()
   }
 }
 
@@ -337,11 +384,20 @@ extension EditProfileViewController: UIPickerViewDataSource {
   }
 
   func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-    return self.pickerDataSource.count
+    return (self.pickerDataSource?.count)!
+  }
+}
+
+extension EditProfileViewController: UIPickerViewDelegate {
+  func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+    return self.pickerDataSource?[row]
   }
 
-  func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
-    return self.pickerDataSource[row]
+  func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    let selectedValue = self.pickerDataSource?[row]
+    self.tempMe?.gender = ProfileItemGender.getGenderKey(selectedValue!)
+    self.contentTableView.reloadRows(at: [ProfileItemGender.indexPath!], with: .automatic)
+    self.genderPicker?.removeFromSuperview()
   }
 }
 
@@ -357,10 +413,47 @@ struct ProfileItem {
   }
 }
 
-//struct ProfileItemGender {
-//  enum genderType {
-//    case none
-//    case male
-//    case female
-//  }
-//}
+struct ProfileItemBio {
+  static var indexPath: IndexPath?
+}
+
+struct ProfileItemGender {
+
+  static let map: NSDictionary = ["": LS("gender_none"), "M": LS("gender_male"), "F": LS("gender_female")]
+
+  static var indexPath: IndexPath?
+
+  /**
+   * 화면에 출력될 성별 목록을 반환
+   *
+   * - returns : 성별 목록 Array (입력되지 않음, 남성, 여성)
+   */
+  static func getGenderList() -> [String] {
+    return ProfileItemGender.map.allValues as! [String]
+  }
+
+  /**
+   * User객체에 저장된 값에 해당하는 화면 출력용 문구를 반환
+   *
+   * - param : User객체에 저장되는 gender key (빈 String 혹은 M이나 F)
+   * - returns : key값에 매칭되어 실제 사용자가 화면에서 보는 문구 (입력되지 않음, 남성, 여성)
+   */
+  static func getGenderValue(_ key: String) -> String {
+    var value = ProfileItemGender.map.value(forKey: key) as! String
+    if value.characters.count <= 0 {
+      value = LS("gender_none") // default value
+    }
+    return value
+  }
+
+  /**
+   * 화면에 출력된 Gender정보를 User객체에 넣을 수 있는 key로 변환
+   *
+   * - param : 실제 사용자가 화면에서 보는 문구 (입력되지 않음, 남성, 여성)
+   * - returns : User객체에 저장되는 gender key (빈 String 혹은 M이나 F)
+   */
+  static func getGenderKey(_ value: String) -> String {
+    let keys = ProfileItemGender.map.allKeys(for: value)
+    return keys.first as! String
+  }
+}

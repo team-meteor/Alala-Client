@@ -36,6 +36,7 @@
 "change_profile_photo" = "Change Profile Photo";
 "name" = "name";
 "username" = "User name";
+"username_needed" = "Please choose a username.";
 "website" = "Website";
 "bio" = "Bio";
 "email" = "Email";

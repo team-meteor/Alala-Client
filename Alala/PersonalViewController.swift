@@ -25,6 +25,8 @@ class PersonalViewController: UIViewController {
 
   fileprivate var profileUser: User?
 
+  fileprivate let refreshControl = UIRefreshControl()
+
   let discoverPeopleButton = UIBarButtonItem(
     image: UIImage(named: "add_user")?.resizeImage(scaledTolength: 25),
     style: .plain,
@@ -102,6 +104,7 @@ class PersonalViewController: UIViewController {
     super.viewDidLoad()
 
     self.view.backgroundColor = UIColor.white
+    self.scrollView.backgroundColor = UIColor.white
 
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
@@ -109,6 +112,9 @@ class PersonalViewController: UIViewController {
       $0.sizeToFit()
     }
     self.navigationController?.navigationBar.topItem?.title = ""
+
+    self.refreshControl.addTarget(self, action: #selector(self.refreshControlDidChangeValue), for: .valueChanged)
+    self.scrollView.addSubview(self.refreshControl)
 
     self.view.addSubview(scrollView)
     scrollView.snp.makeConstraints { (make) in
@@ -254,6 +260,10 @@ class PersonalViewController: UIViewController {
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     self.navigationController?.isNavigationBarHidden = false
+  }
+
+  func refreshControlDidChangeValue() {
+    self.fetchFeedMine(paging: .refresh)
   }
 
   func profileUpdated(_ notification: Notification) {

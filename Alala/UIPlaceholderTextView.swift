@@ -3,13 +3,33 @@
 //  Alala
 //
 //  Created by Ellie Kwon on 2017. 7. 16..
-//  Copyright © 2017년 team-meteor. All rights reserved.
+//  Copyright © 2017 team-meteor. All rights reserved.
 //
 
 import UIKit
 
-class UIPlaceholderTextView: UITextView, UITextViewDelegate {
-  var placeholder: String = ""
+protocol UIPlaceholderTextViewDelegate {
+  func placeholderTextViewHeightChanged(_ height: CGFloat)
+}
+
+/**
+ * Placeholer를 보여줄 수 있는 커스텀 텍스트뷰
+ */
+class UIPlaceholderTextView: UITextView {
+
+  public var placeholderDelgate: UIPlaceholderTextViewDelegate?
+
+  var placeholder: String = "" {
+    didSet {
+      placeholderLabel.text = placeholder
+    }
+  }
+
+  let placeholderLabel =  UILabel().then {
+    $0.font = UIFont(name: "HelveticaNeue", size: 16)
+    $0.textColor = UIColor(rgb: 0xcccccc)
+    $0.sizeToFit()
+  }
 
   // MARK: - Initialize
   override init(frame: CGRect, textContainer: NSTextContainer?) {
@@ -24,50 +44,43 @@ class UIPlaceholderTextView: UITextView, UITextViewDelegate {
   func setupUI() {
     self.delegate = self
 
-    self.text = placeholder
+    self.addSubview(placeholderLabel)
+    placeholderLabel.snp.makeConstraints { (make) in
+      make.top.equalTo(self).offset(6)
+      make.left.equalTo(self).offset(6)
+      make.rightMargin.equalTo(self)
+      make.bottom.equalTo(placeholderLabel.frame.height)
+    }
 
     self.selectedTextRange = self.textRange(from: self.beginningOfDocument, to: self.beginningOfDocument)
   }
+}
 
+extension UIPlaceholderTextView: UITextViewDelegate {
   func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
 
-    // Combine the textView text and the replacement text to
-    // create the updated text string
-    //let currentText = textView.text
-    let updatedText = text
-
-    // If updated text view will be empty, add the placeholder
-    // and set the cursor to the beginning of the text view
-    if updatedText.isEmpty {
-
-      textView.text = placeholder
-      textView.textColor = UIColor.lightGray
-
-      textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
-
-      return false
-    }
-
-      // Else if the text view's placeholder is showing and the
-      // length of the replacement string is greater than 0, clear
-      // the text view and set its color to black to prepare for
-      // the user's entry
-    else if textView.textColor == UIColor.lightGray && !text.isEmpty {
-      textView.text = nil
-      textView.textColor = UIColor.black
+    if text.isEmpty, (textView.text.characters.count - range.length) <= 0 {
+      self.placeholderLabel.isHidden = false
+    } else if self.placeholderLabel.isHidden == false, !text.isEmpty {
+      self.placeholderLabel.isHidden = true
     }
 
     return true
   }
 
   func textViewDidBeginEditing(_ textView: UITextView) {
-    textView.textColor = textView.text.characters.count > 0 ? UIColor.black : UIColor.lightGray
+    self.placeholderLabel.isHidden = textView.text.characters.count > 0 ? true : false
   }
 
   func textViewDidEndEditing(_ textView: UITextView) {
-    if textView.text.isEmpty {
-      textView.text = placeholder
-      textView.textColor = UIColor.lightGray
+    self.placeholderLabel.isHidden = !textView.text.isEmpty
+  }
+
+  func textViewDidChange(_ textView: UITextView) {
+    let fixedWidth: CGFloat = textView.frame.size.width
+    let newSize: CGSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+    if self.placeholderDelgate != nil {
+      self.placeholderDelgate?.placeholderTextViewHeightChanged(newSize.height)
     }
   }
 }
