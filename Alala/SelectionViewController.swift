@@ -13,7 +13,7 @@ class SelectionViewController: UIViewController {
 
   let tileCellSpacing = CGFloat(1)
   var zoomMode: Bool = false
-  var photoViewMode: Bool = false
+  var photoViewMode: Bool = true
   var multiSelectMode: Bool = false
   let photosLimit: Int = 500
 
@@ -49,11 +49,10 @@ class SelectionViewController: UIViewController {
     $0.maximumZoomScale = 3.0
     $0.minimumZoomScale = 0.8
     $0.zoomScale = 1.0
-    $0.bouncesZoom = true
-    $0.alwaysBounceVertical = true
-    $0.alwaysBounceHorizontal = false
+    //$0.alwaysBounceVertical = false
+    //$0.alwaysBounceHorizontal = false
     $0.isUserInteractionEnabled = true
-    $0.clipsToBounds = true
+    //$0.clipsToBounds = false
   }
   fileprivate let imageView = UIImageView()
   fileprivate let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
@@ -96,7 +95,6 @@ class SelectionViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-
     let scrollViewDoubleTap = UITapGestureRecognizer(target: self, action: #selector(doubleTapped))
     scrollViewDoubleTap.numberOfTapsRequired = 2
     scrollView.addGestureRecognizer(scrollViewDoubleTap)
@@ -104,7 +102,6 @@ class SelectionViewController: UIViewController {
     NotificationCenter.default.addObserver(self, selector: #selector(fetchSmartUserAlbums), name: NSNotification.Name(rawValue: "fetchSmartUserAlbums"), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(fetchAllPhotoAlbum), name: NSNotification.Name(rawValue: "fetchAllPhotoAlbum"), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(tableViewOffMode), name: NSNotification.Name(rawValue: "tableViewOffMode"), object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(selectionViewScrollEnable), name: NSNotification.Name(rawValue: "selectionViewScrollEnable"), object: nil)
 
     self.collectionView.dataSource = self
     self.collectionView.delegate = self
@@ -213,12 +210,6 @@ class SelectionViewController: UIViewController {
     }
   }
 
-  func selectionViewScrollEnable() {
-    if photoViewMode {
-      scrollView.isScrollEnabled = true
-    }
-  }
-
   func updateFirstImageView() {
 
     let targetSize = CGSize(width:  600 * UIScreen.main.scale, height: 600 * UIScreen.main.scale)
@@ -270,12 +261,15 @@ class SelectionViewController: UIViewController {
     let imageViewWidth = imageView.frame.size.width
     let imageViewHeight = imageView.frame.size.height
 
-    if imageWidth >= imageHeight {
+    if imageWidth > imageHeight {
       imageWidth *= imageViewHeight / imageHeight
       imageHeight = imageViewHeight
-    } else {
+    } else if imageWidth < imageHeight {
       imageHeight *= imageViewWidth / imageWidth
       imageWidth = imageViewWidth
+    } else {
+      imageWidth *= imageViewHeight / imageHeight
+      imageHeight *= imageViewWidth / imageWidth
     }
     self.imageView.frame.size = CGSize(width: imageWidth, height: imageHeight)
   }
@@ -335,20 +329,24 @@ class SelectionViewController: UIViewController {
       make.centerY.equalTo(self.buttonBarView)
       make.right.equalTo(self.buttonBarView).offset(-10)
     }
-    let tap = UIPanGestureRecognizer(target: self, action: #selector(buttonBarViewGesture(_:)))
-    buttonBarView.addGestureRecognizer(tap)
+
     self.scrollViewZoomButton.addTarget(self, action: #selector(scrollViewZoom), for: .touchUpInside)
     self.multiSelectButton.addTarget(self, action: #selector(multiSelectButtonDidTap), for: .touchUpInside)
     self.libraryButton.addTarget(self, action: #selector(libraryButtonDidTap), for: .touchUpInside)
+    let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(buttonBarViewGesture(_:)))
+    buttonBarView.addGestureRecognizer(panGestureRecognizer)
   }
 
   func buttonBarViewGesture(_ recognizer: UIPanGestureRecognizer) {
     if recognizer.state == .began {
+      print("begin")
       NotificationCenter.default.post(name: Notification.Name("changeIsScrollEnabled"), object: nil)
     }
 
     if recognizer.state == .ended {
+      print("end")
       NotificationCenter.default.post(name: Notification.Name("changeIsScrollEnabled"), object: nil)
+      buttonBarView.isUserInteractionEnabled = true
     }
   }
 
@@ -387,9 +385,6 @@ class SelectionViewController: UIViewController {
     self.fetchResult = photoAlbum.fetchResult!
     self.tableWrapperVC?.view.removeFromSuperview()
     self.tableWrapperVC?.removeFromParentViewController()
-
-    //self.tableWrapperVC?.dismiss(animated: true, completion: nil)
-
     NotificationCenter.default.post(name: Notification.Name("showCustomTabBar"), object: nil)
     self.navigationItem.leftBarButtonItem = UIBarButtonItem(
       barButtonSystemItem: .cancel,
@@ -407,12 +402,8 @@ class SelectionViewController: UIViewController {
   func tableViewOnMode() {
     self.libraryButton.setTitle("Library ^", for: .normal)
     tableWrapperVC = TableViewWrapperController()
-
     self.view.addSubview((tableWrapperVC?.view)!)
     self.addChildViewController(tableWrapperVC!)
-
-    //self.present(tableWrapperVC!, animated: true, completion: nil)
-
     self.navigationItem.leftBarButtonItem = nil
     self.navigationItem.rightBarButtonItem = nil
   }
@@ -421,10 +412,8 @@ class SelectionViewController: UIViewController {
     let asset = AVAsset(url: videoUrl)
     let imageGenerator = AVAssetImageGenerator(asset: asset)
     imageGenerator.appliesPreferredTrackTransform = true
-
     var time = asset.duration
     time.value = min(time.value, 2)
-
     do {
       let imageRef = try imageGenerator.copyCGImage(at: time, actualTime: nil)
       return UIImage(cgImage: imageRef)
@@ -517,12 +506,6 @@ extension SelectionViewController: UICollectionViewDelegateFlowLayout {
   }
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
-    if self.allPhotos.count == photosLimit && self.fetchResult == self.allPhotos {
-
-      photoAlbum.getAllPhotos()
-
-    }
-
     let asset = fetchResult.object(at: indexPath.item)
 
     if asset.mediaType == .video {
@@ -587,21 +570,13 @@ extension SelectionViewController: UIScrollViewDelegate {
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
 
     let page = self.baseScrollView.contentOffset.y
-
     if page >= 44 {
       self.navigationController?.navigationBar.frame.origin.y = -44
-
     } else if page < 44 {
       self.navigationController?.navigationBar.frame.origin.y = -(page)
     }
     self.cropAreaView.backgroundColor = UIColor.black.withAlphaComponent(page / 600)
 
-    let contentOffX = scrollView.contentOffset.x
-    if photoViewMode && contentOffX > 0 && contentOffX >= imageView.frame.width - UIScreen.main.bounds.width {
-      scrollView.isScrollEnabled = false
-    } else {
-      scrollView.isScrollEnabled = true
-    }
   }
 
   func scrollViewDidZoom(_ scrollView: UIScrollView) {
