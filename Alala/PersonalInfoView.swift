@@ -152,7 +152,7 @@ class PersonalInfoView: UIView {
   }
 
   let savedMenuButton = UIButton().then {
-    $0.setImage(UIImage(named: "tag")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
+    $0.setImage(UIImage(named: "save")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
     $0.addTarget(self, action: #selector(savedMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
