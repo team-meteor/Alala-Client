@@ -36,6 +36,7 @@
 "change_profile_photo" = "프로필 사진 바꾸기";
 "name" = "이름";
 "username" = "사용자 이름";
+"username_needed" = "사용자 이름을 입력해 주세요.";
 "website" = "웹사이트";
 "bio" = "소개";
 "email" = "이메일";
