@@ -50,6 +50,7 @@ class WrapperViewController: UIViewController {
     NotificationCenter.default.addObserver(self, selector: #selector(showCustomTabBar), name: Notification.Name("showCustomTabBar"), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(hideCustomTabBar), name: Notification.Name("hideCustomTabBar"), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(dismissWrapperVC), name: Notification.Name("dismissWrapperVC"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(changeIsScrollEnabled), name: Notification.Name("changeIsScrollEnabled"), object: nil)
 
     self.addChildViewController(self.cameraViewController)
     self.scrollView.addSubview(self.cameraViewController.view)
@@ -114,6 +115,14 @@ class WrapperViewController: UIViewController {
 
   func dismissWrapperVC() {
     self.dismiss(animated: true, completion: nil)
+  }
+
+  func changeIsScrollEnabled() {
+    if scrollView.isScrollEnabled {
+      scrollView.isScrollEnabled = false
+    } else {
+      scrollView.isScrollEnabled = true
+    }
   }
 
   deinit {
@@ -192,6 +201,7 @@ extension WrapperViewController: UIScrollViewDelegate {
 			self.photoButton.setTitleColor(UIColor.lightGray, for: .normal)
 			self.videoButton.setTitleColor(UIColor.lightGray, for: .normal)
       NotificationCenter.default.post(name: Notification.Name("cameraStop"), object: nil)
+
 		} else if page == 1 {
 			photoModeOnTabBar()
 			NotificationCenter.default.post(name: Notification.Name("photoMode"), object: nil)

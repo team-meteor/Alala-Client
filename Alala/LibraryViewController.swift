@@ -40,7 +40,7 @@ class LibraryViewController: UIViewController {
   deinit {
     NotificationCenter.default.removeObserver(self)
     self.remove(asChildViewController: selectionViewController)
-    self.remove(asChildViewController: rejectViewController)
+    //self.remove(asChildViewController: rejectViewController)
 
   }
 

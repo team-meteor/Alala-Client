@@ -5,7 +5,6 @@
 //  Created by hoemoon on 05/06/2017.
 //  Copyright © 2017 team-meteor. All rights reserved.
 //
-
 import UIKit
 import IGListKit
 import Alamofire
@@ -105,12 +104,12 @@ class FeedViewController: UIViewController {
           self.posts.append(contentsOf: newPosts)
         }
         self.nextPage = feed.nextPage
-          self.adapter.performUpdates(animated: true, completion: nil)
+        self.adapter.performUpdates(animated: true, completion: nil)
       case .failure(let error):
         print(error)
-  }
       }
     }
+  }
 
   func refreshControlDidChangeValue() {
     self.fetchFeed(paging: .refresh)

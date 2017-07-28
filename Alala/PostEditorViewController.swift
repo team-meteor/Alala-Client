@@ -33,7 +33,7 @@ class PostEditorViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-
+    NotificationCenter.default.post(name: Notification.Name("changeIsScrollEnabled"), object: nil)
     self.tableView.dataSource = self
     self.tableView.delegate = self
     self.view.addSubview(self.tableView)
@@ -68,6 +68,7 @@ class PostEditorViewController: UIViewController {
   }
 
   deinit {
+    NotificationCenter.default.post(name: Notification.Name("changeIsScrollEnabled"), object: nil)
     NotificationCenter.default.removeObserver(self)
   }
 }
