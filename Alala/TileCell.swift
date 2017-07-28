@@ -11,15 +11,15 @@ class TileCell: UICollectionViewCell {
     $0.clipsToBounds = true
   }
 
-  let rightTopIconView = UIImageView()
+  let rightBottomDurationLabel = UILabel().then {
+    $0.textColor = UIColor.white
+    $0.font = $0.font.withSize(15)
+  }
 
   override init(frame: CGRect) {
-    isVideo = false
     super.init(frame: frame)
-
     self.contentView.addSubview(thumbnailImageView)
-    self.contentView.addSubview(rightTopIconView)
-
+    self.contentView.addSubview(rightBottomDurationLabel)
     thumbnailImageView.snp.makeConstraints { (make) in
       make.top.equalTo(self.contentView)
       make.left.equalTo(self.contentView)
@@ -27,11 +27,11 @@ class TileCell: UICollectionViewCell {
       make.bottom.equalTo(self.contentView)
     }
 
-    rightTopIconView.snp.makeConstraints { (make) in
-      make.top.equalTo(thumbnailImageView).offset(5)
-      make.right.equalTo(thumbnailImageView).offset(-5)
-      make.width.equalTo(20)
-      make.height.equalTo(20)
+    rightBottomDurationLabel.snp.makeConstraints { (make) in
+      make.bottom.equalTo(thumbnailImageView).offset(-2)
+      make.right.equalTo(thumbnailImageView).offset(-2)
+      make.width.equalTo(50)
+      make.height.equalTo(50)
     }
   }
 
@@ -70,18 +70,18 @@ class TileCell: UICollectionViewCell {
   override func prepareForReuse() {
     super.prepareForReuse()
     thumbnailImageView.image = nil
+    rightBottomDurationLabel.text = nil
   }
 
-  var isVideo: Bool {
-    didSet {
-      switch isVideo {
-      case true:
-        rightTopIconView.isHidden = false
-        rightTopIconView.image = UIImage(named: "video1")?.resizeImage(scaledTolength: 20)
-      case false:
-        rightTopIconView.isHidden = true
-      }
-    }
+  func setVideoLabel(duration: Float) {
+    let time = timeString(time: duration)
+    rightBottomDurationLabel.text = time
+  }
+
+  func timeString(time: Float) -> String {
+    let minutes = Int(time) / 60 % 60
+    let seconds = Int(time) % 60
+    return String(format:"%02i:%02i", minutes, seconds)
   }
 
 }

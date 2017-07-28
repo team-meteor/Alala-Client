@@ -438,6 +438,12 @@ class SelectionViewController: UIViewController {
     self.scrollView.isScrollEnabled = true
   }
 
+  func getMediaDuration(url: URL) -> Float {
+    let asset: AVURLAsset = AVURLAsset(url: url)
+    let duration: CMTime = asset.duration
+    return Float(CMTimeGetSeconds(duration))
+  }
+
 }
 
 extension SelectionViewController: UICollectionViewDelegate {
@@ -462,7 +468,15 @@ extension SelectionViewController: UICollectionViewDataSource {
 
     let targetSize = CGSize(width:  150 * UIScreen.main.scale, height: 150 * UIScreen.main.scale)
     if asset.mediaType == .video {
-      cell.isVideo = true
+      imageManager.requestAVAsset(forVideo: asset, options: nil, resultHandler: {(asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable : Any]?) -> Void in
+        if let urlAsset = asset as? AVURLAsset {
+          let localVideoUrl: URL = urlAsset.url as URL
+          DispatchQueue.main.async {
+            cell.setVideoLabel(duration: self.getMediaDuration(url: localVideoUrl))
+          }
+
+        }
+      })
     }
     imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
