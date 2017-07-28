@@ -339,12 +339,10 @@ class SelectionViewController: UIViewController {
 
   func buttonBarViewGesture(_ recognizer: UIPanGestureRecognizer) {
     if recognizer.state == .began {
-      print("begin")
       NotificationCenter.default.post(name: Notification.Name("changeIsScrollEnabled"), object: nil)
     }
 
     if recognizer.state == .ended {
-      print("end")
       NotificationCenter.default.post(name: Notification.Name("changeIsScrollEnabled"), object: nil)
       buttonBarView.isUserInteractionEnabled = true
     }
