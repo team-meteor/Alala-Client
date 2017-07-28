@@ -462,8 +462,10 @@ extension SelectionViewController: UICollectionViewDataSource {
     let asset = self.fetchResult.object(at: indexPath.item)
     cell.representedAssetIdentifier = asset.localIdentifier
 
-    let targetSize = CGSize(width:  100 * UIScreen.main.scale, height: 100 * UIScreen.main.scale)
-
+    let targetSize = CGSize(width:  150 * UIScreen.main.scale, height: 150 * UIScreen.main.scale)
+    if asset.mediaType == .video {
+      cell.isVideo = true
+    }
     imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
       if cell.representedAssetIdentifier == asset.localIdentifier && image != nil {
         cell.configure(photo: image!)
@@ -477,8 +479,8 @@ extension SelectionViewController: UICollectionViewDataSource {
         self.imageView.image = image
         self.centerScrollView(animated: false)
       }
-
     })
+
     return cell
   }
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
