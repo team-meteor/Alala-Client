@@ -62,7 +62,6 @@ class AfterRegisterViewController: UIViewController {
   }
 
   func doneButtonDidTap() {
-    // profile update
     guard let profileImage = profilePhoto.image, let username = usernameTextField.text, !username.isEmpty else {
       return
     }

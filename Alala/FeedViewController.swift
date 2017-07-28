@@ -11,7 +11,7 @@ import IGListKit
 import Alamofire
 import AVFoundation
 
-class FeedViewController: UIViewController {
+class FeedViewController: PostViewController {
 
   fileprivate let cameraButton = UIBarButtonItem(
     image: UIImage(named: "camera")?.resizeImage(scaledTolength: 25),
@@ -27,25 +27,14 @@ class FeedViewController: UIViewController {
     action: nil
   )
 
-  fileprivate var posts: [Post] = []
   fileprivate var nextPage: String?
   fileprivate var isLoading: Bool = false
 
   fileprivate let refreshControl = UIRefreshControl()
 
-  let collectionView: UICollectionView = {
-    let flowLayout = UICollectionViewFlowLayout()
-    let view = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
-    view.backgroundColor = UIColor.white
-    return view
-  }()
+  override init(_ posts: [Post] = []) {
+    super.init(posts)
 
-  lazy var adapter: ListAdapter = {
-    return ListAdapter(updater: ListAdapterUpdater(), viewController: self)
-  }()
-
-  override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-    super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     self.tabBarItem.image = UIImage(named: "feed")?.resizeImage(scaledTolength: 25)
     self.tabBarItem.selectedImage = UIImage(named: "feed-selected")?.resizeImage(scaledTolength: 25)
     self.tabBarItem.imageInsets.top = 5
@@ -64,22 +53,18 @@ class FeedViewController: UIViewController {
     NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: .postDidCreate, object: nil)
     self.refreshControl.addTarget(self, action: #selector(self.refreshControlDidChangeValue), for: .valueChanged)
     self.collectionView.addSubview(self.refreshControl)
+    self.fetchFeed(paging: .refresh)
+//    self.adapter.reloadData(completion: nil)
+  }
+
+  override func setupNavigation() {
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "IowanOldStyle-BoldItalic", size: 20)
       $0.text = "Alala"
       $0.sizeToFit()
     }
-    adapter.scrollViewDelegate = self
-    adapter.collectionView = collectionView
-    adapter.dataSource = self
-    view.addSubview(collectionView)
-    self.adapter.reloadData(completion: nil)
   }
 
-  override func viewDidLayoutSubviews() {
-    super.viewDidLayoutSubviews()
-    self.collectionView.frame = view.bounds
-  }
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     self.navigationController?.isNavigationBarHidden = false
@@ -127,12 +112,10 @@ class FeedViewController: UIViewController {
 
   func preparePosting(_ notification: Notification) {
     self.moveToFeedViewController()
-
     guard let postDic = notification.userInfo?["postDic"] as? [String:Any],
       let multipartArr = postDic["multipartArr"] as? [Any],
       let message = postDic["message"] as? String? else { return }
     self.getMultipartsIdArr(multipartArray: multipartArr) { idArr in
-      print("prepare", idArr)
       PostService.postWithMultipart(idArr: idArr, message: message, progress: nil, completion: { [weak self] response in
         guard self != nil else { return }
         switch response.result {
@@ -194,49 +177,8 @@ class FeedViewController: UIViewController {
   }
 }
 
-extension FeedViewController: ListAdapterDataSource {
-  func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
-    let items: [ListDiffable] = self.posts
-    return items
-  }
-  func listAdapter(_ listAdapter: ListAdapter, sectionControllerFor object: Any) -> ListSectionController {
-    if object is Post {
-      return PostSectionController()
-    } else {
-      return ListSectionController()
-    }
-  }
-  func emptyView(for listAdapter: ListAdapter) -> UIView? {
-    return nil
-  }
-}
-
-extension FeedViewController: InteractiveButtonGroupCellDelegate {
-  func commentButtondidTap(_ post: Post) {
-    guard let comments = post.comments else { return }
-    self.tabBarController?.tabBar.isHidden = true
-    self.navigationController?.pushViewController(CommentViewController(comments: comments), animated: true)
-  }
-  func likeButtonDidTap(_ post: Post) {
-    let post = post
-    PostService.like(post: post) { response in
-      switch response.result {
-      case .success(let resultPost):
-        post.likeCount = resultPost.likeCount
-        post.isLiked = resultPost.isLiked
-        self.adapter.performUpdates(animated: false, completion: { _ in
-          self.adapter.reloadObjects([post])
-        })
-      case .failure:
-        print("failure")
-      }
-    }
-  }
-}
-
 extension FeedViewController: VideoPlayButtonDelegate {
   func playButtonDidTap(sender: UIButton, player: AVPlayer) {
-    print("feed tap")
     if player.rate == 0 {
       player.play()
       sender.setImage(nil, for: .normal)

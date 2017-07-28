@@ -10,8 +10,7 @@ import UIKit
 import SnapKit
 
 class CommentViewController: UIViewController {
-  let comments: [Comment]!
-
+  let post: Post!
   let tableView: UITableView = {
     let view = UITableView()
     view.register(CommentTableCell.self, forCellReuseIdentifier: "commentCell")
@@ -21,6 +20,7 @@ class CommentViewController: UIViewController {
 
   let commentInputView: UIView = {
     let view = UIView()
+    view.backgroundColor = UIColor.white
     return view
   }()
 
@@ -64,16 +64,17 @@ class CommentViewController: UIViewController {
     return button
   }()
 
-  init(comments: [Comment]) {
-    self.comments = comments
+  init(post: Post) {
+    self.post = post
     super.init(nibName: nil, bundle: nil)
     self.view.addSubview(tableView)
     self.view.addSubview(commentInputView)
     self.commentInputView.addSubview(topBorder)
     self.commentInputView.addSubview(sendButton)
-    self.commentInputView.addSubview(placeholderLabel)
     self.commentInputView.addSubview(textInputView)
     self.commentInputView.addSubview(postButton)
+    self.commentInputView.addSubview(placeholderLabel)
+
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -86,20 +87,23 @@ class CommentViewController: UIViewController {
     self.tableView.delegate = self
     self.tableView.dataSource = self
     self.textInputView.delegate = self
+    self.tableView.tableFooterView = UIView()
+    self.postButton.addTarget(self, action: #selector(postButtonDidTap), for: .touchUpInside)
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: .UIKeyboardWillHide, object: nil)
     self.view.addGestureRecognizer(
       UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
     )
+
     self.textInputView.becomeFirstResponder()
   }
 
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     tableView.snp.makeConstraints { (make) in
-      make.left.right.top.equalTo(self.view)
-      make.height.equalTo(max(50 + 64, self.tableViewHeight(comments: self.comments)))
+      make.left.right.top.bottom.equalTo(self.view)
     }
+
     topBorder.snp.makeConstraints { (make) in
       make.width.equalTo(self.commentInputView)
       make.height.equalTo(1)
@@ -116,7 +120,6 @@ class CommentViewController: UIViewController {
       make.right.equalTo(self.commentInputView).offset(-10)
     }
     let inputViewHeight = TextSize.size(textInputView.text, font: UIFont.systemFont(ofSize: 17), width: commentInputView.frame.width - sendButton.frame.width - postButton.frame.height - 20).height
-
     textInputView.snp.makeConstraints { (make) in
       make.left.equalTo(sendButton.snp.right).offset(10)
       make.right.equalTo(postButton.snp.left)
@@ -131,17 +134,21 @@ class CommentViewController: UIViewController {
     }
   }
 
-  func tableViewHeight(comments: [Comment]) -> CGFloat {
-    var height = CGFloat()
-    for comment in comments {
-      height += TextSize.size(
-        comment.createdBy.profileName! + comment.content,
-        font: UIFont.systemFont(ofSize: 15),
-        width: self.view.frame.width,
-        insets: UIEdgeInsets(top: 0, left: 45, bottom: 0, right: 10)
-        ).height + 10
+  func postButtonDidTap() {
+    self.postButton.isEnabled = false
+    postButton.setTitleColor(UIColor(red:0.71, green:0.86, blue:0.99, alpha:1.00), for: .normal)
+    PostService.createComment(post: self.post, content: self.textInputView.text) { (response) in
+      switch response.result {
+      case .success(let resultComment):
+        self.post.comments?.append(resultComment)
+        self.tableView.reloadData()
+        self.postButton.isEnabled = true
+        self.postButton.setTitleColor(UIColor(red:0.24, green:0.60, blue:0.93, alpha:1.00), for: .normal)
+        self.textInputView.text = ""
+      case .failure:
+        print("failure")
+      }
     }
-    return height + 64
   }
 
   func keyboardWillShow(_ notification: Notification) {
@@ -171,28 +178,27 @@ class CommentViewController: UIViewController {
   func dismissKeyboard(recognizer: UITapGestureRecognizer) {
     view.endEditing(true)
   }
-
 }
 
 extension CommentViewController: UITableViewDataSource {
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = self.tableView.dequeueReusableCell(withIdentifier: "commentCell", for: indexPath) as! CommentTableCell
-    cell.configure(comment: self.comments[indexPath.row])
+    cell.configure(comment: self.post.comments![indexPath.row])
     return cell
   }
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return comments.count
+    return self.post.comments!.count
   }
 }
 
 extension CommentViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-    let comment = comments[indexPath.row]
+    let comment = self.post.comments![indexPath.row]
     let size = TextSize.size(
       comment.createdBy.profileName! + comment.content,
       font: UIFont.systemFont(ofSize: 15),
       width: self.view.frame.width,
-      insets: UIEdgeInsets(top: 0, left: 45, bottom: 0, right: 10)
+      insets: UIEdgeInsets(top: 0, left: 45, bottom: 10, right: 10)
       ).height + 10
     return max(size, 50)
   }

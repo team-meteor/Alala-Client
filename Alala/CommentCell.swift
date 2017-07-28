@@ -25,7 +25,7 @@ class CommentCell: UICollectionViewCell {
     guard let comments = post.comments else { return }
     self.comments = comments
     for comment in self.comments {
-      if let profileName = comment.createdBy.profileName, profileName.characters.count > 0 && comment.content.characters.count > 0 {
+      if let creator = comment.createdBy, let profileName = creator.profileName, profileName.characters.count > 0 && comment.content.characters.count > 0 {
         let label = CommentLabel()
         label.attributedText = NSMutableAttributedString(string: "@@" + profileName + " " + comment.content)
         label.numberOfLines = 0
