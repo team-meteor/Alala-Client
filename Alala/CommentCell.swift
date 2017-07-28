@@ -11,25 +11,20 @@ import UIKit
 class CommentCell: UICollectionViewCell {
   var comments = [Comment]()
   var labelContainer = [CommentLabel]()
-  override init(frame: CGRect) {
-    super.init(frame: frame)
-    print("override init")
-  }
-
-  required init?(coder aDecoder: NSCoder) {
-    print("coder init")
-    fatalError("init(coder:) has not been implemented")
-  }
 
   override func prepareForReuse() {
     super.prepareForReuse()
     comments = [Comment]()
     labelContainer = [CommentLabel]()
-    self.contentView.subviews.forEach({$0.removeFromSuperview()})
+    for view in self.contentView.subviews {
+      view.removeFromSuperview()
+    }
   }
 
-  func configure(comments: [Comment]) {
-    for comment in comments {
+  func configure(post: Post) {
+    guard let comments = post.comments else { return }
+    self.comments = comments
+    for comment in self.comments {
       if let profileName = comment.createdBy.profileName, profileName.characters.count > 0 && comment.content.characters.count > 0 {
         let label = CommentLabel()
         label.attributedText = NSMutableAttributedString(string: "@@" + profileName + " " + comment.content)
@@ -43,7 +38,6 @@ class CommentCell: UICollectionViewCell {
   }
 
   override func layoutSubviews() {
-    print("layoutSubviews")
     super.layoutSubviews()
     var preHeight: CGFloat = 0
     for label in labelContainer {
@@ -59,5 +53,4 @@ class CommentCell: UICollectionViewCell {
       }
     }
   }
-
 }

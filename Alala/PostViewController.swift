@@ -60,6 +60,7 @@ class PostViewController: UIViewController {
 
     adapter.collectionView = collectionView
     adapter.dataSource = self
+    adapter.collectionViewDelegate = self
     self.view.addSubview(collectionView)
     collectionView.snp.makeConstraints { (make) in
       make.top.equalTo(self.view)
@@ -110,5 +111,15 @@ extension PostViewController: ListAdapterDataSource {
   }
   func emptyView(for listAdapter: ListAdapter) -> UIView? {
     return nil
+  }
+}
+
+extension PostViewController: UICollectionViewDelegate {
+  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    if indexPath.row == 0 {
+      let selectedPost = self.posts[indexPath.section]
+      let profileVC = PersonalViewController(user:selectedPost.createdBy)
+      self.navigationController?.pushViewController(profileVC, animated: true)
+    }
   }
 }

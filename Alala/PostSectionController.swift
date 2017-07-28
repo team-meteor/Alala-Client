@@ -14,8 +14,7 @@ class PostSectionController: ListSectionController {
 
   override init() {
     super.init()
-    inset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-
+    inset = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
   }
   override func numberOfItems() -> Int {
     return 5
@@ -41,7 +40,7 @@ class PostSectionController: ListSectionController {
         return CGSize()
       }
     case 4: // comment cell
-      guard let comments = post.comments, comments.count > 0 else {
+      guard let comments = post.comments, comments.count > 0, comments[0].createdBy != nil else {
         return CGSize()
       }
       if let profileName = comments[0].createdBy.profileName {
@@ -88,8 +87,8 @@ class PostSectionController: ListSectionController {
       cell.delegate = self.viewController as? InteractiveButtonGroupCellDelegate
     } else if let cell = cell as? LikeCountCell {
       cell.configure(post: post)
-    } else if let cell = cell as? CommentCell, let comments = post.comments {
-      cell.configure(comments: comments)
+    } else if let cell = cell as? CommentCell {
+      cell.configure(post: post)
     }
     return cell
   }
