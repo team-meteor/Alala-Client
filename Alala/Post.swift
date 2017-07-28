@@ -36,14 +36,11 @@ class Post: NSObject, Mappable {
 }
 
 extension Notification.Name {
-  static var postDidLike: Notification.Name { return .init("postDidLike") }
-  static var postDidUnlike: Notification.Name { return .init("postDidUnlike") }
   static var preparePosting: Notification.Name { return .init("preparePosting") }
   static var postDidCreate: Notification.Name { return .init("postDidCreate") }
 }
 
 extension Post {
-
   override func diffIdentifier() -> NSObjectProtocol {
     return id as NSObjectProtocol
   }
@@ -51,7 +48,9 @@ extension Post {
   override func isEqual(toDiffableObject object: ListDiffable?) -> Bool {
     guard self !== object else { return true }
     guard let object = object as? Post else { return false }
+    if let objectComments = object.comments, let comments = comments {
+      return id == object.id && multipartIds == object.multipartIds && comments == objectComments
+    }
     return id == object.id && multipartIds == object.multipartIds
   }
-
 }

@@ -119,6 +119,7 @@ class FeedViewController: UIViewController {
   func postDidCreate(_ notification: Notification) {
     guard let post = notification.userInfo?["post"] as? Post else { return }
     self.posts.insert(post, at: 0)
+    self.adapter.reloadObjects([post])
     self.adapter.performUpdates(animated: true) { _ in
       self.adapter.reloadObjects([post])
     }
@@ -213,6 +214,7 @@ extension FeedViewController: ListAdapterDataSource {
 extension FeedViewController: InteractiveButtonGroupCellDelegate {
   func commentButtondidTap(_ post: Post) {
     guard let comments = post.comments else { return }
+    self.tabBarController?.tabBar.isHidden = true
     self.navigationController?.pushViewController(CommentViewController(comments: comments), animated: true)
   }
   func likeButtonDidTap(_ post: Post) {

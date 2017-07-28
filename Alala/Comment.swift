@@ -7,6 +7,7 @@
 //
 
 import ObjectMapper
+import IGListKit
 
 class Comment: NSObject, Mappable {
   var id: String!
@@ -26,5 +27,17 @@ class Comment: NSObject, Mappable {
     likedUsers <- map["likedUsers"]
     isLiked <- map["isLiked"]
     createdAt <- (map["createdAt"], DateTransform())
+  }
+}
+
+extension Comment {
+  override func diffIdentifier() -> NSObjectProtocol {
+    return id as NSObjectProtocol
+  }
+
+  override func isEqual(toDiffableObject object: ListDiffable?) -> Bool {
+    guard self !== object else { return true }
+    guard let object = object as? Comment else { return false }
+    return id == object.id && content == object.content
   }
 }
