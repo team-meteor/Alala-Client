@@ -43,7 +43,7 @@ class PostViewController: UIViewController {
     self.init([])
   }
 
-  init(_ posts: [Post]) {
+  init(_ posts: [Post] = []) {
     self.posts = posts
 
     super.init(nibName: nil, bundle: nil)
@@ -55,9 +55,7 @@ class PostViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-
     setupNavigation()
-
     adapter.collectionView = collectionView
     adapter.dataSource = self
     adapter.collectionViewDelegate = self
@@ -69,9 +67,13 @@ class PostViewController: UIViewController {
       make.bottom.equalTo(self.view)
     }
 
-    if posts.count > 0 {
-      self.adapter.performUpdates(animated: true, completion: nil)
-    }
+//    self.adapter.reloadData(completion: nil)
+    self.adapter.performUpdates(animated: true)
+  }
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    self.navigationController?.isNavigationBarHidden = false
+    self.tabBarController?.tabBar.isHidden = false
   }
 
   /**
@@ -99,7 +101,6 @@ class PostViewController: UIViewController {
 extension PostViewController: ListAdapterDataSource {
   func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
     let items: [ListDiffable] = self.posts
-    print("in objects", items)
     return items
   }
   func listAdapter(_ listAdapter: ListAdapter, sectionControllerFor object: Any) -> ListSectionController {
@@ -120,6 +121,28 @@ extension PostViewController: UICollectionViewDelegate {
       let selectedPost = self.posts[indexPath.section]
       let profileVC = PersonalViewController(user:selectedPost.createdBy)
       self.navigationController?.pushViewController(profileVC, animated: true)
+    }
+  }
+}
+
+extension PostViewController: InteractiveButtonGroupCellDelegate {
+  func commentButtondidTap(_ post: Post) {
+    self.tabBarController?.tabBar.isHidden = true
+    self.navigationController?.pushViewController(CommentViewController(post: post), animated: true)
+  }
+  func likeButtonDidTap(_ post: Post) {
+    let post = post
+    PostService.like(post: post) { response in
+      switch response.result {
+      case .success(let resultPost):
+        post.likeCount = resultPost.likeCount
+        post.isLiked = resultPost.isLiked
+        self.adapter.performUpdates(animated: false, completion: { _ in
+          self.adapter.reloadObjects([post])
+        })
+      case .failure:
+        print("failure")
+      }
     }
   }
 }

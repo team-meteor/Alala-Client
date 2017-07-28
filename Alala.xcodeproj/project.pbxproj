@@ -30,7 +30,6 @@
 		6F09C8D81EF0113600BCFFEF /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8D71EF0113600BCFFEF /* LoginViewController.swift */; };
 		6F09C8DA1EF013B900BCFFEF /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8D91EF013B900BCFFEF /* AuthService.swift */; };
 		6F09C8DE1EF101E800BCFFEF /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8DD1EF101E800BCFFEF /* Constants.swift */; };
-		6F09C8E01EF1058200BCFFEF /* DataResponse+MapResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8DF1EF1058200BCFFEF /* DataResponse+MapResults.swift */; };
 		6F09C8E21EF127C900BCFFEF /* AfterRegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8E11EF127C900BCFFEF /* AfterRegisterViewController.swift */; };
 		6F09C9021EF241F100BCFFEF /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C9011EF241F100BCFFEF /* SplashViewController.swift */; };
 		6F0A205F1EFA5D6700C71417 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0A205E1EFA5D6700C71417 /* Comment.swift */; };
@@ -136,7 +135,6 @@
 		6F09C8D71EF0113600BCFFEF /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		6F09C8D91EF013B900BCFFEF /* AuthService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		6F09C8DD1EF101E800BCFFEF /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		6F09C8DF1EF1058200BCFFEF /* DataResponse+MapResults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DataResponse+MapResults.swift"; sourceTree = "<group>"; };
 		6F09C8E11EF127C900BCFFEF /* AfterRegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AfterRegisterViewController.swift; sourceTree = "<group>"; };
 		6F09C9011EF241F100BCFFEF /* SplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		6F0A205E1EFA5D6700C71417 /* Comment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
@@ -357,14 +355,6 @@
 			name = Models;
 			sourceTree = "<group>";
 		};
-		6F5B85461EE52058009285DD /* Networking */ = {
-			isa = PBXGroup;
-			children = (
-				6F09C8DF1EF1058200BCFFEF /* DataResponse+MapResults.swift */,
-			);
-			name = Networking;
-			sourceTree = "<group>";
-		};
 		6F5B85471EE52064009285DD /* Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -373,7 +363,6 @@
 				6F09C8DD1EF101E800BCFFEF /* Constants.swift */,
 				6F09C8AD1EEA862E00BCFFEF /* Extensions */,
 				6F5B85451EE5204B009285DD /* Models */,
-				6F5B85461EE52058009285DD /* Networking */,
 				6FBD85501F04CDE20097B82A /* SectionControllers */,
 				6F09C8CB1EEE6A1E00BCFFEF /* Services */,
 				6F5B85431EE52037009285DD /* ViewControllers */,
@@ -546,7 +535,7 @@
 				TargetAttributes = {
 					6FFC06A81EE3D49000E542BC = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = TM6U8P8E5J;
+						DevelopmentTeam = UJ82UGU342;
 						ProvisioningStyle = Automatic;
 					};
 					6FFC06BC1EE3D49000E542BC = {
@@ -689,7 +678,6 @@
 				6F09C9021EF241F100BCFFEF /* SplashViewController.swift in Sources */,
 				992170921F0CA55A00D03E01 /* PostGridCell.swift in Sources */,
 				99C654F41F03F50A0005AD3E /* OptionsViewController.swift in Sources */,
-				6F09C8E01EF1058200BCFFEF /* DataResponse+MapResults.swift in Sources */,
 				6F01C29D1EF7999000552782 /* PostCardCell.swift in Sources */,
 				6F5B854F1EE52B3B009285DD /* DiscoverViewController.swift in Sources */,
 				487394021EFE467300B3E1D0 /* CameraViewController.swift in Sources */,
@@ -894,7 +882,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = TM6U8P8E5J;
+				DEVELOPMENT_TEAM = UJ82UGU342;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -912,7 +900,7 @@
 					"-weak_framework",
 					RevealServer,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = codesquad.kraa;
+				PRODUCT_BUNDLE_IDENTIFIER = hoemoon.com;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -922,7 +910,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = TM6U8P8E5J;
+				DEVELOPMENT_TEAM = UJ82UGU342;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -940,7 +928,7 @@
 					"-weak_framework",
 					RevealServer,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = codesquad.kraa;
+				PRODUCT_BUNDLE_IDENTIFIER = hoemoon.com;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
