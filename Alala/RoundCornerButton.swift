@@ -26,6 +26,9 @@ class RoundCornerButton: UIButton {
   var nomalBorderColor: UIColor!
   var highlightBorderColor: UIColor!
 
+  var nomalBackgroundColor: UIColor!
+  var highlightBackgroundColor: UIColor!
+
   override init(frame: CGRect) {
     super.init(frame: frame)
 
@@ -51,6 +54,8 @@ class RoundCornerButton: UIButton {
   }
 
   func setupCommon() {
+    self.backgroundColor = nomalBackgroundColor
+
     self.layer.borderColor = nomalBorderColor.cgColor
     self.layer.cornerRadius = 3
     self.layer.borderWidth = 1
@@ -59,17 +64,23 @@ class RoundCornerButton: UIButton {
   }
 
   func setupWhiteType() {
-    nomalBorderColor = UIColor(rgb: 0xdddddd)
-    highlightBorderColor = UIColor(rgb: 0xeeeeee)
     self.setTitleColor(UIColor.black, for: .normal)
-    self.backgroundColor = UIColor.white
+
+    nomalBorderColor = UIColor(rgb: 0xdddddd)
+    nomalBackgroundColor = UIColor.white
+
+    highlightBorderColor = UIColor(rgb: 0xeeeeee)
+    highlightBackgroundColor = UIColor.white
   }
 
   func setupBlueType() {
-    nomalBorderColor = UIColor(rgb: 0x3E99ED)
-    highlightBorderColor = UIColor(rgb: 0x3E99ED)
     self.setTitleColor(UIColor.white, for: .normal)
-    self.backgroundColor = UIColor(rgb: 0x3E99ED)
+
+    nomalBorderColor = UIColor(rgb: 0x3E99ED)
+    nomalBackgroundColor = UIColor(rgb: 0x3E99ED)
+
+    highlightBorderColor = UIColor(rgb: 0x3EB7ED)
+    highlightBackgroundColor = UIColor(rgb: 0x3EB7ED)
   }
 
   override var isHighlighted: Bool {
@@ -77,8 +88,10 @@ class RoundCornerButton: UIButton {
       switch isHighlighted {
       case true:
         layer.borderColor = highlightBorderColor.cgColor
+        self.backgroundColor = highlightBackgroundColor
       case false:
         layer.borderColor = nomalBorderColor.cgColor
+        self.backgroundColor = nomalBackgroundColor
       }
     }
   }

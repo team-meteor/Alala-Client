@@ -11,6 +11,10 @@
 "following" = "팔로잉";
 "followers" = "팔로워";
 
+"button_follow" = "팔로우";
+"button_following" = "팔로잉";
+"button_hide" = "숨김";
+
 "Archive" = "보관";
 "DiscoverPeople" = "사람 찾아보기";
 "private_information" = "개인 정보";

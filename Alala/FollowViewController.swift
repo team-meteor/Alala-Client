@@ -17,7 +17,7 @@ import UIKit
  * ViewController생성시 'FollowType'을 지정하여 구분하도록 한다.
  *
  */
-class FollowViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+class FollowViewController: UIViewController, UISearchBarDelegate {
 
   enum FollowType: String {
     case follower
@@ -111,8 +111,9 @@ class FollowViewController: UIViewController, UITableViewDelegate, UITableViewDa
     contentTableView.register(EditProfileTableViewCell.self, forCellReuseIdentifier: EditProfileTableViewCell.cellReuseIdentifier)
     contentTableView.tableFooterView = UIView()
   }
+}
 
-  // MARK: Tableview DataSource
+extension FollowViewController: UITableViewDataSource {
   func numberOfSections(in tableView: UITableView) -> Int {
     return 2
   }
@@ -153,10 +154,6 @@ class FollowViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
   }
 
-  func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-    return 40
-  }
-
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     let view = UIBorderView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 40))
     view.topBorderLine.isHidden = false
@@ -164,11 +161,12 @@ class FollowViewController: UIViewController, UITableViewDelegate, UITableViewDa
 
     let label = UILabel()
     view.addSubview(label)
-    label.font = UIFont.systemFont(ofSize: 10)
+    label.font = UIFont.boldSystemFont(ofSize: 12)
+    label.textColor = UIColor.lightGray
     view.backgroundColor = UIColor(rgb: 0xeeeeee)
     label.snp.makeConstraints { (make) in
-      make.leftMargin.equalTo(view).offset(10)
-      make.bottomMargin.equalTo(view)
+      make.left.equalTo(view).offset(10)
+      make.bottom.equalTo(view)
       make.rightMargin.equalTo(view)
       make.height.equalTo(18)
     }
@@ -180,6 +178,16 @@ class FollowViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
 
     return view
+  }
+}
+
+extension FollowViewController: UITableViewDelegate {
+  func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    return 50
+  }
+
+  func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    return 40
   }
 
   func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {

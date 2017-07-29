@@ -11,6 +11,10 @@
 "following" = "following";
 "followers" = "followers";
 
+"button_follow" = "Follow";
+"button_following" = "Following";
+"button_hide" = "Hide";
+
 "Archive" = "Archive";
 "DiscoverPeople" = "DiscoverPeople";
 "private_information" = "PRIVATE INFORMATION";
