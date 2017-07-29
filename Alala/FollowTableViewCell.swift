@@ -41,7 +41,6 @@ class FollowTableViewCell: UITableViewCell {
   }
 
   let userIDLabel = UILabel().then {
-    //    $0.font = UIFont(name: "HelveticaNeue", size: 10)
     $0.font = UIFont.boldSystemFont(ofSize: 12.0)
     $0.text = LS("id")
     $0.sizeToFit()
@@ -55,29 +54,25 @@ class FollowTableViewCell: UITableViewCell {
   }
 
   let followButton = RoundCornerButton(type: .buttonColorTypeBlue).then {
-    $0.setTitle("팔로우", for: .normal)
+    $0.setTitle(LS("button_follow"), for: .normal)
     $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
-    $0.addTarget(self, action: #selector(followButtonDidTap), for: .touchUpInside)
   }
   var followButtonWidthConstraint: Constraint?
 
   let followingButton = RoundCornerButton(type: .buttonColorTypeWhite).then {
-    $0.setTitle("팔로잉", for: .normal)
+    $0.setTitle(LS("button_following"), for: .normal)
     $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
-    $0.addTarget(self, action: #selector(followingButtonDidTap), for: .touchUpInside)
   }
   var followingButtonWidthConstraint: Constraint?
 
   let hideButton = RoundCornerButton(type: .buttonColorTypeWhite).then {
-    $0.setTitle("숨김", for: .normal)
+    $0.setTitle(LS("button_hide"), for: .normal)
     $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
-    $0.addTarget(self, action: #selector(hideButtonDidTap), for: .touchUpInside)
   }
   var hideButtonWidthConstraint: Constraint?
 
   let deleteButton = UIButton().then {
     $0.setImage(UIImage(named: "more")?.resizeImage(scaledTolength: 10), for: .normal)
-    $0.addTarget(self, action: #selector(deleteButtonDidTap), for: .touchUpInside)
   }
   var deleteButtonWidthConstraint: Constraint?
 
@@ -113,6 +108,7 @@ class FollowTableViewCell: UITableViewCell {
       make.bottom.equalTo(self).offset(-8)
     }
 
+    followButton.addTarget(self, action: #selector(followButtonDidTap), for: .touchUpInside)
     followButton.snp.makeConstraints { (make) in
       make.centerY.equalTo(self)
       make.right.equalTo(followingButton.snp.left).offset(-5)
@@ -120,6 +116,7 @@ class FollowTableViewCell: UITableViewCell {
       followButtonWidthConstraint = make.width.equalTo(80).constraint
     }
 
+    followingButton.addTarget(self, action: #selector(followingButtonDidTap), for: .touchUpInside)
     followingButton.snp.makeConstraints { (make) in
       make.centerY.equalTo(self)
       make.right.equalTo(hideButton.snp.left).offset(-5)
@@ -127,6 +124,7 @@ class FollowTableViewCell: UITableViewCell {
       followingButtonWidthConstraint = make.width.equalTo(80).constraint
     }
 
+    hideButton.addTarget(self, action: #selector(hideButtonDidTap), for: .touchUpInside)
     hideButton.snp.makeConstraints { (make) in
       make.centerY.equalTo(self)
       make.right.equalTo(deleteButton.snp.left).offset(-5)
@@ -134,6 +132,7 @@ class FollowTableViewCell: UITableViewCell {
       hideButtonWidthConstraint = make.width.equalTo(80).constraint
     }
 
+    deleteButton.addTarget(self, action: #selector(deleteButtonDidTap), for: .touchUpInside)
     deleteButton.snp.makeConstraints { (make) in
       make.centerY.equalTo(self)
       make.right.equalTo(self).offset(-5)

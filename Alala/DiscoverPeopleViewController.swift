@@ -35,6 +35,7 @@ class DiscoverPeopleViewController: UIViewController {
 
     contentTableView.register(FollowTableViewCell.self, forCellReuseIdentifier: FollowTableViewCell.cellReuseIdentifier)
     contentTableView.tableFooterView = UIView()
+    contentTableView.allowsSelection = false
   }
 }
 
