@@ -36,7 +36,7 @@ class WrapperViewController: UIViewController {
 	}
 
 	fileprivate let customTabBar = UIView().then {
-		$0.backgroundColor = UIColor.cyan
+		$0.backgroundColor = UIColor(red: 249, green: 249, blue: 249)
 	}
 
 	fileprivate let libraryViewController = LibraryViewController()
