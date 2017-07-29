@@ -17,6 +17,7 @@
 		48D41E291F1F409000868F58 /* FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D41E281F1F409000868F58 /* FileManager.swift */; };
 		48D41E2B1F1F445300868F58 /* Cropper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D41E2A1F1F445300868F58 /* Cropper.swift */; };
 		48D41E2D1F2108FC00868F58 /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D41E2C1F2108FC00868F58 /* VideoPlayerView.swift */; };
+		48F480E71F2C8CF80092213C /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F480E61F2C8CF80092213C /* UserService.swift */; };
 		48F73CA21EF50FDB00E75022 /* RejectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F73CA11EF50FDB00E75022 /* RejectViewController.swift */; };
 		48F73CA41EF60ABA00E75022 /* LibraryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F73CA31EF60ABA00E75022 /* LibraryViewController.swift */; };
 		48F73CA61EF613F400E75022 /* WrapperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F73CA51EF613F400E75022 /* WrapperViewController.swift */; };
@@ -67,6 +68,7 @@
 		6FFDBF871F20968A0019EC64 /* CommentLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFDBF861F20968A0019EC64 /* CommentLabel.swift */; };
 		6FFDBF891F21B6DD0019EC64 /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFDBF881F21B6DD0019EC64 /* CommentViewController.swift */; };
 		6FFDBF8B1F21C6A70019EC64 /* CommentTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFDBF8A1F21C6A70019EC64 /* CommentTableCell.swift */; };
+		9904A2C51F2C66F6004DC0EA /* FollowTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9904A2C41F2C66F6004DC0EA /* FollowTableViewCell.swift */; };
 		9905A9951F20B9960063DDB1 /* UIScrollTapMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9905A9941F20B9960063DDB1 /* UIScrollTapMenuViewController.swift */; };
 		9905A9A01F23B28D0063DDB1 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9905A9A21F23B28D0063DDB1 /* Localizable.strings */; };
 		9905A9A51F25C9070063DDB1 /* Localized.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9905A9A41F25C9070063DDB1 /* Localized.swift */; };
@@ -120,6 +122,7 @@
 		48D41E281F1F409000868F58 /* FileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileManager.swift; sourceTree = "<group>"; };
 		48D41E2A1F1F445300868F58 /* Cropper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cropper.swift; sourceTree = "<group>"; };
 		48D41E2C1F2108FC00868F58 /* VideoPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
+		48F480E61F2C8CF80092213C /* UserService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
 		48F73CA11EF50FDB00E75022 /* RejectViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RejectViewController.swift; sourceTree = "<group>"; };
 		48F73CA31EF60ABA00E75022 /* LibraryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LibraryViewController.swift; sourceTree = "<group>"; };
 		48F73CA51EF613F400E75022 /* WrapperViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WrapperViewController.swift; sourceTree = "<group>"; };
@@ -180,6 +183,7 @@
 		6FFDBF861F20968A0019EC64 /* CommentLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentLabel.swift; sourceTree = "<group>"; };
 		6FFDBF881F21B6DD0019EC64 /* CommentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
 		6FFDBF8A1F21C6A70019EC64 /* CommentTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentTableCell.swift; sourceTree = "<group>"; };
+		9904A2C41F2C66F6004DC0EA /* FollowTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FollowTableViewCell.swift; sourceTree = "<group>"; };
 		9905A9941F20B9960063DDB1 /* UIScrollTapMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIScrollTapMenuViewController.swift; sourceTree = "<group>"; };
 		9905A9A11F23B28D0063DDB1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9905A9A31F23B2CD0063DDB1 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -266,6 +270,7 @@
 				48F857951EF8B6C800957B3A /* PostService.swift */,
 				6F0068881EFE161D009EDFBF /* FeedService.swift */,
 				487394091F03798B00B3E1D0 /* MultipartService.swift */,
+				48F480E61F2C8CF80092213C /* UserService.swift */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -339,6 +344,7 @@
 				6FFDBF861F20968A0019EC64 /* CommentLabel.swift */,
 				6FFDBF8A1F21C6A70019EC64 /* CommentTableCell.swift */,
 				48D41E2C1F2108FC00868F58 /* VideoPlayerView.swift */,
+				9904A2C41F2C66F6004DC0EA /* FollowTableViewCell.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -666,9 +672,11 @@
 				6F09C8D81EF0113600BCFFEF /* LoginViewController.swift in Sources */,
 				6F01C29B1EF7996800552782 /* CircleImageView.swift in Sources */,
 				6FBD85521F04CE150097B82A /* PostSectionController.swift in Sources */,
+				9904A2C51F2C66F6004DC0EA /* FollowTableViewCell.swift in Sources */,
 				6F01C2991EF7984000552782 /* UIImage.swift in Sources */,
 				9905A9951F20B9960063DDB1 /* UIScrollTapMenuViewController.swift in Sources */,
 				6F01C2971EF797C400552782 /* UIImageView.swift in Sources */,
+				48F480E71F2C8CF80092213C /* UserService.swift in Sources */,
 				6F5B85491EE52101009285DD /* FeedViewController.swift in Sources */,
 				9921706D1F0A374500D03E01 /* SavedViewController.swift in Sources */,
 				992227761F134DB3008DDD59 /* PostViewController.swift in Sources */,

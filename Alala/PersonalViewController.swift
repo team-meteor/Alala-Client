@@ -83,8 +83,11 @@ class PersonalViewController: UIViewController {
       self.tabBarItem.imageInsets.top = 5
       self.tabBarItem.imageInsets.bottom = -5
 
-      self.navigationItem.leftBarButtonItem = discoverPeopleButton
-      self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "add_user")?.resizeImage(scaledTolength: 25), style: .plain, target: self, action: #selector(PersonalViewController.discoverPeopleButtonTap))
+      self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "add_user")?.resizeImage(scaledTolength: 25),
+                                                              style: .plain,
+                                                              target: self,
+                                                              action: #selector(discoverPeopleButtonTap))
+
       self.navigationItem.rightBarButtonItem = archiveButton
     } else {
 
@@ -103,6 +106,7 @@ class PersonalViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
     self.view.backgroundColor = UIColor.white
     self.scrollView.backgroundColor = UIColor.white
 
@@ -300,13 +304,14 @@ class PersonalViewController: UIViewController {
 
     return nil
   }
-}
 
-extension PersonalViewController: PersonalInfoViewDelegate {
   func discoverPeopleButtonTap() {
     let sampleVC = DiscoverPeopleViewController()
     self.navigationController?.pushViewController(sampleVC, animated: true)
   }
+}
+
+extension PersonalViewController: PersonalInfoViewDelegate {
 
   func postsAreaTap() {
     var moveRect = scrollView.frame

@@ -66,10 +66,10 @@ class RoundCornerButton: UIButton {
   }
 
   func setupBlueType() {
-    nomalBorderColor = UIColor(rgb: 0xdddddd)
-    highlightBorderColor = UIColor(rgb: 0xeeeeee)
+    nomalBorderColor = UIColor(rgb: 0x3E99ED)
+    highlightBorderColor = UIColor(rgb: 0x3E99ED)
     self.setTitleColor(UIColor.white, for: .normal)
-    self.backgroundColor = UIColor.blue
+    self.backgroundColor = UIColor(rgb: 0x3E99ED)
   }
 
   override var isHighlighted: Bool {
