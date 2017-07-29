@@ -50,7 +50,6 @@ class PostSectionController: ListSectionController {
           width: UIScreen.main.bounds.width,
           insets: UIEdgeInsets(top: 10, left: 10, bottom: 0, right: 10)).height
         // TODO : dynamic cell expand
-        print("cell height", firstCommentHeight, profileName + comments[0].content)
         return CGSize(width: width, height: firstCommentHeight)
       }
       return CGSize()

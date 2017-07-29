@@ -51,7 +51,6 @@ class CommentCell: UICollectionViewCell {
     for label in labelContainer {
       if let text = label.text {
         let textHeight = TextSize.size(text, font: UIFont.systemFont(ofSize: 15), width: self.contentView.frame.width, insets: UIEdgeInsets(top: 10, left: 10, bottom: 0, right: 10)).height
-        print("textHeight", textHeight, text)
 
         label.snp.makeConstraints({ (make) in
           make.top.equalTo(self.contentView).offset(preHeight)
