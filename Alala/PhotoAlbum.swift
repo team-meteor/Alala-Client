@@ -33,13 +33,13 @@ final class PhotoAlbum {
   }
 
   func getAllPhotos() {
-
+    print("get")
     let AllOptions = PHFetchOptions()
     AllOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
     allPhotos = PHAsset.fetchAssets(with: AllOptions)
-    NotificationCenter.default.post(name: Notification.Name("fetchAllPhotoAlbum"), object: nil)
     fetchResult = allPhotos
-    print("getAllPhotos")
+
+    NotificationCenter.default.post(name: Notification.Name("fetchAllPhotoAlbum"), object: nil)
   }
 
   func getSmartUserAlbums() {

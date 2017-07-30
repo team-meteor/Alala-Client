@@ -3,7 +3,6 @@ import Photos
 import AVKit
 
 class SelectionViewController: UIViewController {
-
   var photoAlbum = PhotoAlbum.sharedInstance
   var allPhotos: PHFetchResult<PHAsset>!
   var smartAlbumsArr = [PHAssetCollection]()
@@ -21,6 +20,8 @@ class SelectionViewController: UIViewController {
     didSet {
       updateFirstImageView()
       self.collectionView.reloadData()
+      self.collectionView.setNeedsDisplay()
+      print("selec", fetchResult.count)
     }
   }
 
@@ -31,8 +32,9 @@ class SelectionViewController: UIViewController {
   }
   fileprivate var tableWrapperVC: TableViewWrapperController?
   fileprivate let libraryButton = UIButton().then {
-    $0.backgroundColor = UIColor.red
+    $0.backgroundColor = UIColor(red: 249, green: 249, blue: 249)
     $0.setTitle("Library v", for: .normal)
+    $0.setTitleColor(UIColor.black, for: .normal)
   }
 
   fileprivate let multiSelectButton = MultiSelectButton()
@@ -283,13 +285,13 @@ class SelectionViewController: UIViewController {
     self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 0, width: bounds.width, height: 44)
     self.title = "Library"
 
-    self.baseScrollView.contentSize = CGSize(width: screenWidth, height: screenHeight * 2 / 3 + screenHeight - screenWidth/8 * 2 - navigationBarHeight!)
+    self.baseScrollView.contentSize = CGSize(width: screenWidth, height: screenHeight + screenHeight * 2/3 - navigationBarHeight!)
 
     self.buttonBarView.addSubview(scrollViewZoomButton)
     self.buttonBarView.addSubview(multiSelectButton)
+    self.baseScrollView.addSubview(self.collectionView)
     self.baseScrollView.addSubview(self.scrollView)
     self.baseScrollView.addSubview(self.cropAreaView)
-    self.baseScrollView.addSubview(self.collectionView)
     self.baseScrollView.addSubview(self.buttonBarView)
     self.scrollView.addSubview(self.imageView)
     self.view.addSubview(baseScrollView)
@@ -297,6 +299,7 @@ class SelectionViewController: UIViewController {
     self.baseScrollView.snp.makeConstraints { make in
       make.bottom.left.right.equalTo(self.view)
     }
+
     self.scrollView.snp.makeConstraints { make in
       make.left.right.top.equalTo(self.baseScrollView)
       make.height.equalTo(screenHeight * 2 / 3 - screenWidth/8 )

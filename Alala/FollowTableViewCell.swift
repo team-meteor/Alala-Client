@@ -9,11 +9,11 @@
 import UIKit
 import SnapKit
 
-@objc protocol FollowTableViewCellDelegate {
-  @objc optional func followButtonDidTap(_ userInfo: User)
-  @objc optional func followingButtonDidTap(_ userInfo: User)
-  @objc optional func hideButtonDidTap(_ userInfo: User)
-  @objc optional func deleteButtonDidTap(_ userInfo: User)
+protocol FollowTableViewCellDelegate {
+  func followButtonDidTap(_ userInfo: User, _ followButton: UIButton, _ followingButton: UIButton)
+  func followingButtonDidTap(_ userInfo: User, _ followButton: UIButton, _ followingButton: UIButton)
+  func hideButtonDidTap(_ userInfo: User)
+  func deleteButtonDidTap(_ userInfo: User)
 }
 
 class FollowTableViewCell: UITableViewCell {
@@ -148,25 +148,25 @@ class FollowTableViewCell: UITableViewCell {
   func followButtonDidTap() {
     guard delegate != nil, userInfo != nil else {return}
 
-    delegate?.followButtonDidTap!(userInfo!)
+    delegate?.followButtonDidTap(userInfo!, followButton, followingButton)
   }
 
   func followingButtonDidTap() {
     guard delegate != nil, userInfo != nil else {return}
 
-    delegate?.followingButtonDidTap!(userInfo!)
+    delegate?.followingButtonDidTap(userInfo!, followButton, followingButton)
   }
 
   func hideButtonDidTap() {
     guard delegate != nil, userInfo != nil else {return}
 
-    delegate?.hideButtonDidTap!(userInfo!)
+    delegate?.hideButtonDidTap(userInfo!)
   }
 
   func deleteButtonDidTap() {
     guard delegate != nil, userInfo != nil else {return}
 
-    delegate?.deleteButtonDidTap!(userInfo!)
+    delegate?.deleteButtonDidTap(userInfo!)
   }
 
 }
