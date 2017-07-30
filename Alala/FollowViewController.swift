@@ -36,6 +36,8 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
   var searchBar = UISearchBar()
   var contentTableView = UITableView()
 
+  var users: [User] = []
+
   // MARK: - Initialize
   convenience init() {
     self.init(type:.follower)
@@ -63,6 +65,9 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
       setupUIForFollowingType()
     }
 
+    //--- TEST CODE
+    //users = [AuthService.instance.currentUser!]
+
     setupUI()
    //configureSearchController()
   }
@@ -73,6 +78,8 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
       $0.text = LS("Followers")
       $0.sizeToFit()
     }
+
+    users = (AuthService.instance.currentUser?.followers)!
   }
 
   func setupUIForFollowingType() {
@@ -81,6 +88,7 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
       $0.text = LS("Following")
       $0.sizeToFit()
     }
+    users = (AuthService.instance.currentUser?.following)!
   }
 
   func setupUI() {
@@ -115,24 +123,20 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
 
 extension FollowViewController: UITableViewDataSource {
   func numberOfSections(in tableView: UITableView) -> Int {
-    return 2
+    return 1
   }
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    if section == 0 {
-      return 1
-    } else {
-      //    if shouldShowSearchResults {
-      //      return filteredArray.count
-      //    } else {
-      //      return dataArray.count
-      //    }
-      return 3
-    }
+    //    if shouldShowSearchResults {
+    //      return filteredArray.count
+    //    } else {
+    //      return dataArray.count
+    //    }
+    return users.count
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
+    /*
     if indexPath.section == 0 {
       let cell: EditProfileTableViewCell = tableView.dequeueReusableCell(withIdentifier: EditProfileTableViewCell.cellReuseIdentifier) as! EditProfileTableViewCell
       cell.textView.text = LS("friends_from_facebook")
@@ -140,18 +144,23 @@ extension FollowViewController: UITableViewDataSource {
       cell.rightButton.setImage(UIImage(named: "foward")?.resizeImage(scaledTolength: 15), for: .normal)
       cell.rightButtonWidthConstraint?.constant = 20
       return cell
-    } else {
-      let cell: FollowTableViewCell = tableView.dequeueReusableCell(withIdentifier: FollowTableViewCell.cellReuseIdentifier) as! FollowTableViewCell
-      //let cell = tableView.dequeueReusableCell(withIdentifier: "idCell", for: indexPath as IndexPath)
-
-      //    if shouldShowSearchResults {
-      //      cell.textLabel?.text = filteredArray[indexPath.row]
-      //    } else {
-      //      cell.textLabel?.text = dataArray[indexPath.row]
-      //    }
-
-      return cell
+    } else {}
+     */
+    let cell: FollowTableViewCell = tableView.dequeueReusableCell(withIdentifier: FollowTableViewCell.cellReuseIdentifier) as! FollowTableViewCell
+    if FollowType.follower.rawValue==currentType {
+      cell.followButtonWidthConstraint?.update(offset: 0)
+      cell.hideButtonWidthConstraint?.update(offset: 0)
+    } else if FollowType.following.rawValue==currentType {
+      cell.followButtonWidthConstraint?.update(offset: 0)
+      cell.hideButtonWidthConstraint?.update(offset: 0)
+      cell.deleteButtonWidthConstraint?.update(offset: 0)
     }
+    guard let user: User = users[indexPath.row] as User! else {return cell}
+
+    cell.userInfo = user
+    cell.delegate = self
+
+    return cell
   }
 
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -171,11 +180,11 @@ extension FollowViewController: UITableViewDataSource {
       make.height.equalTo(18)
     }
 
-    if section == 0 {
-      label.text = LS("invite")
-    } else {
-      label.text = LS("following")
-    }
+    //if section == 0 {
+    //  label.text = LS("invite").uppercased()
+    //} else {
+    label.text = LS("following").uppercased()
+    //}
 
     return view
   }
@@ -194,5 +203,19 @@ extension FollowViewController: UITableViewDelegate {
     if cell.responds(to: #selector(setter: UITableViewCell.separatorInset)) {
       cell.separatorInset = FollowTableViewCell.cellSeparatorInsets
     }
+  }
+}
+
+extension FollowViewController: FollowTableViewCellDelegate {
+  func followButtonDidTap(_ userInfo: User) {
+    print("followButtonDidTap : \(userInfo)")
+  }
+
+  func followingButtonDidTap(_ userInfo: User) {
+    print("followingButtonDidTap : \(userInfo)")
+  }
+
+  func deleteButtonDidTap(_ userInfo: User) {
+    print("deleteButtonDidTap : \(userInfo)")
   }
 }
