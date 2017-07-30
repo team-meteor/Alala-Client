@@ -59,7 +59,7 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
     cell.delegate = self
 
     cell.userInfo = self.allUsers[indexPath.item]
-    //cell.userInfo = AuthService.instance.currentUser
+
     //cell.userIDLabel.text = "아이디"
     //cell.userNameLabel.text = "설명"
 
@@ -106,11 +106,57 @@ extension DiscoverPeopleViewController: UITableViewDelegate {
 }
 
 extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
-  func followButtonDidTap(_ userInfo: User) {
-    print("followButtonDidTap : \(userInfo)")
+  func followButtonDidTap(_ userInfo: User, _ followButton: UIButton, _ followingButton: UIButton) {
+    UserService.instance.followUser(id: userInfo.id) { bool in
+      if bool {
+        print("follow success")
+        followButton.snp.updateConstraints { make in
+          make.width.equalTo(0)
+        }
+        followingButton.snp.updateConstraints { make in
+          make.width.equalTo(80)
+        }
+      } else {
+        print("follow fail")
+      }
+    }
+
+//    UserService.instance.unfollowUser(id: userInfo.id) { bool in
+//      if bool {
+//        print("unfollow success")
+//        followButton.snp.updateConstraints { make in
+//          make.width.equalTo(80)
+//        }
+//        followingButton.snp.updateConstraints { make in
+//          make.width.equalTo(0)
+//        }
+//      } else {
+//        print("unfollow fail")
+//      }
+//    }
+  }
+
+  func followingButtonDidTap(_ userInfo: User, _ followButton: UIButton, _ followingButton: UIButton) {
+    UserService.instance.unfollowUser(id: userInfo.id) { bool in
+      if bool {
+        print("unfollow success")
+        followButton.snp.updateConstraints { make in
+          make.width.equalTo(80)
+        }
+        followingButton.snp.updateConstraints { make in
+          make.width.equalTo(0)
+        }
+      } else {
+        print("unfollow fail")
+      }
+    }
   }
 
   func hideButtonDidTap(_ userInfo: User) {
-    print("hideButtonDidTap : \(userInfo)")
+    print(userInfo)
+  }
+
+  func deleteButtonDidTap(_ userInfo: User) {
+    print(userInfo)
   }
 }
