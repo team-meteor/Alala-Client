@@ -11,6 +11,8 @@ import SnapKit
 
 class CommentViewController: UIViewController {
   let post: Post!
+  var commentInputViewBottomConstraint: Constraint?
+  var tableViewBottomConstraint: Constraint?
   let tableView: UITableView = {
     let view = UITableView()
     view.register(CommentTableCell.self, forCellReuseIdentifier: "commentCell")
@@ -67,13 +69,6 @@ class CommentViewController: UIViewController {
   init(post: Post) {
     self.post = post
     super.init(nibName: nil, bundle: nil)
-    self.view.addSubview(tableView)
-    self.view.addSubview(commentInputView)
-    self.commentInputView.addSubview(topBorder)
-    self.commentInputView.addSubview(sendButton)
-    self.commentInputView.addSubview(textInputView)
-    self.commentInputView.addSubview(postButton)
-    self.commentInputView.addSubview(placeholderLabel)
 
   }
 
@@ -92,18 +87,34 @@ class CommentViewController: UIViewController {
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: .UIKeyboardWillHide, object: nil)
     self.view.addGestureRecognizer(
-      UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+      UIPanGestureRecognizer(target: self, action: #selector(dismissKeyboard))
     )
-
+    self.setupSubview()
+    self.setupConstraints()
     self.textInputView.becomeFirstResponder()
   }
 
-  override func viewDidLayoutSubviews() {
-    super.viewDidLayoutSubviews()
-    tableView.snp.makeConstraints { (make) in
-      make.left.right.top.bottom.equalTo(self.view)
-    }
+  func setupSubview() {
+    self.view.addSubview(tableView)
+    self.view.addSubview(commentInputView)
+    self.commentInputView.addSubview(topBorder)
+    self.commentInputView.addSubview(sendButton)
+    self.commentInputView.addSubview(textInputView)
+    self.commentInputView.addSubview(postButton)
+    self.commentInputView.addSubview(placeholderLabel)
+  }
 
+  func setupConstraints() {
+    tableView.snp.makeConstraints { (make) in
+      make.left.right.top.equalTo(self.view)
+      tableViewBottomConstraint = make.bottom.equalTo(self.view).constraint
+    }
+    commentInputView.snp.makeConstraints({ (make) in
+      make.width.equalTo(self.view)
+      make.height.equalTo(51.5)
+      make.centerX.equalTo(self.view)
+      commentInputViewBottomConstraint = make.bottom.equalTo(self.view).constraint
+    })
     topBorder.snp.makeConstraints { (make) in
       make.width.equalTo(self.commentInputView)
       make.height.equalTo(1)
@@ -115,11 +126,18 @@ class CommentViewController: UIViewController {
       make.centerY.equalTo(self.commentInputView)
       make.left.equalTo(self.commentInputView).offset(10)
     }
+    postButton.sizeToFit()
     postButton.snp.makeConstraints { (make) in
       make.centerY.equalTo(self.commentInputView)
       make.right.equalTo(self.commentInputView).offset(-10)
+      make.left.equalTo(textInputView.snp.right)
+      make.width.equalTo(postButton.frame.width)
     }
-    let inputViewHeight = TextSize.size(textInputView.text, font: UIFont.systemFont(ofSize: 17), width: commentInputView.frame.width - sendButton.frame.width - postButton.frame.height - 20).height
+    let inputViewHeight = TextSize.size(
+      textInputView.text,
+      font: UIFont.systemFont(ofSize: 17),
+      width: commentInputView.frame.width - sendButton.frame.width - postButton.frame.height - 20
+      ).height
     textInputView.snp.makeConstraints { (make) in
       make.left.equalTo(sendButton.snp.right).offset(10)
       make.right.equalTo(postButton.snp.left)
@@ -145,6 +163,7 @@ class CommentViewController: UIViewController {
         self.postButton.isEnabled = true
         self.postButton.setTitleColor(UIColor(red:0.24, green:0.60, blue:0.93, alpha:1.00), for: .normal)
         self.textInputView.text = ""
+        self.tableView.scrollToRow(at: IndexPath.init(row: self.post.comments!.count - 1, section: 0), at: UITableViewScrollPosition.top, animated: false)
       case .failure:
         print("failure")
       }
@@ -154,29 +173,23 @@ class CommentViewController: UIViewController {
   func keyboardWillShow(_ notification: Notification) {
     if let keyboardFrame: NSValue = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue {
       let keyboardRectangle = keyboardFrame.cgRectValue
-      UIView.animate(withDuration: 10, animations: {
-        self.commentInputView.snp.remakeConstraints({ (make) in
-          make.width.equalTo(self.view)
-          make.height.equalTo(51.5)
-          make.centerX.equalTo(self.view)
-          make.bottom.equalTo(self.view).offset(-keyboardRectangle.height)
-        })
-      })
+      self.commentInputViewBottomConstraint?.update(offset: -keyboardRectangle.height)
+      self.tableViewBottomConstraint?.update(offset: -keyboardRectangle.height)
+      if self.post.comments!.count > 0 {
+        let lastRow = self.post.comments!.count - 1
+        self.tableView.scrollToRow(at: IndexPath.init(row: lastRow, section: 0), at: UITableViewScrollPosition.top, animated: false)
+      }
     }
   }
   func keyboardWillHide(_ notification: Notification) {
-    UIView.animate(withDuration: 10, animations: {
-      self.commentInputView.snp.remakeConstraints({ (make) in
-        make.width.equalTo(self.view)
-        make.height.equalTo(51.5)
-        make.centerX.equalTo(self.view)
-        make.bottom.equalTo(self.view)
-      })
-    })
+    self.commentInputViewBottomConstraint?.update(offset: 0)
+    self.tableViewBottomConstraint?.update(offset: 0)
   }
 
-  func dismissKeyboard(recognizer: UITapGestureRecognizer) {
+  func dismissKeyboard(_ recognizer: UITapGestureRecognizer) {
     view.endEditing(true)
+    // todo : 일정 속도 일상일 때 닫기
+    // 손가락이 키보드랑 닿으면 닫기
   }
 }
 
@@ -198,8 +211,8 @@ extension CommentViewController: UITableViewDelegate {
       comment.createdBy.profileName! + comment.content,
       font: UIFont.systemFont(ofSize: 15),
       width: self.view.frame.width,
-      insets: UIEdgeInsets(top: 0, left: 45, bottom: 10, right: 10)
-      ).height + 10
+      insets: UIEdgeInsets(top: 0, left: 50, bottom: 0, right: 10)
+      ).height
     return max(size, 50)
   }
 }

@@ -349,6 +349,12 @@ class CameraViewController: UIViewController {
 
   func savePhotoToLibrary() {
     UIImageWriteToSavedPhotosAlbum(self.capturedImageView.image!, nil, nil, nil)
+    //UIImageWriteToSavedPhotosAlbum(self.capturedImageView.image!, self, #selector(updatePhotoAlbum), nil)
+    updatePhotoAlbum()
+  }
+
+  func updatePhotoAlbum() {
+    PhotoAlbum.sharedInstance.getAllPhotos()
   }
 
   func takeVideoButtonDidTap() {

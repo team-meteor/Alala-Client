@@ -24,16 +24,24 @@ class CommentCell: UICollectionViewCell {
   func configure(post: Post) {
     guard let comments = post.comments else { return }
     self.comments = comments
-    for comment in self.comments {
-      if let creator = comment.createdBy, let profileName = creator.profileName, profileName.characters.count > 0 && comment.content.characters.count > 0 {
-        let label = CommentLabel()
-        label.attributedText = NSMutableAttributedString(string: "@@" + profileName + " " + comment.content)
-        label.numberOfLines = 0
-        label.lineBreakMode = .byCharWrapping
-        labelContainer.append(label)
-        self.contentView.addSubview(label)
-      }
-    }
+//    for comment in self.comments {
+//      if let creator = comment.createdBy, let profileName = creator.profileName, profileName.characters.count > 0 && comment.content.characters.count > 0 {
+//        let label = CommentLabel()
+//        label.attributedText = NSMutableAttributedString(string: "@@" + profileName + " " + comment.content)
+//        labelContainer.append(label)
+//        self.contentView.addSubview(label)
+//      }
+//    }
+    let label: CommentLabel = {
+      let comment = self.comments[0]
+      let view = CommentLabel()
+      view.attributedText = NSMutableAttributedString(
+        string: comment.createdBy!.profileName! + " " + comment.content
+      )
+      return view
+    }()
+    labelContainer.append(label)
+    self.contentView.addSubview(label)
     self.setNeedsLayout()
   }
 
@@ -42,7 +50,8 @@ class CommentCell: UICollectionViewCell {
     var preHeight: CGFloat = 0
     for label in labelContainer {
       if let text = label.text {
-        let textHeight = TextSize.size(text, font: UIFont.systemFont(ofSize: 17), width: self.contentView.frame.width, insets: UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)).height
+        let textHeight = TextSize.size(text, font: UIFont.systemFont(ofSize: 15), width: self.contentView.frame.width, insets: UIEdgeInsets(top: 10, left: 10, bottom: 0, right: 10)).height
+
         label.snp.makeConstraints({ (make) in
           make.top.equalTo(self.contentView).offset(preHeight)
           make.left.equalTo(self.contentView).offset(10)
