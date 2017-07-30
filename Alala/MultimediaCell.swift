@@ -54,13 +54,11 @@ class MultimediaCell: UICollectionViewCell {
         viewContainer.append(videoView)
       }
     }
-
     self.setNeedsLayout()
   }
 
   override func layoutSubviews() {
     super.layoutSubviews()
-    print("layoutSubviews")
     self.multimediaScrollView.frame = self.contentView.frame
     let frame = self.multimediaScrollView.frame
     multimediaScrollView.contentSize = CGSize(

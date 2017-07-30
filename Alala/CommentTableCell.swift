@@ -23,7 +23,9 @@ class CommentTableCell: UITableViewCell {
 
   func configure(comment: Comment) {
     guard let profileName = comment.createdBy.profileName else { return }
-    self.commentLabel.attributedText = NSMutableAttributedString(string: "@@" + profileName + " " + comment.content)
+    self.commentLabel.attributedText = NSMutableAttributedString(string:
+      profileName + " " + comment.content
+    )
     self.commentLabel.font = UIFont.systemFont(ofSize: 15)
     self.commentLabel.sizeToFit()
     self.profilePhoto.setImage(with: comment.createdBy.profilePhotoId, size: .thumbnail)
