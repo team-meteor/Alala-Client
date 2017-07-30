@@ -60,9 +60,6 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
 
     cell.userInfo = self.allUsers[indexPath.item]
 
-    //cell.userIDLabel.text = "아이디"
-    //cell.userNameLabel.text = "설명"
-
     cell.followingButtonWidthConstraint?.update(offset: 0)
     cell.deleteButtonWidthConstraint?.update(offset: 0)
 
@@ -120,20 +117,6 @@ extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
         print("follow fail")
       }
     }
-
-//    UserService.instance.unfollowUser(id: userInfo.id) { bool in
-//      if bool {
-//        print("unfollow success")
-//        followButton.snp.updateConstraints { make in
-//          make.width.equalTo(80)
-//        }
-//        followingButton.snp.updateConstraints { make in
-//          make.width.equalTo(0)
-//        }
-//      } else {
-//        print("unfollow fail")
-//      }
-//    }
   }
 
   func followingButtonDidTap(_ userInfo: User, _ followButton: UIButton, _ followingButton: UIButton) {
