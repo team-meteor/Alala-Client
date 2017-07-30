@@ -11,16 +11,20 @@ import UIKit
 class DiscoverPeopleViewController: UIViewController {
 
   var contentTableView = UITableView()
+  var allUsers = [User]()
 
   override func viewDidLoad() {
     super.viewDidLoad()
-
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
       $0.text = LS("DiscoverPeople")
       $0.sizeToFit()
     }
-
+    UserService.instance.getAllRegisterdUsers { users in
+      self.allUsers = users! as! [User]
+      print("users", self.allUsers)
+      self.contentTableView.reloadData()
+    }
     setupUI()
   }
 
@@ -45,7 +49,8 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
   }
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return 1
+    return self.allUsers.count
+    //return 1
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -53,9 +58,7 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
 
     cell.delegate = self
 
-    cell.userInfo = AuthService.instance.currentUser
-    //cell.userIDLabel.text = "아이디"
-    //cell.userNameLabel.text = "설명"
+    cell.userInfo = self.allUsers[indexPath.item]
 
     cell.followingButtonWidthConstraint?.update(offset: 0)
     cell.deleteButtonWidthConstraint?.update(offset: 0)
@@ -100,11 +103,43 @@ extension DiscoverPeopleViewController: UITableViewDelegate {
 }
 
 extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
-  func followButtonDidTap(_ userInfo: User) {
-    print("followButtonDidTap : \(userInfo)")
+  func followButtonDidTap(_ userInfo: User, _ followButton: UIButton, _ followingButton: UIButton) {
+    UserService.instance.followUser(id: userInfo.id) { bool in
+      if bool {
+        print("follow success")
+        followButton.snp.updateConstraints { make in
+          make.width.equalTo(0)
+        }
+        followingButton.snp.updateConstraints { make in
+          make.width.equalTo(80)
+        }
+      } else {
+        print("follow fail")
+      }
+    }
+  }
+
+  func followingButtonDidTap(_ userInfo: User, _ followButton: UIButton, _ followingButton: UIButton) {
+    UserService.instance.unfollowUser(id: userInfo.id) { bool in
+      if bool {
+        print("unfollow success")
+        followButton.snp.updateConstraints { make in
+          make.width.equalTo(80)
+        }
+        followingButton.snp.updateConstraints { make in
+          make.width.equalTo(0)
+        }
+      } else {
+        print("unfollow fail")
+      }
+    }
   }
 
   func hideButtonDidTap(_ userInfo: User) {
-    print("hideButtonDidTap : \(userInfo)")
+    print(userInfo)
+  }
+
+  func deleteButtonDidTap(_ userInfo: User) {
+    print(userInfo)
   }
 }
