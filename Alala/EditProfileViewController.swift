@@ -15,7 +15,7 @@ import UIKit
  */
 class EditProfileViewController: UIViewController {
 
-  let me = AuthService.instance.currentUser
+  let me = UserService.instance.currentUser
   var tempMe: User?
 
   let contentView = UIView()
@@ -187,7 +187,7 @@ class EditProfileViewController: UIViewController {
   func requestProfileUpdate() {
     AuthService.instance.updateProfile(userInfo: self.tempMe!, completion: { (success) in
       if success {
-        AuthService.instance.me(completion: { (user) in
+        UserService.instance.me(completion: { (user) in
           if user != nil {
             DispatchQueue.main.async {
               NotificationCenter.default.post(
