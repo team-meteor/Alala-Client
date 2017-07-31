@@ -71,7 +71,7 @@ class AfterRegisterViewController: UIViewController {
     MultipartService.uploadMultipart(multiPartDataArray: imageArray, progressCompletion: nil) { (multipartIds) in
       AuthService.instance.updateProfile(profileName: username, profileImageId: multipartIds[0], completion: { (success) in
         if success {
-          UserService.instance.me(completion: { (user) in
+          AuthService.instance.me(completion: { (user) in
             if user != nil {
               DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .presentMainTabBar, object: nil)

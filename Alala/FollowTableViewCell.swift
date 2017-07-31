@@ -16,6 +16,14 @@ protocol FollowTableViewCellDelegate {
   func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton)
 }
 
+//프로토콜 중 옵셔널메소드를 extension에 넣는다
+extension FollowTableViewCellDelegate {
+  func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {}
+  func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {}
+  func hideButtonDidTap(_ userInfo: User, _ sender: UIButton) {}
+  func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton) {}
+}
+
 class FollowTableViewCell: UITableViewCell {
   static let cellReuseIdentifier = "followCell"
   static let cellSeparatorInsets = UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 0)
@@ -111,7 +119,7 @@ class FollowTableViewCell: UITableViewCell {
     followButton.addTarget(self, action: #selector(followButtonDidTap), for: .touchUpInside)
     followButton.snp.makeConstraints { (make) in
       make.centerY.equalTo(self)
-      make.right.equalTo(followingButton.snp.left).offset(-5)
+      make.right.equalTo(hideButton.snp.left).offset(-5)
       make.height.equalTo(25)
       followButtonWidthConstraint = make.width.equalTo(80).constraint
     }
@@ -139,15 +147,6 @@ class FollowTableViewCell: UITableViewCell {
       make.height.equalTo(25)
       deleteButtonWidthConstraint = make.width.equalTo(20).constraint
     }
-
-//    if (AuthService.instance.currentUser?.following?.contains(userInfo))! {
-//      followButton.snp.updateConstraints { make in
-//        make.width.equalTo(0)
-//      }
-//      followingButton.snp.updateConstraints { make in
-//        make.width.equalTo(80)
-//      }
-//    }
 
   }
 

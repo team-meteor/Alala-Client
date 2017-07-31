@@ -52,7 +52,7 @@ class FeedViewController: PostViewController {
     NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: .postDidCreate, object: nil)
     self.refreshControl.addTarget(self, action: #selector(self.refreshControlDidChangeValue), for: .valueChanged)
     self.collectionView.addSubview(self.refreshControl)
-    self.fetchFeed(paging: .refresh)
+    //self.fetchFeed(paging: .refresh)
 //    self.adapter.reloadData(completion: nil)
   }
 
