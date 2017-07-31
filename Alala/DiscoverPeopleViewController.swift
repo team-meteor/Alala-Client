@@ -12,7 +12,6 @@ class DiscoverPeopleViewController: UIViewController {
 
   var contentTableView = UITableView()
   var allUsers = [User]()
-  var currentUser: User?
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -21,11 +20,9 @@ class DiscoverPeopleViewController: UIViewController {
       $0.text = LS("DiscoverPeople")
       $0.sizeToFit()
     }
-    UserService.instance.me { user in
-      self.currentUser = user
-    }
+    AuthService.instance.me { _ in}
     UserService.instance.getAllRegisterdUsers { users in
-      self.allUsers = (users?.filter({$0?.email != self.currentUser?.email}))! as! [User]
+      self.allUsers = (users?.filter({$0?.email != AuthService.instance.currentUser?.email}))! as! [User]
       self.contentTableView.reloadData()
     }
     setupUI()
@@ -64,7 +61,7 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
 
     cell.deleteButtonWidthConstraint?.update(offset: 0)
 
-    if let followingUsers = self.currentUser?.following {
+    if let followingUsers = AuthService.instance.currentUser?.following {
       for followingUser in followingUsers {
         if followingUser.email == cell.userInfo.email {
           cell.followButtonWidthConstraint?.update(offset: 0)
@@ -117,13 +114,10 @@ extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
   func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     UserService.instance.followUser(id: userInfo.id) { bool in
       if bool {
-        print("follow success")
         if let cell = sender.superview as? FollowTableViewCell {
           cell.followButtonWidthConstraint?.update(offset: 0)
           cell.followingButtonWidthConstraint?.update(offset: 80)
         }
-      } else {
-        print("follow fail")
       }
     }
   }
@@ -131,13 +125,10 @@ extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
   func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     UserService.instance.unfollowUser(id: userInfo.id) { bool in
       if bool {
-        print("unfollow success")
         if let cell = sender.superview as? FollowTableViewCell {
-          cell.followButtonWidthConstraint?.update(offset: 80)
           cell.followingButtonWidthConstraint?.update(offset: 0)
+          cell.followButtonWidthConstraint?.update(offset: 80)
         }
-      } else {
-        print("unfollow fail")
       }
     }
   }
@@ -152,6 +143,5 @@ extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
   }
 
   func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton) {
-    print(userInfo, sender)
   }
 }

@@ -111,7 +111,7 @@ class FollowTableViewCell: UITableViewCell {
     followButton.addTarget(self, action: #selector(followButtonDidTap), for: .touchUpInside)
     followButton.snp.makeConstraints { (make) in
       make.centerY.equalTo(self)
-      make.right.equalTo(followingButton.snp.left).offset(-5)
+      make.right.equalTo(hideButton.snp.left).offset(-5)
       make.height.equalTo(25)
       followButtonWidthConstraint = make.width.equalTo(80).constraint
     }
@@ -139,15 +139,6 @@ class FollowTableViewCell: UITableViewCell {
       make.height.equalTo(25)
       deleteButtonWidthConstraint = make.width.equalTo(20).constraint
     }
-
-//    if (AuthService.instance.currentUser?.following?.contains(userInfo))! {
-//      followButton.snp.updateConstraints { make in
-//        make.width.equalTo(0)
-//      }
-//      followingButton.snp.updateConstraints { make in
-//        make.width.equalTo(80)
-//      }
-//    }
 
   }
 

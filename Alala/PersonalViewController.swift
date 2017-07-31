@@ -76,7 +76,7 @@ class PersonalViewController: UIViewController {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
 
     if profileUser == nil {
-      profileUser = UserService.instance.currentUser
+      profileUser = AuthService.instance.currentUser
 
       self.tabBarItem.image = UIImage(named: "personal")?.resizeImage(scaledTolength: 25)
       self.tabBarItem.selectedImage = UIImage(named: "personal-selected")?.resizeImage(scaledTolength: 25)
