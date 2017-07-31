@@ -113,15 +113,14 @@ extension DiscoverPeopleViewController: UITableViewDelegate {
 }
 
 extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
-  func followButtonDidTap(_ userInfo: User, _ followButton: UIButton, _ followingButton: UIButton) {
+
+  func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     UserService.instance.followUser(id: userInfo.id) { bool in
       if bool {
         print("follow success")
-        followButton.snp.updateConstraints { make in
-          make.width.equalTo(0)
-        }
-        followingButton.snp.updateConstraints { make in
-          make.width.equalTo(80)
+        if let cell = sender.superview as? FollowTableViewCell {
+          cell.followButtonWidthConstraint?.update(offset: 0)
+          cell.followingButtonWidthConstraint?.update(offset: 80)
         }
       } else {
         print("follow fail")
@@ -129,15 +128,13 @@ extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
     }
   }
 
-  func followingButtonDidTap(_ userInfo: User, _ followButton: UIButton, _ followingButton: UIButton) {
+  func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     UserService.instance.unfollowUser(id: userInfo.id) { bool in
       if bool {
         print("unfollow success")
-        followButton.snp.updateConstraints { make in
-          make.width.equalTo(80)
-        }
-        followingButton.snp.updateConstraints { make in
-          make.width.equalTo(0)
+        if let cell = sender.superview as? FollowTableViewCell {
+          cell.followButtonWidthConstraint?.update(offset: 80)
+          cell.followingButtonWidthConstraint?.update(offset: 0)
         }
       } else {
         print("unfollow fail")
@@ -145,11 +142,16 @@ extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
     }
   }
 
-  func hideButtonDidTap(_ userInfo: User) {
-    print(userInfo)
+  func hideButtonDidTap(_ userInfo: User, _ sender: UIButton) {
+    if let cell = sender.superview as? FollowTableViewCell {
+      let indexPath = contentTableView.indexPath(for: cell)
+      let newUsers = self.allUsers.filter({$0.email != self.allUsers[(indexPath?.row)!].email})
+      self.allUsers = newUsers
+      contentTableView.reloadData()
+    }
   }
 
-  func deleteButtonDidTap(_ userInfo: User) {
-    print(userInfo)
+  func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton) {
+    print(userInfo, sender)
   }
 }
