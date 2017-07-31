@@ -75,20 +75,20 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
   func setupUIForFollowerType() {
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = LS("Followers")
+      $0.text = LS("followers")
       $0.sizeToFit()
     }
 
-    users = (UserService.instance.currentUser?.followers)!
+    users = (AuthService.instance.currentUser?.followers)!
   }
 
   func setupUIForFollowingType() {
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = LS("Following")
+      $0.text = LS("following")
       $0.sizeToFit()
     }
-    users = (UserService.instance.currentUser?.following)!
+    users = (AuthService.instance.currentUser?.following)!
   }
 
   func setupUI() {
@@ -147,11 +147,12 @@ extension FollowViewController: UITableViewDataSource {
     } else {}
      */
     let cell: FollowTableViewCell = tableView.dequeueReusableCell(withIdentifier: FollowTableViewCell.cellReuseIdentifier) as! FollowTableViewCell
+    cell.selectionStyle = .none
+
     if FollowType.follower.rawValue==currentType {
-      cell.isShowFollowingButton = true
       cell.isShowDeleteButton = true
     } else if FollowType.following.rawValue==currentType {
-      cell.isShowFollowingButton = true
+      cell.isShowDeleteButton = false
     }
     guard let user: User = users[indexPath.row] as User! else {return cell}
 
@@ -163,7 +164,6 @@ extension FollowViewController: UITableViewDataSource {
 
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     let view = UIBorderView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 40))
-    view.topBorderLine.isHidden = false
     view.bottomBorderLine.isHidden = false
 
     let label = UILabel()
@@ -173,7 +173,7 @@ extension FollowViewController: UITableViewDataSource {
     view.backgroundColor = UIColor(rgb: 0xeeeeee)
     label.snp.makeConstraints { (make) in
       make.left.equalTo(view).offset(10)
-      make.bottom.equalTo(view)
+      make.bottom.equalTo(view).offset(-3)
       make.rightMargin.equalTo(view)
       make.height.equalTo(18)
     }
@@ -190,7 +190,7 @@ extension FollowViewController: UITableViewDataSource {
 
 extension FollowViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-    return 50
+    return CGFloat(FollowTableViewCell.cellHeight)
   }
 
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -202,15 +202,34 @@ extension FollowViewController: UITableViewDelegate {
       cell.separatorInset = FollowTableViewCell.cellSeparatorInsets
     }
   }
+
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    let rowUser = users[indexPath.row]
+    let profileVC = PersonalViewController(user:rowUser)
+    self.navigationController?.pushViewController(profileVC, animated: true)
+  }
 }
 
 extension FollowViewController: FollowTableViewCellDelegate {
-  func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {
-    print("followButtonDidTap : \(userInfo)")
-  }
-
   func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     print("followingButtonDidTap : \(userInfo)")
+    guard let cell = sender.superview as? FollowTableViewCell else {return}
+
+    if cell.isSetFollowButton == true {
+      UserService.instance.followUser(id: userInfo.id) { bool in
+        if bool {
+          cell.isSetFollowButton = false
+        }
+      }
+    } else {
+      // todo : 팔로우 취소할 것인지 물어야 함
+      UserService.instance.unfollowUser(id: userInfo.id) { bool in
+        if bool {
+          cell.isSetFollowButton = true
+        }
+      }
+    }
+
   }
 
   func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton) {

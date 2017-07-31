@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "icons8-google_groups-2.png",
+      "filename" : "icons8-bookmark_ribbon-2.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "icons8-google_groups-1.png",
+      "filename" : "icons8-bookmark_ribbon-1.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "icons8-google_groups.png",
+      "filename" : "icons8-bookmark_ribbon.png",
       "scale" : "3x"
     }
   ],

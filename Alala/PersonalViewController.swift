@@ -141,7 +141,6 @@ class PersonalViewController: UIViewController {
       make.width.equalTo(scrollView)
     }
     personalInfoView.delegate = self
-    personalInfoView.setupUserInfo(userInfo: profileUser!)
 
     //-- Section 3 : personal post list or no contents view (one of both)
     scrollView.addSubview(contentsView)
@@ -151,8 +150,6 @@ class PersonalViewController: UIViewController {
       make.right.equalTo(scrollView)
       make.bottom.equalTo(self.view.snp.bottom)
     }
-
-    self.fetchFeedMine(paging: .refresh)
 
     NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: .postDidCreate, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(profileUpdated), name: .profileUpdated, object: nil)
@@ -168,9 +165,6 @@ class PersonalViewController: UIViewController {
         make.bottom.equalTo(contentsView)
       }
       noContentsGuideView.delegate = self
-
-      personalInfoView.gridPostMenuButton.isEnabled = false
-      personalInfoView.listPostMenuButton.isEnabled = false
     }
   }
 
@@ -187,9 +181,6 @@ class PersonalViewController: UIViewController {
       postGridCollectionView.dataSource = self
       postGridCollectionView.delegate = self
       postGridCollectionView.isScrollEnabled = false
-
-      personalInfoView.gridPostMenuButton.isEnabled = true
-      personalInfoView.listPostMenuButton.isEnabled = true
     }
 
     postGridCollectionView.isHidden = false
@@ -213,9 +204,6 @@ class PersonalViewController: UIViewController {
 
       postViewController.delegate = self
       postListCollectionView.isScrollEnabled = false
-
-      personalInfoView.gridPostMenuButton.isEnabled = true
-      personalInfoView.listPostMenuButton.isEnabled = true
     }
 
     postGridCollectionView.isHidden = true
@@ -242,7 +230,7 @@ class PersonalViewController: UIViewController {
         self.nextPage = feed.nextPage
         print("fetchFeed : ", self.posts)
         DispatchQueue.main.async {
-          self.personalInfoView.postsCountLabel.text = self.posts.count.description
+          self.personalInfoView.postsCount = self.posts.count
           if self.posts.count == 0 {
             self.setupNoContents()
           } else {
@@ -264,6 +252,15 @@ class PersonalViewController: UIViewController {
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     self.navigationController?.isNavigationBarHidden = false
+
+    if(profileUser?.id == AuthService.instance.currentUser?.id) {
+      profileUser = AuthService.instance.currentUser
+      personalInfoView.setupUserInfo(userInfo: profileUser!)
+    } else {
+      // todo : 해당 유저의 id로 서버에 user정보를 새로 요청해야 함
+    }
+
+    self.fetchFeedMine(paging: .refresh)
   }
 
   func refreshControlDidChangeValue() {
@@ -422,7 +419,7 @@ extension PersonalViewController: UICollectionViewDataSource {
         }
       }
     } else {
-      cell.thumbnailImageView.setImage(with: post.multipartIds[0], size: .thumbnail)
+      cell.thumbnailImageView.setImage(with: post.multipartIds[0], size: .medium)
       cell.isMultiPhotos = post.multipartIds.count > 1 ? true : false
     }
     return cell

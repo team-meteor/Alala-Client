@@ -37,7 +37,7 @@ class DiscoverPeopleViewController: UIViewController {
     contentTableView.dataSource = self
     contentTableView.delegate = self
 
-    contentTableView.register(FollowTableViewCell.self, forCellReuseIdentifier: FollowTableViewCell.cellReuseIdentifier)
+    contentTableView.register(PeoplesTableViewCell.self, forCellReuseIdentifier: PeoplesTableViewCell.cellReuseIdentifier)
     contentTableView.tableFooterView = UIView()
   }
 }
@@ -52,23 +52,20 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell: FollowTableViewCell = tableView.dequeueReusableCell(withIdentifier: FollowTableViewCell.cellReuseIdentifier) as! FollowTableViewCell
+    let cell: PeoplesTableViewCell = tableView.dequeueReusableCell(withIdentifier: PeoplesTableViewCell.cellReuseIdentifier) as! PeoplesTableViewCell
 
     cell.delegate = self
     cell.selectionStyle = .none
 
     cell.userInfo = self.allUsers[indexPath.item]
-    cell.isShowDeleteButton = false
 
-    if let followingUsers = self.currentUser?.following {
-      for followingUser in followingUsers {
-        if followingUser.email == cell.userInfo.email {
-          cell.isShowFollowButton = false
-          return cell
-        }
+    if let followingUsers = AuthService.instance.currentUser?.following {
+      if followingUsers.contains(where: { $0.email == cell.userInfo.email }) {
+        cell.isFollowingUser = true
+        return cell
       }
     }
-    cell.isShowFollowingButton = false
+    cell.isFollowingUser = false
     return cell
   }
 
@@ -84,7 +81,7 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
     view.backgroundColor = UIColor(rgb: 0xeeeeee)
     label.snp.makeConstraints { (make) in
       make.left.equalTo(view).offset(10)
-      make.bottom.equalTo(view)
+      make.bottom.equalTo(view).offset(-3)
       make.rightMargin.equalTo(view)
       make.height.equalTo(18)
     }
@@ -94,7 +91,7 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
 
 extension DiscoverPeopleViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-    return 50
+    return CGFloat(PeoplesTableViewCell.cellHeight)
   }
 
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -103,7 +100,7 @@ extension DiscoverPeopleViewController: UITableViewDelegate {
 
   func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
     if cell.responds(to: #selector(setter: UITableViewCell.separatorInset)) {
-      cell.separatorInset = FollowTableViewCell.cellSeparatorInsets
+      cell.separatorInset = PeoplesTableViewCell.cellSeparatorInsets
     }
   }
 
@@ -114,13 +111,12 @@ extension DiscoverPeopleViewController: UITableViewDelegate {
   }
 }
 
-extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
+extension DiscoverPeopleViewController: PeoplesTableViewCellDelegate {
   func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     UserService.instance.followUser(id: userInfo.id) { bool in
       if bool {
-        if let cell = sender.superview as? FollowTableViewCell {
-          cell.isShowFollowButton = false
-          cell.isShowFollowingButton = true
+        if let cell = sender.superview as? PeoplesTableViewCell {
+          cell.isFollowingUser = true
         }
       }
     }
@@ -129,16 +125,15 @@ extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
   func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     UserService.instance.unfollowUser(id: userInfo.id) { bool in
       if bool {
-        if let cell = sender.superview as? FollowTableViewCell {
-          cell.isShowFollowButton = true
-          cell.isShowFollowingButton = false
+        if let cell = sender.superview as? PeoplesTableViewCell {
+          cell.isFollowingUser = false
         }
       }
     }
   }
 
   func hideButtonDidTap(_ userInfo: User, _ sender: UIButton) {
-    if let cell = sender.superview as? FollowTableViewCell {
+    if let cell = sender.superview as? PeoplesTableViewCell {
       let indexPath = contentTableView.indexPath(for: cell)
       let newUsers = self.allUsers.filter({$0.email != self.allUsers[(indexPath?.row)!].email})
       self.allUsers = newUsers
