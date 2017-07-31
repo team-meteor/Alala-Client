@@ -9,11 +9,18 @@
 import UIKit
 import SnapKit
 
-protocol FollowTableViewCellDelegate {
+protocol FollowTableViewCellDelegate :class {
   func followButtonDidTap(_ userInfo: User, _ sender: UIButton)
   func followingButtonDidTap(_ userInfo: User, _ sender: UIButton)
   func hideButtonDidTap(_ userInfo: User, _ sender: UIButton)
   func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton)
+}
+
+extension FollowTableViewCellDelegate {
+  func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {}
+  func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {}
+  func hideButtonDidTap(_ userInfo: User, _ sender: UIButton) {}
+  func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton) {}
 }
 
 class FollowTableViewCell: UITableViewCell {
@@ -30,9 +37,49 @@ class FollowTableViewCell: UITableViewCell {
     }
   }
 
-  var delegate: FollowTableViewCellDelegate?
+  weak var delegate: FollowTableViewCellDelegate?
 
-  let userPhotoImageView = CircleImageView().then {
+  var isShowFollowButton = false {
+    didSet {
+      if isShowFollowButton == true {
+        followButtonWidthConstraint?.update(offset: 80)
+      } else {
+        followButtonWidthConstraint?.update(offset: 0)
+      }
+    }
+  }
+
+  var isShowFollowingButton = false {
+    didSet {
+      if isShowFollowingButton == true {
+        followingButtonWidthConstraint?.update(offset: 80)
+      } else {
+        followingButtonWidthConstraint?.update(offset: 0)
+      }
+    }
+  }
+
+  var isShowHideButton = false {
+    didSet {
+      if isShowHideButton == true {
+        hideButtonWidthConstraint?.update(offset: 80)
+      } else {
+        hideButtonWidthConstraint?.update(offset: 0)
+      }
+    }
+  }
+
+  var isShowDeleteButton = false {
+    didSet {
+      if isShowDeleteButton == true {
+        deleteButtonWidthConstraint?.update(offset: 20)
+      } else {
+        deleteButtonWidthConstraint?.update(offset: 0)
+      }
+    }
+  }
+
+  fileprivate let userPhotoImageView = CircleImageView().then {
     $0.layer.borderWidth = 1
     $0.layer.masksToBounds = false
     $0.layer.borderColor = UIColor.lightGray.cgColor
@@ -40,41 +87,41 @@ class FollowTableViewCell: UITableViewCell {
     $0.isUserInteractionEnabled = true
   }
 
-  let userIDLabel = UILabel().then {
+  fileprivate let userIDLabel = UILabel().then {
     $0.font = UIFont.boldSystemFont(ofSize: 12.0)
     $0.text = LS("id")
     $0.sizeToFit()
   }
 
-  let userNameLabel = UILabel().then {
+  fileprivate let userNameLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 12)
     $0.text = LS("name")
     $0.textColor = UIColor.lightGray
     $0.sizeToFit()
   }
 
-  let followButton = RoundCornerButton(type: .buttonColorTypeBlue).then {
+  fileprivate let followButton = RoundCornerButton(type: .buttonColorTypeBlue).then {
     $0.setTitle(LS("button_follow"), for: .normal)
     $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
   }
-  var followButtonWidthConstraint: Constraint?
+  fileprivate var followButtonWidthConstraint: Constraint?
 
-  let followingButton = RoundCornerButton(type: .buttonColorTypeWhite).then {
+  fileprivate let followingButton = RoundCornerButton(type: .buttonColorTypeWhite).then {
     $0.setTitle(LS("button_following"), for: .normal)
     $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
   }
-  var followingButtonWidthConstraint: Constraint?
+  fileprivate var followingButtonWidthConstraint: Constraint?
 
-  let hideButton = RoundCornerButton(type: .buttonColorTypeWhite).then {
+  fileprivate let hideButton = RoundCornerButton(type: .buttonColorTypeWhite).then {
     $0.setTitle(LS("button_hide"), for: .normal)
     $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
   }
-  var hideButtonWidthConstraint: Constraint?
+  fileprivate var hideButtonWidthConstraint: Constraint?
 
-  let deleteButton = UIButton().then {
+  fileprivate let deleteButton = UIButton().then {
     $0.setImage(UIImage(named: "more")?.resizeImage(scaledTolength: 10), for: .normal)
   }
-  var deleteButtonWidthConstraint: Constraint?
+  fileprivate var deleteButtonWidthConstraint: Constraint?
 
   override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -111,9 +158,9 @@ class FollowTableViewCell: UITableViewCell {
     followButton.addTarget(self, action: #selector(followButtonDidTap), for: .touchUpInside)
     followButton.snp.makeConstraints { (make) in
       make.centerY.equalTo(self)
-      make.right.equalTo(followingButton.snp.left).offset(-5)
+      make.right.equalTo(hideButton.snp.left).offset(-5)
       make.height.equalTo(25)
-      followButtonWidthConstraint = make.width.equalTo(80).constraint
+      followButtonWidthConstraint = make.width.equalTo(0).constraint
     }
 
     followingButton.addTarget(self, action: #selector(followingButtonDidTap), for: .touchUpInside)
@@ -121,7 +168,7 @@ class FollowTableViewCell: UITableViewCell {
       make.centerY.equalTo(self)
       make.right.equalTo(hideButton.snp.left).offset(-5)
       make.height.equalTo(25)
-      followingButtonWidthConstraint = make.width.equalTo(80).constraint
+      followingButtonWidthConstraint = make.width.equalTo(0).constraint
     }
 
     hideButton.addTarget(self, action: #selector(hideButtonDidTap), for: .touchUpInside)
@@ -129,7 +176,7 @@ class FollowTableViewCell: UITableViewCell {
       make.centerY.equalTo(self)
       make.right.equalTo(deleteButton.snp.left).offset(-5)
       make.height.equalTo(25)
-      hideButtonWidthConstraint = make.width.equalTo(80).constraint
+      hideButtonWidthConstraint = make.width.equalTo(0).constraint
     }
 
     deleteButton.addTarget(self, action: #selector(deleteButtonDidTap), for: .touchUpInside)
@@ -137,7 +184,7 @@ class FollowTableViewCell: UITableViewCell {
       make.centerY.equalTo(self)
       make.right.equalTo(self).offset(-5)
       make.height.equalTo(25)
-      deleteButtonWidthConstraint = make.width.equalTo(20).constraint
+      deleteButtonWidthConstraint = make.width.equalTo(0).constraint
     }
 
 //    if (AuthService.instance.currentUser?.following?.contains(userInfo))! {

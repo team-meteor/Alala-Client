@@ -79,7 +79,7 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
       $0.sizeToFit()
     }
 
-    users = (AuthService.instance.currentUser?.followers)!
+    users = (UserService.instance.currentUser?.followers)!
   }
 
   func setupUIForFollowingType() {
@@ -88,7 +88,7 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
       $0.text = LS("Following")
       $0.sizeToFit()
     }
-    users = (AuthService.instance.currentUser?.following)!
+    users = (UserService.instance.currentUser?.following)!
   }
 
   func setupUI() {
@@ -148,12 +148,10 @@ extension FollowViewController: UITableViewDataSource {
      */
     let cell: FollowTableViewCell = tableView.dequeueReusableCell(withIdentifier: FollowTableViewCell.cellReuseIdentifier) as! FollowTableViewCell
     if FollowType.follower.rawValue==currentType {
-      cell.followButtonWidthConstraint?.update(offset: 0)
-      cell.hideButtonWidthConstraint?.update(offset: 0)
+      cell.isShowFollowingButton = true
+      cell.isShowDeleteButton = true
     } else if FollowType.following.rawValue==currentType {
-      cell.followButtonWidthConstraint?.update(offset: 0)
-      cell.hideButtonWidthConstraint?.update(offset: 0)
-      cell.deleteButtonWidthConstraint?.update(offset: 0)
+      cell.isShowFollowingButton = true
     }
     guard let user: User = users[indexPath.row] as User! else {return cell}
 
@@ -207,15 +205,15 @@ extension FollowViewController: UITableViewDelegate {
 }
 
 extension FollowViewController: FollowTableViewCellDelegate {
-  func followButtonDidTap(_ userInfo: User) {
+  func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     print("followButtonDidTap : \(userInfo)")
   }
 
-  func followingButtonDidTap(_ userInfo: User) {
+  func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     print("followingButtonDidTap : \(userInfo)")
   }
 
-  func deleteButtonDidTap(_ userInfo: User) {
+  func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     print("deleteButtonDidTap : \(userInfo)")
   }
 }

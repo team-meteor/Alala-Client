@@ -42,7 +42,6 @@ class DiscoverPeopleViewController: UIViewController {
 
     contentTableView.register(FollowTableViewCell.self, forCellReuseIdentifier: FollowTableViewCell.cellReuseIdentifier)
     contentTableView.tableFooterView = UIView()
-    contentTableView.allowsSelection = false
   }
 }
 
@@ -59,20 +58,20 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
     let cell: FollowTableViewCell = tableView.dequeueReusableCell(withIdentifier: FollowTableViewCell.cellReuseIdentifier) as! FollowTableViewCell
 
     cell.delegate = self
+    cell.selectionStyle = .none
 
     cell.userInfo = self.allUsers[indexPath.item]
-
-    cell.deleteButtonWidthConstraint?.update(offset: 0)
+    cell.isShowDeleteButton = false
 
     if let followingUsers = self.currentUser?.following {
       for followingUser in followingUsers {
         if followingUser.email == cell.userInfo.email {
-          cell.followButtonWidthConstraint?.update(offset: 0)
+          cell.isShowFollowButton = false
           return cell
         }
       }
     }
-    cell.followingButtonWidthConstraint?.update(offset: 0)
+    cell.isShowFollowingButton = false
     return cell
   }
 
@@ -110,6 +109,12 @@ extension DiscoverPeopleViewController: UITableViewDelegate {
       cell.separatorInset = FollowTableViewCell.cellSeparatorInsets
     }
   }
+
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    let rowUser = self.allUsers[indexPath.row]
+    let profileVC = PersonalViewController(user:rowUser)
+    self.navigationController?.pushViewController(profileVC, animated: true)
+  }
 }
 
 extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
@@ -119,8 +124,8 @@ extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
       if bool {
         print("follow success")
         if let cell = sender.superview as? FollowTableViewCell {
-          cell.followButtonWidthConstraint?.update(offset: 0)
-          cell.followingButtonWidthConstraint?.update(offset: 80)
+          cell.isShowFollowButton = false
+          cell.isShowFollowingButton = true
         }
       } else {
         print("follow fail")
@@ -133,8 +138,8 @@ extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
       if bool {
         print("unfollow success")
         if let cell = sender.superview as? FollowTableViewCell {
-          cell.followButtonWidthConstraint?.update(offset: 80)
-          cell.followingButtonWidthConstraint?.update(offset: 0)
+          cell.isShowFollowButton = true
+          cell.isShowFollowingButton = false
         }
       } else {
         print("unfollow fail")

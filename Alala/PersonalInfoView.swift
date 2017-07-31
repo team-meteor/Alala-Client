@@ -200,14 +200,12 @@ class PersonalInfoView: UIView {
       make.top.equalTo(self)
       make.left.equalTo(self)
       make.right.equalTo(self)
-      make.leftMargin.equalTo(10)
-      make.rightMargin.equalTo(10)
       make.bottom.equalTo(websiteLabel).offset(10)
     }
 
     profileImageView.snp.makeConstraints { (make) in
       make.top.equalTo(infoView).offset(10)
-      make.left.equalTo(infoView.snp.leftMargin)
+      make.left.equalTo(infoView).offset(10)
       make.width.equalTo(70)
       make.height.equalTo(70)
     }
@@ -255,7 +253,7 @@ class PersonalInfoView: UIView {
     followingButton.snp.makeConstraints { (make) in
       make.top.equalTo(profileImageView.snp.top).offset(5)
       make.left.equalTo(followersCountLabel.snp.right)
-      make.right.equalTo(infoView.snp.rightMargin)
+      make.right.equalTo(infoView).offset(-10)
       make.width.equalTo(postsButton.snp.width)
       make.height.equalTo(30)
     }
@@ -367,6 +365,9 @@ class PersonalInfoView: UIView {
     websiteLabel.text = userInfo.website
     let websiteOffset = (websiteLabel.text?.characters.count==0) ? 0 : 20
     self.websiteHeightConstraint?.update(offset: websiteOffset)
+
+    followersCountLabel.text = userInfo.followers?.count.description
+    followingCountLabel.text = userInfo.following?.count.description
 
     self.updateConstraints()
   }
