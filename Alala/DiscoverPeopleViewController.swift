@@ -60,13 +60,10 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
     cell.userInfo = self.allUsers[indexPath.item]
 
     cell.deleteButtonWidthConstraint?.update(offset: 0)
-
     if let followingUsers = AuthService.instance.currentUser?.following {
-      for followingUser in followingUsers {
-        if followingUser.email == cell.userInfo.email {
-          cell.followButtonWidthConstraint?.update(offset: 0)
-          return cell
-        }
+      if followingUsers.contains(where: { $0.email == cell.userInfo.email }) {
+        cell.followButtonWidthConstraint?.update(offset: 0)
+        return cell
       }
     }
     cell.followingButtonWidthConstraint?.update(offset: 0)
@@ -110,7 +107,6 @@ extension DiscoverPeopleViewController: UITableViewDelegate {
 }
 
 extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
-
   func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     UserService.instance.followUser(id: userInfo.id) { bool in
       if bool {
@@ -140,8 +136,5 @@ extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
       self.allUsers = newUsers
       contentTableView.reloadData()
     }
-  }
-
-  func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton) {
   }
 }

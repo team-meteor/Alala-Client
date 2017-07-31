@@ -16,6 +16,14 @@ protocol FollowTableViewCellDelegate {
   func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton)
 }
 
+//프로토콜 중 옵셔널메소드를 extension에 넣는다
+extension FollowTableViewCellDelegate {
+  func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {}
+  func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {}
+  func hideButtonDidTap(_ userInfo: User, _ sender: UIButton) {}
+  func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton) {}
+}
+
 class FollowTableViewCell: UITableViewCell {
   static let cellReuseIdentifier = "followCell"
   static let cellSeparatorInsets = UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 0)
