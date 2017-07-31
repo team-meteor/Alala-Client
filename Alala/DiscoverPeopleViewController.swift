@@ -12,6 +12,7 @@ class DiscoverPeopleViewController: UIViewController {
 
   var contentTableView = UITableView()
   var allUsers = [User]()
+  var currentUser: User?
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -20,9 +21,11 @@ class DiscoverPeopleViewController: UIViewController {
       $0.text = LS("DiscoverPeople")
       $0.sizeToFit()
     }
+    UserService.instance.me { user in
+      self.currentUser = user
+    }
     UserService.instance.getAllRegisterdUsers { users in
-      self.allUsers = users! as! [User]
-      print("users", self.allUsers)
+      self.allUsers = (users?.filter({$0?.email != self.currentUser?.email}))! as! [User]
       self.contentTableView.reloadData()
     }
     setupUI()
@@ -50,7 +53,6 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return self.allUsers.count
-    //return 1
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -60,9 +62,17 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
 
     cell.userInfo = self.allUsers[indexPath.item]
 
-    cell.followingButtonWidthConstraint?.update(offset: 0)
     cell.deleteButtonWidthConstraint?.update(offset: 0)
 
+    if let followingUsers = self.currentUser?.following {
+      for followingUser in followingUsers {
+        if followingUser.email == cell.userInfo.email {
+          cell.followButtonWidthConstraint?.update(offset: 0)
+          return cell
+        }
+      }
+    }
+    cell.followingButtonWidthConstraint?.update(offset: 0)
     return cell
   }
 
