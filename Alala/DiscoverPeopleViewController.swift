@@ -12,7 +12,6 @@ class DiscoverPeopleViewController: UIViewController {
 
   var contentTableView = UITableView()
   var allUsers = [User]()
-  var currentUser: User?
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -21,11 +20,9 @@ class DiscoverPeopleViewController: UIViewController {
       $0.text = LS("DiscoverPeople")
       $0.sizeToFit()
     }
-    UserService.instance.me { user in
-      self.currentUser = user
-    }
+    AuthService.instance.me { _ in}
     UserService.instance.getAllRegisterdUsers { users in
-      self.allUsers = (users?.filter({$0?.email != self.currentUser?.email}))! as! [User]
+      self.allUsers = (users?.filter({$0?.email != AuthService.instance.currentUser?.email}))! as! [User]
       self.contentTableView.reloadData()
     }
     setupUI()
@@ -118,17 +115,13 @@ extension DiscoverPeopleViewController: UITableViewDelegate {
 }
 
 extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
-
   func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     UserService.instance.followUser(id: userInfo.id) { bool in
       if bool {
-        print("follow success")
         if let cell = sender.superview as? FollowTableViewCell {
           cell.isShowFollowButton = false
           cell.isShowFollowingButton = true
         }
-      } else {
-        print("follow fail")
       }
     }
   }
@@ -136,13 +129,10 @@ extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
   func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     UserService.instance.unfollowUser(id: userInfo.id) { bool in
       if bool {
-        print("unfollow success")
         if let cell = sender.superview as? FollowTableViewCell {
           cell.isShowFollowButton = true
           cell.isShowFollowingButton = false
         }
-      } else {
-        print("unfollow fail")
       }
     }
   }
@@ -154,9 +144,5 @@ extension DiscoverPeopleViewController: FollowTableViewCellDelegate {
       self.allUsers = newUsers
       contentTableView.reloadData()
     }
-  }
-
-  func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton) {
-    print(userInfo, sender)
   }
 }

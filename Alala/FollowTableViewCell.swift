@@ -187,15 +187,6 @@ class FollowTableViewCell: UITableViewCell {
       deleteButtonWidthConstraint = make.width.equalTo(0).constraint
     }
 
-//    if (AuthService.instance.currentUser?.following?.contains(userInfo))! {
-//      followButton.snp.updateConstraints { make in
-//        make.width.equalTo(0)
-//      }
-//      followingButton.snp.updateConstraints { make in
-//        make.width.equalTo(80)
-//      }
-//    }
-
   }
 
   required init?(coder aDecoder: NSCoder) {
