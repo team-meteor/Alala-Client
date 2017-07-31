@@ -12,7 +12,6 @@ import ObjectMapper
 class AuthService {
   static let instance = AuthService()
   let defaults = UserDefaults.standard
-  var currentUser: User?
   var isRegistered: Bool? {
     get {
       return defaults.bool(forKey: Constants.DEFAULTS_REGISTERED) == true
@@ -144,29 +143,6 @@ class AuthService {
     } catch let err {
       completion(false)
       print(err)
-    }
-  }
-
-  func me(completion: @escaping (_ user: User?) -> Void) {
-    let urlString = Constants.BASE_URL + "user/me"
-    guard let token = self.authToken else {
-      completion(nil)
-      return
-    }
-    let headers = [
-      "Authorization": "Bearer " + token
-    ]
-    Alamofire.request(urlString, method: .get, headers: headers)
-      .validate(statusCode: 200..<300)
-      .responseJSON { response in
-        if response.result.error == nil {
-          self.currentUser = Mapper<User>().map(JSONObject: response.result.value)
-          print(self.currentUser ?? "")
-          completion(self.currentUser)
-        } else {
-          print("HTTP Request failed: \(String(describing: response.result.error))")
-          completion(nil)
-        }
     }
   }
 

@@ -10,10 +10,10 @@ import UIKit
 import SnapKit
 
 protocol FollowTableViewCellDelegate {
-  func followButtonDidTap(_ userInfo: User, _ followButton: UIButton, _ followingButton: UIButton)
-  func followingButtonDidTap(_ userInfo: User, _ followButton: UIButton, _ followingButton: UIButton)
-  func hideButtonDidTap(_ userInfo: User)
-  func deleteButtonDidTap(_ userInfo: User)
+  func followButtonDidTap(_ userInfo: User, _ sender: UIButton)
+  func followingButtonDidTap(_ userInfo: User, _ sender: UIButton)
+  func hideButtonDidTap(_ userInfo: User, _ sender: UIButton)
+  func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton)
 }
 
 class FollowTableViewCell: UITableViewCell {
@@ -139,6 +139,16 @@ class FollowTableViewCell: UITableViewCell {
       make.height.equalTo(25)
       deleteButtonWidthConstraint = make.width.equalTo(20).constraint
     }
+
+//    if (AuthService.instance.currentUser?.following?.contains(userInfo))! {
+//      followButton.snp.updateConstraints { make in
+//        make.width.equalTo(0)
+//      }
+//      followingButton.snp.updateConstraints { make in
+//        make.width.equalTo(80)
+//      }
+//    }
+
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -148,25 +158,25 @@ class FollowTableViewCell: UITableViewCell {
   func followButtonDidTap() {
     guard delegate != nil, userInfo != nil else {return}
 
-    delegate?.followButtonDidTap(userInfo!, followButton, followingButton)
+    delegate?.followButtonDidTap(userInfo!, followButton)
   }
 
   func followingButtonDidTap() {
     guard delegate != nil, userInfo != nil else {return}
 
-    delegate?.followingButtonDidTap(userInfo!, followButton, followingButton)
+    delegate?.followingButtonDidTap(userInfo!, followingButton)
   }
 
   func hideButtonDidTap() {
     guard delegate != nil, userInfo != nil else {return}
 
-    delegate?.hideButtonDidTap(userInfo!)
+    delegate?.hideButtonDidTap(userInfo!, hideButton)
   }
 
   func deleteButtonDidTap() {
     guard delegate != nil, userInfo != nil else {return}
 
-    delegate?.deleteButtonDidTap(userInfo!)
+    delegate?.deleteButtonDidTap(userInfo!, deleteButton)
   }
 
 }

@@ -150,7 +150,7 @@ class LoginViewController: UIViewController {
     if self.requestType == .Login {
       AuthService.instance.login(email: email, password: password, completion: { (success) in
         if success {
-          AuthService.instance.me(completion: { (user) in
+          UserService.instance.me(completion: { (user) in
             if user != nil {
               DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .presentMainTabBar, object: nil)

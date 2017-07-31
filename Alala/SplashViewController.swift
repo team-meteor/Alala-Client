@@ -15,7 +15,7 @@ class SplashViewController: UIViewController {
   }
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    AuthService.instance.me { (user) in
+    UserService.instance.me { (user) in
       if user != nil {
         NotificationCenter.default.post(name: .presentMainTabBar, object: nil, userInfo: nil)
       } else {
