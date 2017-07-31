@@ -255,12 +255,13 @@ class PersonalViewController: UIViewController {
 
     if(profileUser?.id == AuthService.instance.currentUser?.id) {
       profileUser = AuthService.instance.currentUser
-      personalInfoView.setupUserInfo(userInfo: profileUser!)
+      self.fetchFeedMine(paging: .refresh)
     } else {
       // todo : 해당 유저의 id로 서버에 user정보를 새로 요청해야 함
+      // todo : 해당 유저의 post를 받아오는 api가 필요함
     }
 
-    self.fetchFeedMine(paging: .refresh)
+    personalInfoView.setupUserInfo(userInfo: profileUser!)
   }
 
   func refreshControlDidChangeValue() {
