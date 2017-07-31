@@ -68,9 +68,11 @@ class FeedViewController: PostViewController {
     super.viewWillAppear(animated)
     self.navigationController?.isNavigationBarHidden = false
     self.tabBarController?.tabBar.isHidden = false
+    self.fetchFeed(paging: .refresh)
   }
 
   fileprivate func fetchFeed(paging: Paging) {
+    print("fetchfeed")
     guard !self.isLoading else { return }
     self.isLoading = true
 
