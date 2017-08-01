@@ -348,10 +348,10 @@ class CameraViewController: UIViewController {
   }
 
   func savePhotoToLibrary() {
-    UIImageWriteToSavedPhotosAlbum(self.capturedImageView.image!, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+    UIImageWriteToSavedPhotosAlbum(self.capturedImageView.image!, self, #selector(didSaveImage(_:didFinishSavingWithError:contextInfo:)), nil)
   }
 
-  func image(_ image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: UnsafeRawPointer) {
+  func didSaveImage(_ image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: UnsafeRawPointer) {
     if let error = error {
       // we got back an error!
       let ac = UIAlertController(title: "Save error", message: error.localizedDescription, preferredStyle: .alert)

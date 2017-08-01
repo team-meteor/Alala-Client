@@ -72,17 +72,11 @@ class UserService {
       .validate(statusCode: 200..<300)
       .responseJSON { response in
         if response.result.error == nil {
-          var newFollowings = [User]()
-          if let rawFollowings = response.result.value as! [Any]? {
-            for rawFollowing in rawFollowings {
-              let user = Mapper<User>().map(JSONObject: rawFollowing)
-              newFollowings.append(user!)
-              if newFollowings.count == rawFollowings.count {
-                completion(newFollowings)
-              }
-            }
+          if let rawCurrentUser = response.result.value as Any? {
+            let currentUser = Mapper<User>().map(JSONObject: rawCurrentUser)
+            AuthService.instance.currentUser?.following = currentUser?.following
+            completion(currentUser?.following)
           }
-          completion(newFollowings)
         } else {
           print("HTTP Request failed: \(String(describing: response.result.error))")
           completion(nil)
@@ -107,17 +101,11 @@ class UserService {
       .validate(statusCode: 200..<300)
       .responseJSON { response in
         if response.result.error == nil {
-          var newFollowings = [User]()
-          if let rawFollowings = response.result.value as! [Any]? {
-            for rawFollowing in rawFollowings {
-              let user = Mapper<User>().map(JSONObject: rawFollowing)
-              newFollowings.append(user!)
-              if newFollowings.count == rawFollowings.count {
-                completion(newFollowings)
-              }
-            }
+          if let rawCurrentUser = response.result.value as Any? {
+            let currentUser = Mapper<User>().map(JSONObject: rawCurrentUser)
+            AuthService.instance.currentUser?.following = currentUser?.following
+            completion(currentUser?.following)
           }
-          completion(newFollowings)
         } else {
           print("HTTP Request failed: \(String(describing: response.result.error))")
           completion(nil)

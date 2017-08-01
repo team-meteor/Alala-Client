@@ -115,7 +115,6 @@ extension DiscoverPeopleViewController: PeoplesTableViewCellDelegate {
   func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     UserService.instance.followUser(id: userInfo.id) { newFollowings in
       if newFollowings != nil {
-        AuthService.instance.currentUser?.following = newFollowings as? [User]
         if let cell = sender.superview as? PeoplesTableViewCell {
           cell.isFollowingUser = true
         }
@@ -126,7 +125,6 @@ extension DiscoverPeopleViewController: PeoplesTableViewCellDelegate {
   func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     UserService.instance.unfollowUser(id: userInfo.id) { newFollowings in
       if newFollowings != nil {
-        AuthService.instance.currentUser?.following = newFollowings as? [User]
         if let cell = sender.superview as? PeoplesTableViewCell {
           cell.isFollowingUser = false
         }
