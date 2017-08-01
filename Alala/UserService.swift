@@ -54,7 +54,7 @@ class UserService {
   }
 
   //follow
-  func followUser(id: String, completion: @escaping (_ success: Bool) -> Void) {
+  func followUser(id: String, completion: @escaping (_ users: [User?]?) -> Void) {
 
     guard let token = self.authToken else { return }
     let headers = [
@@ -70,16 +70,27 @@ class UserService {
     // Fetch Request
     Alamofire.request(Constants.BASE_URL + "/user/follow", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
-      .responseString { response in
-        if (response.result.error == nil) {
-          completion(true)
+      .responseJSON { response in
+        if response.result.error == nil {
+          var newFollowings = [User]()
+          if let rawFollowings = response.result.value as! [Any]? {
+            for rawFollowing in rawFollowings {
+              let user = Mapper<User>().map(JSONObject: rawFollowing)
+              newFollowings.append(user!)
+              if newFollowings.count == rawFollowings.count {
+                completion(newFollowings)
+              }
+            }
+          }
+          completion(newFollowings)
         } else {
-          completion(false)
+          print("HTTP Request failed: \(String(describing: response.result.error))")
+          completion(nil)
         }
     }
   }
 
-  func unfollowUser(id: String, completion: @escaping (_ success: Bool) -> Void) {
+  func unfollowUser(id: String, completion: @escaping (_ users: [User?]?) -> Void) {
     guard let token = self.authToken else { return }
     let headers = [
       "Authorization": "Bearer " + token,
@@ -94,11 +105,22 @@ class UserService {
     // Fetch Request
     Alamofire.request(Constants.BASE_URL + "/user/unfollow", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
-      .responseString { response in
-        if (response.result.error == nil) {
-          completion(true)
+      .responseJSON { response in
+        if response.result.error == nil {
+          var newFollowings = [User]()
+          if let rawFollowings = response.result.value as! [Any]? {
+            for rawFollowing in rawFollowings {
+              let user = Mapper<User>().map(JSONObject: rawFollowing)
+              newFollowings.append(user!)
+              if newFollowings.count == rawFollowings.count {
+                completion(newFollowings)
+              }
+            }
+          }
+          completion(newFollowings)
         } else {
-          completion(false)
+          print("HTTP Request failed: \(String(describing: response.result.error))")
+          completion(nil)
         }
 
     }
