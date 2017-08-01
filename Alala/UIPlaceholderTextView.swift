@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol UIPlaceholderTextViewDelegate {
+protocol UIPlaceholderTextViewDelegate :class {
   func placeholderTextViewHeightChanged(_ height: CGFloat)
 }
 

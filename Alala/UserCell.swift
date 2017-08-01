@@ -35,6 +35,8 @@ class UserCell: UICollectionViewCell {
     contentView.addSubview(profilePhoto)
     contentView.addSubview(profileNameLabel)
     contentView.addSubview(moreButton)
+
+    moreButton.addTarget(self, action: #selector(moreButtonDidTap), for: .touchUpInside)
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -53,12 +55,16 @@ class UserCell: UICollectionViewCell {
       make.left.equalTo(profilePhoto.snp.right).offset(10)
     }
     moreButton.snp.makeConstraints { (make) in
-      make.centerY.equalTo(self.contentView)
-      make.right.equalTo(self.contentView).offset(-15.5)
+      make.top.right.bottom.equalTo(self.contentView)
+      make.width.equalTo(40)
     }
   }
   func configure(post: Post) {
     self.profilePhoto.setImage(with: post.createdBy.profilePhotoId, size: .thumbnail)
     self.profileNameLabel.text = post.createdBy.profileName
+  }
+
+  func moreButtonDidTap() {
+    print("moreButtonDidTap")
   }
 }

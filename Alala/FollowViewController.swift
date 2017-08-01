@@ -36,6 +36,8 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
   var searchBar = UISearchBar()
   var contentTableView = UITableView()
 
+  var users: [User] = []
+
   // MARK: - Initialize
   convenience init() {
     self.init(type:.follower)
@@ -63,6 +65,9 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
       setupUIForFollowingType()
     }
 
+    //--- TEST CODE
+    //users = [AuthService.instance.currentUser!]
+
     setupUI()
    //configureSearchController()
   }
@@ -70,17 +75,20 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
   func setupUIForFollowerType() {
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = LS("Followers")
+      $0.text = LS("followers")
       $0.sizeToFit()
     }
+
+    users = (AuthService.instance.currentUser?.followers)!
   }
 
   func setupUIForFollowingType() {
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = LS("Following")
+      $0.text = LS("following")
       $0.sizeToFit()
     }
+    users = (AuthService.instance.currentUser?.following)!
   }
 
   func setupUI() {
@@ -115,24 +123,20 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
 
 extension FollowViewController: UITableViewDataSource {
   func numberOfSections(in tableView: UITableView) -> Int {
-    return 2
+    return 1
   }
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    if section == 0 {
-      return 1
-    } else {
-      //    if shouldShowSearchResults {
-      //      return filteredArray.count
-      //    } else {
-      //      return dataArray.count
-      //    }
-      return 3
-    }
+    //    if shouldShowSearchResults {
+    //      return filteredArray.count
+    //    } else {
+    //      return dataArray.count
+    //    }
+    return users.count
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
+    /*
     if indexPath.section == 0 {
       let cell: EditProfileTableViewCell = tableView.dequeueReusableCell(withIdentifier: EditProfileTableViewCell.cellReuseIdentifier) as! EditProfileTableViewCell
       cell.textView.text = LS("friends_from_facebook")
@@ -140,23 +144,26 @@ extension FollowViewController: UITableViewDataSource {
       cell.rightButton.setImage(UIImage(named: "foward")?.resizeImage(scaledTolength: 15), for: .normal)
       cell.rightButtonWidthConstraint?.constant = 20
       return cell
-    } else {
-      let cell: FollowTableViewCell = tableView.dequeueReusableCell(withIdentifier: FollowTableViewCell.cellReuseIdentifier) as! FollowTableViewCell
-      //let cell = tableView.dequeueReusableCell(withIdentifier: "idCell", for: indexPath as IndexPath)
+    } else {}
+     */
+    let cell: FollowTableViewCell = tableView.dequeueReusableCell(withIdentifier: FollowTableViewCell.cellReuseIdentifier) as! FollowTableViewCell
+    cell.selectionStyle = .none
 
-      //    if shouldShowSearchResults {
-      //      cell.textLabel?.text = filteredArray[indexPath.row]
-      //    } else {
-      //      cell.textLabel?.text = dataArray[indexPath.row]
-      //    }
-
-      return cell
+    if FollowType.follower.rawValue==currentType {
+      cell.isShowDeleteButton = true
+    } else if FollowType.following.rawValue==currentType {
+      cell.isShowDeleteButton = false
     }
+    guard let user: User = users[indexPath.row] as User! else {return cell}
+
+    cell.userInfo = user
+    cell.delegate = self
+
+    return cell
   }
 
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     let view = UIBorderView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 40))
-    view.topBorderLine.isHidden = false
     view.bottomBorderLine.isHidden = false
 
     let label = UILabel()
@@ -166,16 +173,16 @@ extension FollowViewController: UITableViewDataSource {
     view.backgroundColor = UIColor(rgb: 0xeeeeee)
     label.snp.makeConstraints { (make) in
       make.left.equalTo(view).offset(10)
-      make.bottom.equalTo(view)
+      make.bottom.equalTo(view).offset(-3)
       make.rightMargin.equalTo(view)
       make.height.equalTo(18)
     }
 
-    if section == 0 {
-      label.text = LS("invite")
-    } else {
-      label.text = LS("following")
-    }
+    //if section == 0 {
+    //  label.text = LS("invite").uppercased()
+    //} else {
+    label.text = LS("following").uppercased()
+    //}
 
     return view
   }
@@ -183,7 +190,7 @@ extension FollowViewController: UITableViewDataSource {
 
 extension FollowViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-    return 50
+    return CGFloat(FollowTableViewCell.cellHeight)
   }
 
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -194,5 +201,38 @@ extension FollowViewController: UITableViewDelegate {
     if cell.responds(to: #selector(setter: UITableViewCell.separatorInset)) {
       cell.separatorInset = FollowTableViewCell.cellSeparatorInsets
     }
+  }
+
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    let rowUser = users[indexPath.row]
+    let profileVC = PersonalViewController(user:rowUser)
+    self.navigationController?.pushViewController(profileVC, animated: true)
+  }
+}
+
+extension FollowViewController: FollowTableViewCellDelegate {
+  func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
+    print("followingButtonDidTap : \(userInfo)")
+    guard let cell = sender.superview as? FollowTableViewCell else {return}
+
+    if cell.isSetFollowButton == true {
+      UserService.instance.followUser(id: userInfo.id) { bool in
+        if bool {
+          cell.isSetFollowButton = false
+        }
+      }
+    } else {
+      // todo : 팔로우 취소할 것인지 물어야 함
+      UserService.instance.unfollowUser(id: userInfo.id) { bool in
+        if bool {
+          cell.isSetFollowButton = true
+        }
+      }
+    }
+
+  }
+
+  func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton) {
+    print("deleteButtonDidTap : \(userInfo)")
   }
 }

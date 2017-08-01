@@ -63,66 +63,86 @@ class PersonalInfoView: UIView {
     $0.sizeToFit()
   }
 
-  let postsButton = UIButton().then {
+  var postsCount: Int = 0 {
+    didSet {
+      self.postsCountLabel.text = String(describing: postsCount)
+      if postsCount <= 0 {
+        postsButton.isEnabled = false
+        postsCountLabel.isEnabled = false
+        postsTextLabel.isEnabled = false
+
+        gridPostMenuButton.isEnabled = false
+        listPostMenuButton.isEnabled = false
+      } else {
+        postsButton.isEnabled = true
+        postsCountLabel.isEnabled = true
+        postsTextLabel.isEnabled = true
+
+        gridPostMenuButton.isEnabled = true
+        listPostMenuButton.isEnabled = true
+      }
+    }
+  }
+  fileprivate let postsButton = UIButton().then {
      $0.addTarget(self, action: #selector(postsButtonTap(sender:)), for: .touchUpInside)
   }
 
-  let postsCountLabel = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 14)
+  fileprivate let postsCountLabel = UILabel().then {
+    $0.font = UIFont.boldSystemFont(ofSize: 14)
     $0.text = "0"
     $0.textAlignment = .center
     $0.sizeToFit()
   }
 
-  let postsTextLabel = UILabel().then {
+  fileprivate let postsTextLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 12)
     $0.text = LS("posts")
     $0.textAlignment = .center
     $0.sizeToFit()
   }
 
-  let followersButton = UIButton().then {
+  fileprivate let followersButton = UIButton().then {
     $0.addTarget(self, action: #selector(followersButtonTap(sender:)), for: .touchUpInside)
   }
 
-  let followersCountLabel = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 14)
+  fileprivate let followersCountLabel = UILabel().then {
+    $0.font = UIFont.boldSystemFont(ofSize: 14)
     $0.text = "0"
     $0.textAlignment = .center
     $0.sizeToFit()
   }
 
-  let followersTextLabel = UILabel().then {
+  fileprivate let followersTextLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 12)
     $0.text = LS("followers")
     $0.textAlignment = .center
     $0.sizeToFit()
   }
 
-  let followingButton = UIButton().then {
+  fileprivate let followingButton = UIButton().then {
     $0.addTarget(self, action: #selector(followingButtonTap(sender:)), for: .touchUpInside)
   }
 
-  let followingCountLabel = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 14)
+  fileprivate let followingCountLabel = UILabel().then {
+    $0.font = UIFont.boldSystemFont(ofSize: 14)
     $0.text = "0"
     $0.textAlignment = .center
     $0.sizeToFit()
   }
 
-  let followingTextLabel = UILabel().then {
+  fileprivate let followingTextLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 12)
     $0.text = LS("following")
     $0.textAlignment = .center
     $0.sizeToFit()
   }
 
-  let editProfileButton = RoundCornerButton(type: .buttonColorTypeWhite).then {
+  fileprivate let editProfileButton = RoundCornerButton(.buttonColorTypeWhite).then {
     $0.setTitle(LS("edit_profile"), for: .normal)
     $0.addTarget(self, action: #selector(editProfileButtonTap(sender:)), for: .touchUpInside)
   }
 
-  let optionsButton = RoundCornerButton(type: .buttonColorTypeWhite).then {
+  fileprivate let optionsButton = RoundCornerButton(.buttonColorTypeWhite).then {
     $0.setImage(UIImage(named: "settings")?.resizeImage(scaledTolength: 15), for: UIControlState.normal)
     $0.setImage(UIImage(named: "settings")?.resizeImage(scaledTolength: 15), for: UIControlState.highlighted)
     $0.imageView?.contentMode = UIViewContentMode.scaleAspectFit
@@ -134,25 +154,25 @@ class PersonalInfoView: UIView {
     $0.bottomBorderLine.isHidden = false
   }
 
-  let gridPostMenuButton = UIButton().then {
-    $0.setImage(UIImage(named: "grid")?.resizeImage(scaledTolength: 20), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "grid_selected")?.resizeImage(scaledTolength: 20), for: UIControlState.selected)
+  fileprivate let gridPostMenuButton = UIButton().then {
+    $0.setImage(UIImage(named: "grid")?.resizeImage(scaledTolength: 26), for: UIControlState.normal)
+    $0.setImage(UIImage(named: "grid_selected")?.resizeImage(scaledTolength: 26), for: UIControlState.selected)
     $0.addTarget(self, action: #selector(gridPostMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
-  let listPostMenuButton = UIButton().then {
-    $0.setImage(UIImage(named: "list")?.resizeImage(scaledTolength: 20), for: UIControlState.normal)
-    $0.setImage(UIImage(named: "list_selected")?.resizeImage(scaledTolength: 20), for: UIControlState.selected)
+  fileprivate let listPostMenuButton = UIButton().then {
+    $0.setImage(UIImage(named: "list")?.resizeImage(scaledTolength: 21), for: UIControlState.normal)
+    $0.setImage(UIImage(named: "list_selected")?.resizeImage(scaledTolength: 21), for: UIControlState.selected)
     $0.addTarget(self, action: #selector(listPostMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
-  let photosForYouMenuButton = UIButton().then {
-    $0.setImage(UIImage(named: "my_photo")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
+  fileprivate let photosForYouMenuButton = UIButton().then {
+    $0.setImage(UIImage(named: "my_photo")?.resizeImage(scaledTolength: 23), for: UIControlState.normal)
     $0.addTarget(self, action: #selector(photosForYouMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
-  let savedMenuButton = UIButton().then {
-    $0.setImage(UIImage(named: "save")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
+  fileprivate let savedMenuButton = UIButton().then {
+    $0.setImage(UIImage(named: "save-gray")?.resizeImage(scaledTolength: 25), for: UIControlState.normal)
     $0.addTarget(self, action: #selector(savedMenuButtonTap(sender:)), for: .touchUpInside)
   }
 
@@ -200,14 +220,12 @@ class PersonalInfoView: UIView {
       make.top.equalTo(self)
       make.left.equalTo(self)
       make.right.equalTo(self)
-      make.leftMargin.equalTo(10)
-      make.rightMargin.equalTo(10)
       make.bottom.equalTo(websiteLabel).offset(10)
     }
 
     profileImageView.snp.makeConstraints { (make) in
       make.top.equalTo(infoView).offset(10)
-      make.left.equalTo(infoView.snp.leftMargin)
+      make.left.equalTo(infoView).offset(10)
       make.width.equalTo(70)
       make.height.equalTo(70)
     }
@@ -255,7 +273,7 @@ class PersonalInfoView: UIView {
     followingButton.snp.makeConstraints { (make) in
       make.top.equalTo(profileImageView.snp.top).offset(5)
       make.left.equalTo(followersCountLabel.snp.right)
-      make.right.equalTo(infoView.snp.rightMargin)
+      make.right.equalTo(infoView).offset(-10)
       make.width.equalTo(postsButton.snp.width)
       make.height.equalTo(30)
     }
@@ -367,6 +385,30 @@ class PersonalInfoView: UIView {
     websiteLabel.text = userInfo.website
     let websiteOffset = (websiteLabel.text?.characters.count==0) ? 0 : 20
     self.websiteHeightConstraint?.update(offset: websiteOffset)
+
+    if userInfo.followers != nil && (userInfo.followers?.count)! > 0 {
+      followersButton.isEnabled = true
+      followersCountLabel.isEnabled = true
+      followersTextLabel.isEnabled = true
+      followersCountLabel.text = userInfo.followers?.count.description
+    } else {
+      followersButton.isEnabled = false
+      followersCountLabel.isEnabled = false
+      followersTextLabel.isEnabled = false
+      followersCountLabel.text = "0"
+    }
+
+    if userInfo.following != nil && (userInfo.following?.count)! > 0 {
+      followingButton.isEnabled = true
+      followingCountLabel.isEnabled = true
+      followingTextLabel.isEnabled = true
+      followingCountLabel.text = userInfo.following?.count.description
+    } else {
+      followingButton.isEnabled = false
+      followingCountLabel.isEnabled = false
+      followingTextLabel.isEnabled = false
+      followingCountLabel.text = "0"
+    }
 
     self.updateConstraints()
   }

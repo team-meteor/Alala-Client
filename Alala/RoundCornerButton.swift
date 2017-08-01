@@ -40,17 +40,10 @@ class RoundCornerButton: UIButton {
     fatalError("init(coder:) has not been implemented")
   }
 
-  required init(type: ButtonColorType) {
+  required init(_ type: ButtonColorType) {
     super.init(frame: .zero)
 
-    switch type {
-    case .buttonColorTypeWhite:
-      setupWhiteType()
-    case .buttonColorTypeBlue:
-      setupBlueType()
-    }
-
-    setupCommon()
+    setButtonType(type)
   }
 
   func setupCommon() {
@@ -81,6 +74,17 @@ class RoundCornerButton: UIButton {
 
     highlightBorderColor = UIColor(rgb: 0x3EB7ED)
     highlightBackgroundColor = UIColor(rgb: 0x3EB7ED)
+  }
+
+  func setButtonType(_ type: ButtonColorType) {
+    switch type {
+    case .buttonColorTypeWhite:
+      setupWhiteType()
+    case .buttonColorTypeBlue:
+      setupBlueType()
+    }
+
+    setupCommon()
   }
 
   override var isHighlighted: Bool {

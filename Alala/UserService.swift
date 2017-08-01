@@ -83,7 +83,7 @@ class UserService {
     guard let token = self.authToken else { return }
     let headers = [
       "Authorization": "Bearer " + token,
-      "Content-Type": "application/json; charset=utf-8",
+      "Content-Type": "application/json; charset=utf-8"
       ]
 
     // JSON Body
