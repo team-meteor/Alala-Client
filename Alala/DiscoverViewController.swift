@@ -12,14 +12,12 @@ class DiscoverViewController: UIViewController {
 
   fileprivate let tableView = UITableView().then {
     $0.isScrollEnabled = true
-    $0.register(UITableViewCell.self, forCellReuseIdentifier: "myCell")
+    $0.register(SearchTableViewCell.self, forCellReuseIdentifier: SearchTableViewCell.cellReuseIdentifier)
   }
 
-  let searchController = UISearchController(searchResultsController: nil)
-
-  fileprivate var items: [String] = ["One", "Two", "Three"]
-
+  fileprivate let searchController = UISearchController(searchResultsController: nil)
   fileprivate let searchPersonVC = SearchPersonViewController()
+  fileprivate var allUsers = [User]()
 
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -36,7 +34,26 @@ class DiscoverViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    configureView()
+    AuthService.instance.me { _ in}
+    UserService.instance.getAllRegisterdUsers { user in
+      self.allUsers = user?.filter({$0?.email != AuthService.instance.currentUser?.email}) as! [User]
+      self.tableView.reloadData()
+    }
+
+    setupUI()
+
+  }
+
+  func setupUI() {
+
+    self.view.addSubview(self.tableView)
+
+    self.tableView.snp.makeConstraints { make in
+      make.bottom.left.right.equalTo(self.view)
+      make.top.equalTo(UIApplication.shared.statusBarFrame.maxY)
+    }
+
+    self.tableView.rowHeight = 60
 
     searchController.searchResultsUpdater = self as? UISearchResultsUpdating
     searchController.dimsBackgroundDuringPresentation = false
@@ -48,16 +65,7 @@ class DiscoverViewController: UIViewController {
 
     displayContentController(content: searchPersonVC)
     customizingSearchBar()
-  }
 
-  func configureView() {
-
-    self.view.addSubview(self.tableView)
-
-    self.tableView.snp.makeConstraints { make in
-      make.bottom.left.right.equalTo(self.view)
-      make.top.equalTo(UIApplication.shared.statusBarFrame.maxY)
-    }
   }
 
   func displayContentController(content: UIViewController) {
@@ -121,13 +129,14 @@ extension DiscoverViewController: UISearchBarDelegate {
 extension DiscoverViewController: UITableViewDataSource {
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return self.items.count
+    return self.allUsers.count
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-    let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath)
-    cell.textLabel?.text = self.items[indexPath.row]
+    let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.cellReuseIdentifier) as! SearchTableViewCell
+    cell.selectionStyle = .none
+    cell.userInfo = self.allUsers[indexPath.item]
     return cell
   }
 }
