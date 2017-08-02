@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 /**
  * Post를 grid형태로 3열 출력할 때 사용하는 콜렉션뷰 셀
@@ -16,6 +17,7 @@ import UIKit
 class PostGridCell: UICollectionViewCell {
 
   static let cellReuseIdentifier = "gridCell"
+  var post: Post!
 
   let thumbnailImageView = UIImageView().then {
     $0.backgroundColor = .lightGray
@@ -49,6 +51,12 @@ class PostGridCell: UICollectionViewCell {
     }
   }
 
+  override func prepareForReuse() {
+    super.prepareForReuse()
+    thumbnailImageView.subviews.forEach({$0.removeFromSuperview()})
+
+  }
+
   var isVideo: Bool {
     didSet {
       switch isVideo {
@@ -70,6 +78,39 @@ class PostGridCell: UICollectionViewCell {
       case false:
         rightTopIconView.isHidden = true
       }
+    }
+  }
+
+  func configure(post: Post) {
+
+    self.post = post
+    let firstMultipartId = self.post.multipartIds[0]
+
+    if !firstMultipartId.contains("_") {
+      let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(firstMultipartId)")
+      let thumbnail = getThumbnailImage(videoUrl: url!)
+      thumbnailImageView.image = thumbnail
+      isVideo = true
+    } else {
+      thumbnailImageView.setImage(with: firstMultipartId, size: .medium)
+    }
+    if self.post.multipartIds.count > 1 {
+      isMultiPhotos = true
+    }
+    self.setNeedsLayout()
+  }
+
+  func getThumbnailImage(videoUrl: URL) -> UIImage? {
+    let asset = AVAsset(url: videoUrl)
+    let imageGenerator = AVAssetImageGenerator(asset: asset)
+    imageGenerator.appliesPreferredTrackTransform = true
+    var time = asset.duration
+    time.value = min(time.value, 2)
+    do {
+      let imageRef = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+      return UIImage(cgImage: imageRef)
+    } catch {
+      return nil
     }
   }
 

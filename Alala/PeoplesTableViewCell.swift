@@ -10,13 +10,11 @@ import UIKit
 import SnapKit
 
 protocol PeoplesTableViewCellDelegate :class {
-  func followButtonDidTap(_ userInfo: User, _ sender: UIButton)
   func followingButtonDidTap(_ userInfo: User, _ sender: UIButton)
   func hideButtonDidTap(_ userInfo: User, _ sender: UIButton)
 }
 
 extension PeoplesTableViewCellDelegate {
-  func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {}
   func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {}
   func hideButtonDidTap(_ userInfo: User, _ sender: UIButton) {}
 }
@@ -44,18 +42,14 @@ class PeoplesTableViewCell: UITableViewCell {
 
   weak var delegate: PeoplesTableViewCellDelegate?
 
-  var isFollowingUser = false {
+  var isSetFollowButton = false {
     didSet {
-      if isFollowingUser == true {
-        // 내가 이미 팔로잉 중인 유저 : '팔로잉' 출력
-        followingButton.isHidden = false
-        followButton.isHidden    = true
-        hideButton.isHidden      = true
+      if isSetFollowButton == true {
+        followingButton.setTitle(LS("button_follow"), for: .normal)
+        followingButton.setButtonType(.buttonColorTypeBlue)   // Blue Button : '팔로우'
       } else {
-        // 내가 팔로잉하지 않은 유저 : '팔로우', '숨김' 출력
-        followingButton.isHidden = true
-        followButton.isHidden    = false
-        hideButton.isHidden      = false
+        followingButton.setTitle(LS("button_following"), for: .normal)
+        followingButton.setButtonType(.buttonColorTypeWhite)  // White Button : '팔로잉'
       }
     }
   }
@@ -88,16 +82,13 @@ class PeoplesTableViewCell: UITableViewCell {
     $0.sizeToFit()
   }
 
-  fileprivate let followButton = RoundCornerButton(.buttonColorTypeBlue).then {
-    $0.setTitle(LS("button_follow"), for: .normal)
-    $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
-  }
-  fileprivate var followButtonWidthConstraint: Constraint?
-
   fileprivate let followingButton = RoundCornerButton(.buttonColorTypeWhite).then {
     $0.setTitle(LS("button_following"), for: .normal)
     $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
   }
+
+  fileprivate var followButtonWidthConstraint: Constraint?
+
   fileprivate var followingButtonWidthConstraint: Constraint?
 
   fileprivate let hideButton = RoundCornerButton(.buttonColorTypeWhite).then {
@@ -113,7 +104,6 @@ class PeoplesTableViewCell: UITableViewCell {
     self.addSubview(userIDLabel)
     self.addSubview(userNameLabel)
     self.addSubview(suggestionLabel)
-    self.addSubview(followButton)
     self.addSubview(followingButton)
     self.addSubview(hideButton)
 
@@ -127,7 +117,7 @@ class PeoplesTableViewCell: UITableViewCell {
     userIDLabel.sizeToFit()
     userIDLabel.snp.makeConstraints { (make) in
       make.left.equalTo(userPhotoImageView.snp.right).offset(10)
-      make.right.equalTo(followButton.snp.left)
+      make.right.equalTo(followingButton.snp.left)
       make.bottom.equalTo(userPhotoImageView.snp.centerY)
       make.height.equalTo(userIDLabel.frame.height)
     }
@@ -147,14 +137,6 @@ class PeoplesTableViewCell: UITableViewCell {
       make.bottom.equalTo(self).offset(-5)
     }
 
-    followButton.addTarget(self, action: #selector(followButtonDidTap), for: .touchUpInside)
-    followButton.snp.makeConstraints { (make) in
-      make.centerY.equalTo(userPhotoImageView)
-      make.right.equalTo(hideButton.snp.left).offset(-5)
-      make.height.equalTo(25)
-      followButtonWidthConstraint = make.width.equalTo(60).constraint
-    }
-
     hideButton.addTarget(self, action: #selector(hideButtonDidTap), for: .touchUpInside)
     hideButton.snp.makeConstraints { (make) in
       make.centerY.equalTo(userPhotoImageView)
@@ -166,21 +148,14 @@ class PeoplesTableViewCell: UITableViewCell {
     followingButton.addTarget(self, action: #selector(followingButtonDidTap), for: .touchUpInside)
     followingButton.snp.makeConstraints { (make) in
       make.centerY.equalTo(userPhotoImageView)
-      make.left.equalTo(followButton)
-      make.right.equalTo(hideButton)
+      make.right.equalTo(hideButton.snp.left).offset(-5)
       make.height.equalTo(25)
-      //followingButtonWidthConstraint = make.width.equalTo(0).constraint
+      followingButtonWidthConstraint = make.width.equalTo(60).constraint
     }
   }
 
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
-  }
-
-  func followButtonDidTap() {
-    guard delegate != nil, userInfo != nil else {return}
-
-    delegate?.followButtonDidTap(userInfo!, followButton)
   }
 
   func followingButtonDidTap() {

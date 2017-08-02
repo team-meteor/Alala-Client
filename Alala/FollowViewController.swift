@@ -211,25 +211,19 @@ extension FollowViewController: UITableViewDelegate {
 }
 
 extension FollowViewController: FollowTableViewCellDelegate {
+
   func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
     print("followingButtonDidTap : \(userInfo)")
     guard let cell = sender.superview as? FollowTableViewCell else {return}
-
-    if cell.isSetFollowButton == true {
-      UserService.instance.followUser(id: userInfo.id) { newFollowings in
-        if newFollowings != nil {
-          cell.isSetFollowButton = false
-        }
-      }
-    } else {
-      // todo : 팔로우 취소할 것인지 물어야 함
-      UserService.instance.unfollowUser(id: userInfo.id) { newFollowings in
-        if newFollowings != nil {
-          cell.isSetFollowButton = true
-        }
+    cell.isSetFollowButton = !cell.isSetFollowButton
+    UserService.instance.follow(id: userInfo.id) { response in
+      switch response.result {
+      case .success(let resultUser):
+        AuthService.instance.currentUser = resultUser
+      case .failure:
+        print("failure")
       }
     }
-
   }
 
   func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton) {
