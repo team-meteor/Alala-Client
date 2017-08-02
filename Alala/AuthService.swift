@@ -14,20 +14,21 @@ class AuthService {
   var currentUser: User? {
     willSet {
       if let bookmarks = newValue?.bookMarks {
-        currentUserMeta.updateValue([], forKey: "bookmarkIDs")
+        bookmarkMeta = [:]
         for post in bookmarks {
-          currentUserMeta["bookmarkIDs"]?.append(post.id)
+          bookmarkMeta[post.id] = post
         }
       }
-      if let followings = newValue?.following {
-        currentUserMeta.updateValue([], forKey: "followingIDs")
-        for user in followings {
-          currentUserMeta["followingIDs"]?.append(user.id)
+      if let follwings = newValue?.following {
+        follwingMeta = [:]
+        for user in follwings {
+          follwingMeta[user.id] = user
         }
       }
     }
   }
-  var currentUserMeta = [String: [String]]()
+  var bookmarkMeta = [String: Post]()
+  var follwingMeta = [String: User]()
   let defaults = UserDefaults.standard
   var isRegistered: Bool? {
     get {

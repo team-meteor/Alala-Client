@@ -45,7 +45,6 @@ class UserService {
               }
             }
           }
-          completion(allUsers)
         } else {
           completion(nil)
         }
@@ -62,16 +61,17 @@ class UserService {
       "id": id
     ]
     var url = ""
-    if !(AuthService.instance.currentUserMeta["followingIDs"]?.contains(id))! {
-      url = "follow"
-    } else {
+    if let _ = AuthService.instance.follwingMeta[id] {
       url = "unfollow"
+    } else {
+      url = "follow"
     }
     Alamofire.request(Constants.BASE_URL + "user/" + url, method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { response in
         if let user = Mapper<User>().map(JSONObject: response.result.value) {
           let response = DataResponse(request: response.request, response: response.response, data: response.data, result: Result.success(user))
+          AuthService.instance.currentUser = user
           completion(response)
         }
     }
