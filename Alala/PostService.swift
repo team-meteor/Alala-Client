@@ -72,19 +72,19 @@ struct PostService {
   }
 
   static func bookMark(post: Post, completion: @escaping (DataResponse<User>) -> Void) {
-
     let body: [String : Any] = ["id": post.id!]
     var url = ""
-    if !(AuthService.instance.currentUserMeta["bookmarkIDs"]?.contains(post.id))! {
-      url = "addBookMark"
-    } else {
+    if let _ = AuthService.instance.bookmarkMeta[post.id] {
       url = "deleteBookMark"
+    } else {
+      url = "addBookMark"
     }
     Alamofire.request(Constants.BASE_URL + "post/" + url, method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { response in
         if let user = Mapper<User>().map(JSONObject: response.result.value) {
           let response = DataResponse(request: response.request, response: response.response, data: response.data, result: Result.success(user))
+          AuthService.instance.currentUser = user
           completion(response)
         }
     }

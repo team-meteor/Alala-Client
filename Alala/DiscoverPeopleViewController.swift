@@ -59,7 +59,7 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
 
     cell.userInfo = self.allUsers[indexPath.item]
 
-    if (AuthService.instance.currentUserMeta["followingIDs"]?.contains(cell.userInfo.id))! {
+    if let _ = AuthService.instance.follwingMeta[cell.userInfo.id] {
       cell.isSetFollowButton = false
       return cell
     }
@@ -123,7 +123,6 @@ extension DiscoverPeopleViewController: PeoplesTableViewCellDelegate {
         print("failure")
       }
     }
-
   }
 
   func hideButtonDidTap(_ userInfo: User, _ sender: UIButton) {
