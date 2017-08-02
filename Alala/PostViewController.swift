@@ -145,4 +145,19 @@ extension PostViewController: InteractiveButtonGroupCellDelegate {
       }
     }
   }
+
+  func saveButtonDidTap(_ post: Post) {
+    let post = post
+    PostService.bookMark(post: post) { response in
+      switch response.result {
+      case .success(let resultUser):
+        AuthService.instance.currentUser = resultUser
+        self.adapter.performUpdates(animated: false, completion: { _ in
+          self.adapter.reloadObjects([post])
+        })
+      case .failure:
+        print("failure")
+      }
+    }
+  }
 }

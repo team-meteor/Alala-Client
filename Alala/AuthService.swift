@@ -11,7 +11,23 @@ import ObjectMapper
 
 class AuthService {
   static let instance = AuthService()
-  var currentUser: User?
+  var currentUser: User? {
+    willSet {
+      if let bookmarks = newValue?.bookMarks {
+        currentUserMeta.updateValue([], forKey: "bookmarkIDs")
+        for post in bookmarks {
+          currentUserMeta["bookmarkIDs"]?.append(post.id)
+        }
+      }
+      if let followings = newValue?.following {
+        currentUserMeta.updateValue([], forKey: "followingIDs")
+        for user in followings {
+          currentUserMeta["followingIDs"]?.append(user.id)
+        }
+      }
+    }
+  }
+  var currentUserMeta = [String: [String]]()
   let defaults = UserDefaults.standard
   var isRegistered: Bool? {
     get {
