@@ -127,26 +127,7 @@ extension SavedViewController: UICollectionViewDataSource {
 
     guard post.multipartIds.count > 0 else { return cell }
 
-    let filename = post.multipartIds[0] as String
-
-    guard filename.characters.count > 0 else { return cell }
-
-    if filename.isVideoPathExtension {
-      cell.isVideo = true
-      DispatchQueue.global(qos: .default).async {
-        let url = URL(string: "https://s3.ap-northeast-2.amazonaws.com/alala-static/\(post.multipartIds[0])")
-        if let thumbnailImage = self.getThumbnailImage(forUrl: url!) {
-          DispatchQueue.main.async { [weak cell] in
-            guard let strongCell = cell else { return }
-            strongCell.thumbnailImageView.image = thumbnailImage
-            strongCell.thumbnailImageView.layoutIfNeeded()
-          }
-        }
-      }
-    } else {
-      cell.thumbnailImageView.setImage(with: post.multipartIds[0], size: .medium)
-      cell.isMultiPhotos = post.multipartIds.count > 1 ? true : false
-    }
+    cell.configure(post: post)
     return cell
   }
 }

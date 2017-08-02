@@ -55,7 +55,6 @@ class PostViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    AuthService.instance.me { _ in }
     setupNavigation()
     adapter.collectionView = collectionView
     adapter.dataSource = self
