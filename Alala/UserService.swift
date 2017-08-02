@@ -52,58 +52,27 @@ class UserService {
     }
   }
 
-  //follow
-  func followUser(id: String, completion: @escaping (_ users: [User?]?) -> Void) {
-
+  func follow(id: String, completion: @escaping (DataResponse<User>) -> Void) {
     guard let token = self.authToken else { return }
     let headers = [
-      "Authorization": "Bearer " + token,
-      "Content-Type": "application/json; charset=utf-8"
-      ]
+      "Authorization": "Bearer " + token
+    ]
 
-    // JSON Body
     let body: [String : String] = [
       "id": id
     ]
-    // Fetch Request
-    Alamofire.request(Constants.BASE_URL + "/user/follow", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
-      .validate(statusCode: 200..<300)
-      .responseJSON { response in
-        if response.result.error == nil {
-          if let rawCurrentUser = response.result.value as Any? {
-            let currentUser = Mapper<User>().map(JSONObject: rawCurrentUser)
-            AuthService.instance.currentUser?.following = currentUser?.following
-            completion(currentUser?.following)
-          }
-        } else {
-          completion(nil)
-        }
+    var url = ""
+    if !(AuthService.instance.currentUserMeta["followingIDs"]?.contains(id))! {
+      url = "follow"
+    } else {
+      url = "unfollow"
     }
-  }
-
-  func unfollowUser(id: String, completion: @escaping (_ users: [User?]?) -> Void) {
-    guard let token = self.authToken else { return }
-    let headers = [
-      "Authorization": "Bearer " + token,
-      "Content-Type": "application/json; charset=utf-8"
-      ]
-
-    // JSON Body
-    let body: [String : String] = [
-      "id": id
-    ]
-    // Fetch Request
-    Alamofire.request(Constants.BASE_URL + "/user/unfollow", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
+    Alamofire.request(Constants.BASE_URL + "user/" + url, method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { response in
-        if response.result.error == nil {
-          if let rawCurrentUser = response.result.value as Any? {
-            let currentUser = Mapper<User>().map(JSONObject: rawCurrentUser)
-            AuthService.instance.currentUser?.following = currentUser?.following
-            completion(currentUser?.following)
-          }
-        } else {
-          completion(nil)
+        if let user = Mapper<User>().map(JSONObject: response.result.value) {
+          let response = DataResponse(request: response.request, response: response.response, data: response.data, result: Result.success(user))
+          completion(response)
         }
     }
   }

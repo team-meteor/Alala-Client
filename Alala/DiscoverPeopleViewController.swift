@@ -59,13 +59,11 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
 
     cell.userInfo = self.allUsers[indexPath.item]
 
-    if let followingUsers = AuthService.instance.currentUser?.following {
-      if followingUsers.contains(where: { $0.email == cell.userInfo.email }) {
-        cell.isFollowingUser = true
-        return cell
-      }
+    if (AuthService.instance.currentUserMeta["followingIDs"]?.contains(cell.userInfo.id))! {
+      cell.isSetFollowButton = false
+      return cell
     }
-    cell.isFollowingUser = false
+    cell.isSetFollowButton = true
     return cell
   }
 
@@ -112,24 +110,20 @@ extension DiscoverPeopleViewController: UITableViewDelegate {
 }
 
 extension DiscoverPeopleViewController: PeoplesTableViewCellDelegate {
-  func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {
-    UserService.instance.followUser(id: userInfo.id) { newFollowings in
-      if newFollowings != nil {
-        if let cell = sender.superview as? PeoplesTableViewCell {
-          cell.isFollowingUser = true
-        }
-      }
-    }
-  }
 
   func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
-    UserService.instance.unfollowUser(id: userInfo.id) { newFollowings in
-      if newFollowings != nil {
+    UserService.instance.follow(id: userInfo.id) { response in
+      switch response.result {
+      case .success(let resultUser):
         if let cell = sender.superview as? PeoplesTableViewCell {
-          cell.isFollowingUser = false
+          cell.isSetFollowButton = !cell.isSetFollowButton
         }
+        AuthService.instance.currentUser = resultUser
+      case .failure:
+        print("failure")
       }
     }
+
   }
 
   func hideButtonDidTap(_ userInfo: User, _ sender: UIButton) {

@@ -75,7 +75,7 @@ struct PostService {
 
     let body: [String : Any] = ["id": post.id!]
     var url = ""
-    if AuthService.instance.currentUser!.bookMarks?.filter({$0.id == post.id}).count == 0 {
+    if !(AuthService.instance.currentUserMeta["bookmarkIDs"]?.contains(post.id))! {
       url = "addBookMark"
     } else {
       url = "deleteBookMark"

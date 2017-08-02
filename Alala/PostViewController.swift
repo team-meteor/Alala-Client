@@ -151,7 +151,7 @@ extension PostViewController: InteractiveButtonGroupCellDelegate {
     PostService.bookMark(post: post) { response in
       switch response.result {
       case .success(let resultUser):
-        AuthService.instance.currentUser?.bookMarks = resultUser.bookMarks
+        AuthService.instance.currentUser = resultUser
         self.adapter.performUpdates(animated: false, completion: { _ in
           self.adapter.reloadObjects([post])
         })
