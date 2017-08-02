@@ -21,6 +21,7 @@ class User: NSObject, Mappable, NSCoding {
   var gender: String? = ""
   var following: [User]?
   var followers: [User]?
+  var bookMarks: [Post]?
 
   required init?(map: Map) {
   }
@@ -33,12 +34,12 @@ class User: NSObject, Mappable, NSCoding {
     profilePhotoId <- map["multipartId"]
     following <- map["following"]
     followers <- map["followers"]
-
     displayName <- map["displayName"]
     website <- map["website"]
     bio <- map["bio"]
     Phone <- map["Phone"]
     gender <- map["gender"]
+    bookMarks <- map["bookMarks"]
   }
 
   public func encode(with aCoder: NSCoder) {
@@ -49,12 +50,12 @@ class User: NSObject, Mappable, NSCoding {
     aCoder.encode(profilePhotoId, forKey: "profilePhotoId")
     aCoder.encode(following, forKey: "following")
     aCoder.encode(followers, forKey: "followers")
-
     aCoder.encode(displayName, forKey: "displayName")
     aCoder.encode(website, forKey: "website")
     aCoder.encode(bio, forKey: "bio")
     aCoder.encode(Phone, forKey: "Phone")
     aCoder.encode(gender, forKey: "gender")
+    aCoder.encode(bookMarks, forKey: "bookMarks")
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -65,7 +66,7 @@ class User: NSObject, Mappable, NSCoding {
     profilePhotoId = aDecoder.decodeObject(forKey: "profilePhotoId") as? String
     following = aDecoder.decodeObject(forKey: "following") as! [User]?
     followers = aDecoder.decodeObject(forKey: "followers") as! [User]?
-
+    bookMarks = aDecoder.decodeObject(forKey: "bookMarks") as! [Post]?
     displayName = aDecoder.decodeObject(forKey: "displayName") as? String
     website = aDecoder.decodeObject(forKey: "website") as? String
     bio = aDecoder.decodeObject(forKey: "bio") as? String

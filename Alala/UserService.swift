@@ -47,7 +47,6 @@ class UserService {
           }
           completion(allUsers)
         } else {
-          print("HTTP Request failed: \(String(describing: response.result.error))")
           completion(nil)
         }
     }
@@ -66,7 +65,6 @@ class UserService {
     let body: [String : String] = [
       "id": id
     ]
-    print("id", id)
     // Fetch Request
     Alamofire.request(Constants.BASE_URL + "/user/follow", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
@@ -78,7 +76,6 @@ class UserService {
             completion(currentUser?.following)
           }
         } else {
-          print("HTTP Request failed: \(String(describing: response.result.error))")
           completion(nil)
         }
     }
@@ -95,7 +92,6 @@ class UserService {
     let body: [String : String] = [
       "id": id
     ]
-    print("id", id)
     // Fetch Request
     Alamofire.request(Constants.BASE_URL + "/user/unfollow", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
@@ -107,10 +103,8 @@ class UserService {
             completion(currentUser?.following)
           }
         } else {
-          print("HTTP Request failed: \(String(describing: response.result.error))")
           completion(nil)
         }
-
     }
   }
 }

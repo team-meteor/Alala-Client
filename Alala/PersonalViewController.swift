@@ -362,6 +362,11 @@ extension PersonalViewController: PersonalInfoViewDelegate {
   func savedMenuButtonTap(sender: UIButton) {
     let savedVC = SavedViewController()
     self.navigationController?.pushViewController(savedVC, animated: true)
+    if self.posts.count <= 0 {
+      return
+    }
+    self.setupPostGrid()
+    self.postGridCollectionView.reloadData()
   }
 }
 
