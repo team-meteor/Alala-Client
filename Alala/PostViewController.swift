@@ -55,6 +55,7 @@ class PostViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    AuthService.instance.me { _ in }
     setupNavigation()
     adapter.collectionView = collectionView
     adapter.dataSource = self
@@ -137,6 +138,21 @@ extension PostViewController: InteractiveButtonGroupCellDelegate {
       case .success(let resultPost):
         post.likeCount = resultPost.likeCount
         post.isLiked = resultPost.isLiked
+        self.adapter.performUpdates(animated: false, completion: { _ in
+          self.adapter.reloadObjects([post])
+        })
+      case .failure:
+        print("failure")
+      }
+    }
+  }
+
+  func saveButtonDidTap(_ post: Post) {
+    let post = post
+    PostService.bookMark(post: post) { response in
+      switch response.result {
+      case .success(let resultUser):
+        AuthService.instance.currentUser?.bookMarks = resultUser.bookMarks
         self.adapter.performUpdates(animated: false, completion: { _ in
           self.adapter.reloadObjects([post])
         })
