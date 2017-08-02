@@ -11,7 +11,16 @@ import ObjectMapper
 
 class AuthService {
   static let instance = AuthService()
-  var currentUser: User?
+  var currentUser: User? {
+    willSet {
+      if let bookmarks = newValue?.bookMarks {
+        for post in bookmarks {
+          currentUserMeta["bookmarkIDs"]?.append(post.id)
+        }
+      }
+    }
+  }
+  var currentUserMeta = [String: [String]]()
   let defaults = UserDefaults.standard
   var isRegistered: Bool? {
     get {
