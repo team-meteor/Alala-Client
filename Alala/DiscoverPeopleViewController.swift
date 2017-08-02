@@ -113,8 +113,8 @@ extension DiscoverPeopleViewController: UITableViewDelegate {
 
 extension DiscoverPeopleViewController: PeoplesTableViewCellDelegate {
   func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {
-    UserService.instance.followUser(id: userInfo.id) { bool in
-      if bool {
+    UserService.instance.followUser(id: userInfo.id) { newFollowings in
+      if newFollowings != nil {
         if let cell = sender.superview as? PeoplesTableViewCell {
           cell.isFollowingUser = true
         }
@@ -123,8 +123,8 @@ extension DiscoverPeopleViewController: PeoplesTableViewCellDelegate {
   }
 
   func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
-    UserService.instance.unfollowUser(id: userInfo.id) { bool in
-      if bool {
+    UserService.instance.unfollowUser(id: userInfo.id) { newFollowings in
+      if newFollowings != nil {
         if let cell = sender.superview as? PeoplesTableViewCell {
           cell.isFollowingUser = false
         }

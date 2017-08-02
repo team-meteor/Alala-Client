@@ -216,15 +216,15 @@ extension FollowViewController: FollowTableViewCellDelegate {
     guard let cell = sender.superview as? FollowTableViewCell else {return}
 
     if cell.isSetFollowButton == true {
-      UserService.instance.followUser(id: userInfo.id) { bool in
-        if bool {
+      UserService.instance.followUser(id: userInfo.id) { newFollowings in
+        if newFollowings != nil {
           cell.isSetFollowButton = false
         }
       }
     } else {
       // todo : 팔로우 취소할 것인지 물어야 함
-      UserService.instance.unfollowUser(id: userInfo.id) { bool in
-        if bool {
+      UserService.instance.unfollowUser(id: userInfo.id) { newFollowings in
+        if newFollowings != nil {
           cell.isSetFollowButton = true
         }
       }
