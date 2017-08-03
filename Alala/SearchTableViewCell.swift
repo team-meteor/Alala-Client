@@ -12,7 +12,7 @@ class SearchTableViewCell: UITableViewCell {
 
   static let cellReuseIdentifier = "searchCell"
   static let cellSeparatorInsets = UIEdgeInsets(top: 0, left: 70, bottom: 0, right: 0)
-  static let cellHeight = 75
+  static let cellHeight = 60
 
   var userInfo: User! {
     didSet {

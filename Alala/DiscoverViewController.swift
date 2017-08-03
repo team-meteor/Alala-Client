@@ -18,6 +18,7 @@ class DiscoverViewController: UIViewController {
   fileprivate let searchController = UISearchController(searchResultsController: nil)
   fileprivate let searchPersonVC = SearchPersonViewController()
   fileprivate var allUsers = [User]()
+  fileprivate var filteredUsers = [User]()
 
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -35,8 +36,9 @@ class DiscoverViewController: UIViewController {
     super.viewDidLoad()
 
     AuthService.instance.me { _ in}
-    UserService.instance.getAllRegisterdUsers { user in
-      self.allUsers = user?.filter({$0?.email != AuthService.instance.currentUser?.email}) as! [User]
+    UserService.instance.getAllRegisterdUsers { users in
+      self.allUsers = (users?.filter({$0?.email != AuthService.instance.currentUser?.email}))! as! [User]
+
       self.tableView.reloadData()
     }
 
@@ -53,19 +55,19 @@ class DiscoverViewController: UIViewController {
       make.top.equalTo(UIApplication.shared.statusBarFrame.maxY)
     }
 
-    self.tableView.rowHeight = 60
-
     searchController.searchResultsUpdater = self as? UISearchResultsUpdating
     searchController.dimsBackgroundDuringPresentation = false
     definesPresentationContext = true
     tableView.tableHeaderView = searchController.searchBar
+    tableView.tableFooterView = UIView(frame: CGRect.zero)
 
+    searchController.searchBar.scopeButtonTitles = ["인기", "사람", "태그", "장소"]
     searchController.searchBar.delegate = self
     tableView.dataSource = self
+    tableView.delegate = self
 
     displayContentController(content: searchPersonVC)
     customizingSearchBar()
-
   }
 
   func displayContentController(content: UIViewController) {
@@ -107,6 +109,20 @@ class DiscoverViewController: UIViewController {
     searchController.searchBar.layer.borderColor = UIColor.white.cgColor
     searchController.searchBar.layer.borderWidth = 1.0
   }
+
+  func filterContentForSearchText(searchText: String, scope: String = "인기") {
+    filteredUsers = allUsers.filter { user in
+      let categoryMatch = (scope == "인기")
+      return categoryMatch && (user.profileName?.lowercased().contains(searchText.lowercased()))!
+    }
+    tableView.reloadData()
+  }
+
+  func updateSearchResultForSearchController(searchController: UISearchController) {
+    let searchBar = searchController.searchBar
+    let scope = searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]
+    filterContentForSearchText(searchText: searchController.searchBar.text!, scope: scope)
+  }
 }
 
 extension DiscoverViewController: UISearchBarDelegate {
@@ -129,14 +145,43 @@ extension DiscoverViewController: UISearchBarDelegate {
 extension DiscoverViewController: UITableViewDataSource {
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    if searchController.isActive && searchController.searchBar.text != "" {
+      return filteredUsers.count
+    }
+
     return self.allUsers.count
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
     let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.cellReuseIdentifier) as! SearchTableViewCell
+
     cell.selectionStyle = .none
-    cell.userInfo = self.allUsers[indexPath.item]
+    if searchController.isActive && searchController.searchBar.text != "" {
+      cell.userInfo = filteredUsers[indexPath.item]
+    } else {
+      cell.userInfo = self.allUsers[indexPath.item]
+    }
+
     return cell
+  }
+}
+
+extension DiscoverViewController: UITableViewDelegate {
+
+  func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    return CGFloat(SearchTableViewCell.cellHeight)
+  }
+
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    let rowUser = self.allUsers[indexPath.row]
+    let profileVC = PersonalViewController(user:rowUser)
+    self.navigationController?.pushViewController(profileVC, animated: true)
+  }
+}
+
+extension DiscoverViewController: UISearchResultsUpdating {
+  func updateSearchResults(for searchController: UISearchController) {
+    filterContentForSearchText(searchText: searchController.searchBar.text!)
   }
 }
