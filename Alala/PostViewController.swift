@@ -67,7 +67,6 @@ class PostViewController: UIViewController {
       make.bottom.equalTo(self.view)
     }
 
-//    self.adapter.reloadData(completion: nil)
     self.adapter.performUpdates(animated: true)
   }
   override func viewWillAppear(_ animated: Bool) {

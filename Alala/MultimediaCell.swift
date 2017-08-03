@@ -43,7 +43,7 @@ class MultimediaCell: UICollectionViewCell {
     for item in post.multipartIds {
       if item.contains("_") {
         let imageView = UIImageView()
-        imageView.setImage(with: item, size: .large)
+        imageView.setImage(with: item, size: .hd)
         multimediaScrollView.addSubview(imageView)
         viewContainer.append(imageView)
       } else { // video
