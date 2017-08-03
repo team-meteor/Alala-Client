@@ -69,7 +69,6 @@ class CommentViewController: UIViewController {
   init(post: Post) {
     self.post = post
     super.init(nibName: nil, bundle: nil)
-
   }
 
   required init?(coder aDecoder: NSCoder) {

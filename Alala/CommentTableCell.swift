@@ -27,7 +27,7 @@ class CommentTableCell: UITableViewCell {
       profileName + " " + comment.content
     )
     self.commentLabel.font = UIFont.systemFont(ofSize: 15)
-    self.commentLabel.sizeToFit()
+//    self.commentLabel.sizeToFit()
     self.profilePhoto.setImage(with: comment.createdBy.profilePhotoId, size: .thumbnail)
     self.contentView.addSubview(profilePhoto)
     self.contentView.addSubview(commentLabel)
