@@ -9,29 +9,16 @@
 import UIKit
 import ActiveLabel
 
+extension ActiveLabelDelegate {
+  func didSelect(_ text: String, type: ActiveType) {}
+}
+
 class CommentLabel: ActiveLabel {
   override init(frame: CGRect) {
     super.init(frame: frame)
     let creatorCustomType = ActiveType.custom(pattern: "^([\\w]+)")
     self.enabledTypes = [.mention, .hashtag, .url, creatorCustomType]
     self.lineBreakMode = .byCharWrapping
-    self.customColor[creatorCustomType] = UIColor.black
-
-    self.handleHashtagTap { hashtag in
-      print("Success. You just tapped the \(hashtag) hashtag")
-    }
-
-    self.handleMentionTap { mention in
-      print("Success. You just tapped the \(mention) mention")
-    }
-
-    self.handleURLTap { url in
-      print("Success. You just tapped the \(url) url")
-    }
-
-    self.handleCustomTap(for: creatorCustomType) { creatorProfileName in
-      print("Success. You just tapped the \(creatorProfileName) creatorProfileName")
-    }
 
     self.customize { label in
       label.numberOfLines = 0
@@ -41,9 +28,15 @@ class CommentLabel: ActiveLabel {
       label.URLColor = highlightColor
       label.URLSelectedColor = highlightColor
 
-      label.handleMentionTap { print("Mention", $0) }
-      label.handleHashtagTap { print("Hashtag", $0) }
-      label.handleURLTap { print("URL", $0.absoluteString) }
+      label.handleMentionTap {
+        self.delegate?.didSelect($0, type: .mention)
+      }
+      label.handleHashtagTap {
+        self.delegate?.didSelect($0, type: .hashtag)
+      }
+      label.handleURLTap {
+        self.delegate?.didSelect($0.absoluteString, type: .url)
+      }
 
       // custom types
       label.customColor[creatorCustomType] = UIColor.black
@@ -54,11 +47,14 @@ class CommentLabel: ActiveLabel {
         switch type {
         case creatorCustomType:
           atts[NSFontAttributeName] = UIFont.boldSystemFont(ofSize: 15)
-        default: ()
+        default:
+          atts[NSFontAttributeName] = UIFont.systemFont(ofSize: 15)
         }
         return atts
       }
-      label.handleCustomTap(for: creatorCustomType) { print("Custom type", $0) }
+      label.handleCustomTap(for: creatorCustomType) {
+        self.delegate?.didSelect($0, type: .custom(pattern: "^([\\w]+)"))
+      }
     }
   }
 

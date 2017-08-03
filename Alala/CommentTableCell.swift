@@ -7,8 +7,10 @@
 //
 
 import UIKit
+import ActiveLabel
 
 class CommentTableCell: UITableViewCell {
+  var delegate: ActiveLabelDelegate?
   let profilePhoto: CircleImageView = {
     let view = CircleImageView()
     view.layer.borderWidth = 1
@@ -27,6 +29,7 @@ class CommentTableCell: UITableViewCell {
       profileName + " " + comment.content
     )
     self.commentLabel.font = UIFont.systemFont(ofSize: 15)
+    self.commentLabel.delegate = delegate
 //    self.commentLabel.sizeToFit()
     self.profilePhoto.setImage(with: comment.createdBy.profilePhotoId, size: .thumbnail)
     self.contentView.addSubview(profilePhoto)
