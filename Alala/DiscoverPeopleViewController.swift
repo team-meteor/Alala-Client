@@ -17,7 +17,7 @@ class DiscoverPeopleViewController: UIViewController {
     super.viewDidLoad()
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = LS("DiscoverPeople")
+      $0.text = LS("discover_people")
       $0.sizeToFit()
     }
     AuthService.instance.me { _ in}
@@ -60,10 +60,10 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
     cell.userInfo = self.allUsers[indexPath.item]
 
     if let _ = AuthService.instance.follwingMeta[cell.userInfo.id] {
-      cell.isSetFollowButton = false
+      cell.isFollowingUser = true
       return cell
     }
-    cell.isSetFollowButton = true
+    cell.isFollowingUser = false
     return cell
   }
 
@@ -72,7 +72,7 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
     view.bottomBorderLine.isHidden = false
 
     let label = UILabel()
-    label.text = LS("discover_all_suggesions")
+    label.text = LS("discover_people_all_suggesions")
     view.addSubview(label)
     label.font = UIFont.boldSystemFont(ofSize: 12)
     label.textColor = UIColor.lightGray
@@ -110,19 +110,12 @@ extension DiscoverPeopleViewController: UITableViewDelegate {
 }
 
 extension DiscoverPeopleViewController: PeoplesTableViewCellDelegate {
+  func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {
+    requestChangeFollowStatus(userInfo, sender)
+  }
 
   func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
-    UserService.instance.follow(id: userInfo.id) { response in
-      switch response.result {
-      case .success(let resultUser):
-        if let cell = sender.superview as? PeoplesTableViewCell {
-          cell.isSetFollowButton = !cell.isSetFollowButton
-        }
-        AuthService.instance.currentUser = resultUser
-      case .failure:
-        print("failure")
-      }
-    }
+    requestChangeFollowStatus(userInfo, sender)
   }
 
   func hideButtonDidTap(_ userInfo: User, _ sender: UIButton) {
@@ -131,6 +124,20 @@ extension DiscoverPeopleViewController: PeoplesTableViewCellDelegate {
       let newUsers = self.allUsers.filter({$0.email != self.allUsers[(indexPath?.row)!].email})
       self.allUsers = newUsers
       contentTableView.reloadData()
+    }
+  }
+
+  func requestChangeFollowStatus(_ userInfo: User, _ sender: UIButton) {
+    UserService.instance.follow(id: userInfo.id) { response in
+      switch response.result {
+      case .success(let resultUser):
+        if let cell = sender.superview as? PeoplesTableViewCell {
+          cell.isFollowingUser = !cell.isFollowingUser
+        }
+        AuthService.instance.currentUser = resultUser
+      case .failure:
+        print("failure")
+      }
     }
   }
 }
