@@ -27,20 +27,6 @@ class PersonalViewController: UIViewController {
 
   fileprivate let refreshControl = UIRefreshControl()
 
-  let discoverPeopleButton = UIBarButtonItem(
-    image: UIImage(named: "add_user")?.resizeImage(scaledTolength: 25),
-    style: .plain,
-    target: self,
-    action: #selector(PersonalViewController.discoverPeopleButtonTap)
-  )
-
-  let archiveButton = UIBarButtonItem(
-    image: UIImage(named: "personal")?.resizeImage(scaledTolength: 25),
-    style: .plain,
-    target: nil,
-    action: nil
-  )
-
   let scrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
     $0.showsVerticalScrollIndicator = true
@@ -88,7 +74,10 @@ class PersonalViewController: UIViewController {
                                                               target: self,
                                                               action: #selector(discoverPeopleButtonTap))
 
-      self.navigationItem.rightBarButtonItem = archiveButton
+      self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "archive")?.resizeImage(scaledTolength: 25),
+                                                              style: .plain,
+                                                              target: self,
+                                                              action: #selector(archiveButtonTap))
     } else {
 
     }
@@ -304,8 +293,13 @@ class PersonalViewController: UIViewController {
   }
 
   func discoverPeopleButtonTap() {
-    let sampleVC = DiscoverPeopleViewController()
-    self.navigationController?.pushViewController(sampleVC, animated: true)
+    let discoverVC = DiscoverPeopleViewController()
+    self.navigationController?.pushViewController(discoverVC, animated: true)
+  }
+
+  func archiveButtonTap() {
+    let archiveVC = ArchiveViewController()
+    self.navigationController?.pushViewController(archiveVC, animated: true)
   }
 }
 
