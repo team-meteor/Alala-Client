@@ -8,6 +8,7 @@
 
 import UIKit
 import IGListKit
+import ActiveLabel
 
 class PostSectionController: ListSectionController {
   var post: Post!
@@ -92,6 +93,7 @@ class PostSectionController: ListSectionController {
     } else if let cell = cell as? LikeCountCell {
       cell.configure(post: post)
     } else if let cell = cell as? CommentCell {
+      cell.delegate = self.viewController as? ActiveLabelDelegate
       cell.configure(post: post)
     }
     return cell

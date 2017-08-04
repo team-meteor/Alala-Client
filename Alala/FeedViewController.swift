@@ -9,6 +9,7 @@ import UIKit
 import IGListKit
 import Alamofire
 import AVFoundation
+import ActiveLabel
 
 class FeedViewController: PostViewController {
 
@@ -197,6 +198,30 @@ extension FeedViewController: UICollectionViewDelegateFlowLayout {
       && contentOffsetBottom >= scrollView.contentSize.height - 300
     if let nextPage = self.nextPage, didReachBottom {
       self.fetchFeed(paging: .next(nextPage))
+    }
+  }
+}
+
+extension FeedViewController: ActiveLabelDelegate {
+  func didSelect(_ text: String, type: ActiveType) {
+    switch type {
+    case .mention:
+      pushToPersonalViewController(userID: text)
+    case .hashtag:
+      print(text)
+    case .url:
+      print(text)
+    case .custom(pattern: "^([\\w]+)"):
+      pushToPersonalViewController(userID: text)
+    default: break
+    }
+  }
+  func pushToPersonalViewController(userID: String) {
+    UserService.instance.getUser(id: userID) { response in
+      if case .success(let user) = response.result {
+        let personalVC = PersonalViewController(user: user)
+        self.navigationController?.pushViewController(personalVC, animated: true)
+      }
     }
   }
 }
