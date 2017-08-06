@@ -19,7 +19,6 @@ import AVFoundation
 class PersonalViewController: UIViewController {
 
   // MARK: - UI Objects
-//  fileprivate var posts: [Post] = []
   fileprivate var collection: PostCollection = PostCollection()
   fileprivate var nextPage: String?
   fileprivate var isLoading: Bool = false
@@ -204,21 +203,24 @@ class PersonalViewController: UIViewController {
     guard !self.isLoading else { return }
     self.isLoading = true
 
-    collection.loadMineFromCloud { isSuccess in
-      guard isSuccess else { return }
+    collection.loadMineFromCloud { [weak self] isSuccess in
+      guard let strongSelf = self else { return }
+      guard isSuccess == true else { return }
       DispatchQueue.main.async {
-        self.personalInfoView.postsCount = self.collection.count()
-        if self.collection.count() == 0 {
-          self.setupNoContents()
+        strongSelf.personalInfoView.postsCount = strongSelf.collection.count()
+        if strongSelf.collection.count() == 0 {
+          strongSelf.setupNoContents()
         } else {
-          if self.personalInfoView.isGridMode {
-            self.setupPostGrid()
-            self.postGridCollectionView.reloadData()
+          if strongSelf.personalInfoView.isGridMode {
+            strongSelf.setupPostGrid()
+            strongSelf.postGridCollectionView.reloadData()
           } else {
-            self.setupPostList()
-            self.postViewController.updateNewPost(self.collection.getPosts())
+            strongSelf.setupPostList()
+            strongSelf.postViewController.updateNewPost(strongSelf.collection.getPosts())
           }
         }
+        strongSelf.refreshControl.endRefreshing()
+        strongSelf.isLoading = false
       }
     }
   }
