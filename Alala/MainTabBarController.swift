@@ -31,7 +31,7 @@ class MainTabBarController: UITabBarController {
       UINavigationController(rootViewController: self.feedViewController),
       self.discoverViewController,
       fakeViewController,
-      activityViewController,
+      UINavigationController(rootViewController: self.activityViewController),
       UINavigationController(rootViewController: self.personalViewController)
     ]
   }

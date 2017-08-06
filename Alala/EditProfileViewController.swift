@@ -368,6 +368,10 @@ extension EditProfileViewController: UITableViewDelegate {
       })
     }
   }
+
+  func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    self.view.endEditing(true)
+  }
 }
 
 extension EditProfileViewController: UIPlaceholderTextViewDelegate {

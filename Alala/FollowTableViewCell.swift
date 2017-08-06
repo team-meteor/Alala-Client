@@ -74,13 +74,13 @@ class FollowTableViewCell: UITableViewCell {
 
   fileprivate let userIDLabel = UILabel().then {
     $0.font = UIFont.boldSystemFont(ofSize: 14.0)
-    $0.text = LS("id")
+    $0.text = "ID" // Label 높이 계산을 위한 DummyText
     $0.sizeToFit()
   }
 
   fileprivate let userNameLabel = UILabel().then {
     $0.font = UIFont(name: "HelveticaNeue", size: 14)
-    $0.text = LS("name")
+    $0.text = "Name" // Label 높이 계산을 위한 DummyText
     $0.textColor = UIColor.lightGray
     $0.sizeToFit()
   }
