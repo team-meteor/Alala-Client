@@ -68,15 +68,18 @@ class AfterRegisterViewController: UIViewController {
     var imageArray = [UIImage]()
     imageArray.append(profileImage)
     doneButton.isEnabled = false
+    SwiftSpinner.show("in progress...")
     MultipartService.uploadMultipart(multiPartDataArray: imageArray, progressCompletion: nil) { (multipartIds) in
       AuthService.instance.updateProfile(profileName: username, profileImageId: multipartIds[0], completion: { (success) in
         if success {
-          AuthService.instance.me(completion: { (user) in
-            if user != nil {
-              DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .presentMainTabBar, object: nil)
+          SwiftSpinner.hide({
+            AuthService.instance.me(completion: { (user) in
+              if user != nil {
+                DispatchQueue.main.async {
+                  NotificationCenter.default.post(name: .presentMainTabBar, object: nil)
+                }
               }
-            }
+            })
           })
         } else {
           print("failed update profile")

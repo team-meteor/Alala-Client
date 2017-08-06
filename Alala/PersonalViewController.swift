@@ -19,7 +19,6 @@ import AVFoundation
 class PersonalViewController: UIViewController {
 
   // MARK: - UI Objects
-//  fileprivate var posts: [Post] = []
   fileprivate var collection: PostCollection = PostCollection()
   fileprivate var nextPage: String?
   fileprivate var isLoading: Bool = false
