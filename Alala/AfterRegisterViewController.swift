@@ -68,6 +68,7 @@ class AfterRegisterViewController: UIViewController {
     var imageArray = [UIImage]()
     imageArray.append(profileImage)
     doneButton.isEnabled = false
+    self.view.endEditing(true)
     SwiftSpinner.show("in progress...")
     MultipartService.uploadMultipart(multiPartDataArray: imageArray, progressCompletion: nil) { (multipartIds) in
       AuthService.instance.updateProfile(profileName: username, profileImageId: multipartIds[0], completion: { (success) in

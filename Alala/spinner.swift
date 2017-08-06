@@ -351,7 +351,7 @@ public class SwiftSpinner: UIView {
   //
   // Tap handler
   //
-  public func addTapHandler(_ tap: @escaping (()->Void), subtitle subtitleText: String? = nil) {
+  public func addTapHandler(_ tap: @escaping (() -> Void), subtitle subtitleText: String? = nil) {
     clearTapHandler()
 
     //vibrancyView.contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: Selector("didTapSpinner")))
@@ -466,7 +466,7 @@ public class SwiftSpinner: UIView {
 
   // MARK: - Util methods
 
-  func delay(_ seconds: Double, completion:@escaping ()->Void) {
+  func delay(_ seconds: Double, completion:@escaping () -> Void) {
     let popTime = DispatchTime.now() + Double(Int64( Double(NSEC_PER_SEC) * seconds )) / Double(NSEC_PER_SEC)
 
     DispatchQueue.main.asyncAfter(deadline: popTime) {
@@ -480,7 +480,7 @@ public class SwiftSpinner: UIView {
   }
 
   // MARK: - Tap handler
-  private var tapHandler: (()->Void)?
+  private var tapHandler: (() -> Void)?
   func didTapSpinner() {
     tapHandler?()
   }
