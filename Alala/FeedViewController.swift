@@ -30,6 +30,8 @@ class FeedViewController: PostViewController {
   fileprivate let refreshControl = UIRefreshControl()
   fileprivate var isLoading: Bool = false
 
+  fileprivate var noPostFeedView: NoPostFeedView?
+
   override init(_ posts: [Post] = []) {
     super.init(posts)
 
@@ -78,9 +80,31 @@ class FeedViewController: PostViewController {
     collection.loadFromCloud { [weak self] isSuccess in
       guard let strongSelf = self else { return }
       guard isSuccess == true else { return }
-      strongSelf.adapter.performUpdates(animated: true, completion: nil)
+      strongSelf.adapter.performUpdates(animated: true) { _ in
+        strongSelf.noPostFeedViewIfNeeded()
+      }
       strongSelf.refreshControl.endRefreshing()
       strongSelf.isLoading = false
+    }
+  }
+
+  func noPostFeedViewIfNeeded() {
+    if self.collection.isNoPost == true, self.noPostFeedView == nil {
+      //print("포스트 없음, 웰컴뷰 없음 --> 웰컴뷰 추가")
+      self.noPostFeedView = NoPostFeedView()
+      self.noPostFeedView?.noFeedDelegate = self
+      self.view.addSubview(self.noPostFeedView!)
+      let naviFrame = self.navigationController?.navigationBar.frame
+      let topMargin = (naviFrame?.origin.y)! + (naviFrame?.size.height)!
+      self.noPostFeedView?.snp.makeConstraints { (make) in
+        make.top.equalTo(self.view).offset(topMargin)
+        make.left.right.bottom.equalTo(self.view)
+      }
+      self.noPostFeedView?.contentSize = self.view.frame.size
+    } else if self.collection.isNoPost == false, self.noPostFeedView != nil {
+      //print("포스트 있음, 웰컴뷰 있음 --> 웰컴뷰 제거")
+      self.noPostFeedView?.removeFromSuperview()
+      self.noPostFeedView = nil
     }
   }
 
@@ -93,6 +117,7 @@ class FeedViewController: PostViewController {
     self.collection.insertPost(post)
     self.adapter.reloadObjects([post])
     self.adapter.performUpdates(animated: true) { _ in
+      self.noPostFeedViewIfNeeded()
       self.adapter.reloadObjects([post])
     }
   }
@@ -208,5 +233,12 @@ extension FeedViewController: ActiveLabelDelegate {
         self.navigationController?.pushViewController(personalVC, animated: true)
       }
     }
+  }
+}
+
+extension FeedViewController: NoPostFeedViewDelegate {
+  func NoPostFeedViewWelcomeButtonDidTap() {
+    let discoverPeopleVC = DiscoverPeopleViewController()
+    self.navigationController?.pushViewController(discoverPeopleVC, animated: true)
   }
 }
