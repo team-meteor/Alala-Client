@@ -127,8 +127,8 @@ class FeedViewController: PostViewController {
     guard let postDic = notification.userInfo?["postDic"] as? [String:Any],
       let multipartArr = postDic["multipartArr"] as? [Any],
       let message = postDic["message"] as? String? else { return }
-    self.getMultipartsIdArr(multipartArray: multipartArr) { idArr in
-      PostService.postWithMultipart(idArr: idArr, message: message, progress: nil, completion: { [weak self] response in
+    self.getMultipartsIdArr(multipartArray: multipartArr) { multipartIDArray in
+      PostDataManager.postWithMultiPartCloud(multipartIDArray: multipartIDArray, message: message, progress: nil, completion: { [weak self] response in
         guard self != nil else { return }
         switch response.result {
         case .success(let post):
@@ -227,7 +227,7 @@ extension FeedViewController: ActiveLabelDelegate {
     }
   }
   func pushToPersonalViewController(userID: String) {
-    UserService.instance.getUser(id: userID) { response in
+    userDataManager.getUserWithCloud(id: userID) { response in
       if case .success(let user) = response.result {
         let personalVC = PersonalViewController(user: user)
         self.navigationController?.pushViewController(personalVC, animated: true)

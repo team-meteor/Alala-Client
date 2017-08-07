@@ -9,7 +9,7 @@
 import UIKit
 
 class DiscoverPeopleViewController: UIViewController {
-
+  let userDataManager = UserDataManager.shared
   var contentTableView = UITableView()
   var allUsers = [User]()
 
@@ -20,9 +20,9 @@ class DiscoverPeopleViewController: UIViewController {
       $0.text = LS("discover_people")
       $0.sizeToFit()
     }
-    AuthService.instance.me { _ in}
-    UserService.instance.getAllRegisterdUsers { users in
-      self.allUsers = (users?.filter({$0?.email != AuthService.instance.currentUser?.email}))! as! [User]
+    userDataManager.getMeWithCloud { _ in}
+    userDataManager.getAllUsersWithCloud { users in
+      self.allUsers = (users.filter({$0.email != self.userDataManager.currentUser?.email}))
       self.contentTableView.reloadData()
     }
     setupUI()
@@ -59,7 +59,7 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
 
     cell.userInfo = self.allUsers[indexPath.item]
 
-    if let _ = AuthService.instance.follwingMeta[cell.userInfo.id] {
+    if userDataManager.isFollowing(with: cell.userInfo.id) {
       cell.isFollowingUser = true
       return cell
     }
@@ -160,13 +160,12 @@ extension DiscoverPeopleViewController: PeoplesTableViewCellDelegate {
   }
 
   func requestChangeFollowStatus(_ userInfo: User, _ sender: UIButton) {
-    UserService.instance.follow(id: userInfo.id) { response in
+    userDataManager.followWithCloud(id: userInfo.id) { response in
       switch response.result {
-      case .success(let resultUser):
+      case .success:
         if let cell = sender.superview as? PeoplesTableViewCell {
           cell.isFollowingUser = !cell.isFollowingUser
         }
-        AuthService.instance.currentUser = resultUser
       case .failure:
         print("failure")
       }

@@ -9,13 +9,14 @@
 import UIKit
 
 class SplashViewController: UIViewController {
+  let userDataManager = UserDataManager.shared
   override func viewDidLoad() {
     super.viewDidLoad()
     self.view.backgroundColor = .blue
   }
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    AuthService.instance.me { (user) in
+    userDataManager.getMeWithCloud { (user) in
       if user != nil {
         NotificationCenter.default.post(name: .presentMainTabBar, object: nil, userInfo: nil)
       } else {

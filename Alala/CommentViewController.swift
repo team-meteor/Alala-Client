@@ -11,6 +11,7 @@ import SnapKit
 import ActiveLabel
 
 class CommentViewController: UIViewController {
+  let userDataManager = UserDataManager.shared
   let post: Post!
   var commentInputViewBottomConstraint: Constraint?
   var tableViewBottomConstraint: Constraint?
@@ -155,7 +156,7 @@ class CommentViewController: UIViewController {
   func postButtonDidTap() {
     self.postButton.isEnabled = false
     postButton.setTitleColor(UIColor(red:0.71, green:0.86, blue:0.99, alpha:1.00), for: .normal)
-    PostService.createComment(post: self.post, content: self.textInputView.text) { (response) in
+    PostDataManager.createCommentWithCloud(post: self.post, content: self.textInputView.text) { (response) in
       switch response.result {
       case .success(let resultComment):
         self.post.comments?.append(resultComment)
@@ -247,7 +248,7 @@ extension CommentViewController: ActiveLabelDelegate {
     }
   }
   func pushToPersonalViewController(userID: String) {
-    UserService.instance.getUser(id: userID) { response in
+    userDataManager.getUserWithCloud(id: userID) { response in
       if case .success(let user) = response.result {
         let personalVC = PersonalViewController(user: user)
         self.navigationController?.pushViewController(personalVC, animated: true)

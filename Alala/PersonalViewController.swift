@@ -22,7 +22,7 @@ class PersonalViewController: UIViewController {
   fileprivate var collection: PostCollection = PostCollection()
   fileprivate var nextPage: String?
   fileprivate var isLoading: Bool = false
-
+  let userdataManager = UserDataManager.shared
   fileprivate var profileUser: User?
 
   fileprivate let refreshControl = UIRefreshControl()
@@ -62,7 +62,7 @@ class PersonalViewController: UIViewController {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
 
     if profileUser == nil {
-      profileUser = AuthService.instance.currentUser
+      profileUser = userdataManager.currentUser
 
       self.tabBarItem.image = UIImage(named: "personal")?.resizeImage(scaledTolength: 25)
       self.tabBarItem.selectedImage = UIImage(named: "personal-selected")?.resizeImage(scaledTolength: 25)
@@ -229,8 +229,8 @@ class PersonalViewController: UIViewController {
     super.viewWillAppear(animated)
     self.navigationController?.isNavigationBarHidden = false
 
-    if(profileUser?.id == AuthService.instance.currentUser?.id) {
-      profileUser = AuthService.instance.currentUser
+    if(profileUser?.id == userdataManager.currentUser?.id) {
+      profileUser = userdataManager.currentUser
       self.fetchFeedMine(paging: .refresh)
     } else {
       // todo : 해당 유저의 id로 서버에 user정보를 새로 요청해야 함

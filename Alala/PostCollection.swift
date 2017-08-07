@@ -20,7 +20,7 @@ class PostCollection {
       }
     }
   }
-  internal var _feedNetworkManager = FeedService()
+  internal var _feedNetworkManager: FeedNetworkService = FeedNetworkManager()
 
   var isNoPost: Bool {
     get {
@@ -58,7 +58,7 @@ class PostCollection {
   }
 
   public func loadFromCloud(completion: @escaping ((Bool) -> Void)) {
-    _feedNetworkManager.feed(paging: self._paging) { [weak self] response in
+    _feedNetworkManager.feed(isMine: nil, paging: self._paging) { [weak self] response in
       guard let strongSelf = self else { return }
       switch response.result {
       case .success(let feed):

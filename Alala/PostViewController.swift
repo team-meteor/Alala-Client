@@ -28,9 +28,9 @@ class PostViewController: UIViewController {
     return ListAdapter(updater: ListAdapterUpdater(), viewController: self)
   }()
 
-//  var posts: [Post] = []
   fileprivate var nextPage: String?
   internal var collection: PostCollection!
+  let userDataManager = UserDataManager.shared
 
   let collectionView: UICollectionView = {
     let flowLayout = UICollectionViewFlowLayout()
@@ -131,7 +131,7 @@ extension PostViewController: InteractiveButtonGroupCellDelegate {
   }
   func likeButtonDidTap(_ post: Post) {
     let post = post
-    PostService.like(post: post) { response in
+    PostDataManager.likePostWithCloud(post: post) { response in
       switch response.result {
       case .success(let resultPost):
         post.likeCount = resultPost.likeCount
@@ -147,10 +147,9 @@ extension PostViewController: InteractiveButtonGroupCellDelegate {
 
   func saveButtonDidTap(_ post: Post) {
     let post = post
-    PostService.bookMark(post: post) { response in
+    userDataManager.bookmarkPostWithCloud(post: post) { response in
       switch response.result {
-      case .success(let resultUser):
-        AuthService.instance.currentUser = resultUser
+      case .success:
         self.adapter.performUpdates(animated: false, completion: { _ in
           self.adapter.reloadObjects([post])
         })
