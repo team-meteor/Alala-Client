@@ -22,6 +22,12 @@ class PostCollection {
   }
   internal var _feedNetworkManager = FeedService()
 
+  var isNoPost: Bool {
+    get {
+      return self._posts.count <= 0 ? true : false
+    }
+  }
+
   convenience init() {
     self.init([])
   }
