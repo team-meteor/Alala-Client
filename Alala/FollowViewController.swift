@@ -177,12 +177,7 @@ extension FollowViewController: UITableViewDataSource {
       make.rightMargin.equalTo(view)
       make.height.equalTo(18)
     }
-
-    //if section == 0 {
-    //  label.text = LS("invite").uppercased()
-    //} else {
     label.text = LS("following").uppercased()
-    //}
 
     return view
   }

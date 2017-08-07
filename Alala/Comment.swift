@@ -9,7 +9,7 @@
 import ObjectMapper
 import IGListKit
 
-class Comment: NSObject, Mappable {
+class Comment: NSObject, Mappable, NSCoding {
   var id: String!
   var content: String!
   var createdBy: User!
@@ -28,6 +28,23 @@ class Comment: NSObject, Mappable {
     isLiked <- map["isLiked"]
     createdAt <- (map["createdAt"], DateTransform())
   }
+  public func encode(with aCoder: NSCoder) {
+    aCoder.encode(id, forKey: "id")
+    aCoder.encode(content, forKey: "content")
+    aCoder.encode(createdBy, forKey: "createdBy")
+    aCoder.encode(likedUsers, forKey: "likedUsers")
+    aCoder.encode(isLiked, forKey: "isLiked")
+    aCoder.encode(createdAt, forKey: "createdAt")
+  }
+  public required init?(coder aDecoder: NSCoder) {
+    id = aDecoder.decodeObject(forKey: "id") as! String
+    content = aDecoder.decodeObject(forKey: "content") as! String
+    createdBy = aDecoder.decodeObject(forKey: "createdBy") as! User
+    likedUsers = aDecoder.decodeObject(forKey: "likedUsers") as! [User]?
+    isLiked = aDecoder.decodeObject(forKey: "isLiked") as! Bool
+    createdAt = aDecoder.decodeObject(forKey: "createdAt") as! Date
+  }
+
 }
 
 extension Comment {

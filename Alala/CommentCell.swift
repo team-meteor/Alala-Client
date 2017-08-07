@@ -7,11 +7,12 @@
 //
 
 import UIKit
+import ActiveLabel
 
 class CommentCell: UICollectionViewCell {
   var comments = [Comment]()
   var labelContainer = [CommentLabel]()
-
+  var delegate: ActiveLabelDelegate?
   override func prepareForReuse() {
     super.prepareForReuse()
     comments = [Comment]()
@@ -38,6 +39,7 @@ class CommentCell: UICollectionViewCell {
       view.attributedText = NSMutableAttributedString(
         string: comment.createdBy!.profileName! + " " + comment.content
       )
+      view.delegate = delegate
       return view
     }()
     labelContainer.append(label)

@@ -17,7 +17,7 @@ class DiscoverPeopleViewController: UIViewController {
     super.viewDidLoad()
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = LS("DiscoverPeople")
+      $0.text = LS("discover_people")
       $0.sizeToFit()
     }
     AuthService.instance.me { _ in}
@@ -60,10 +60,10 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
     cell.userInfo = self.allUsers[indexPath.item]
 
     if let _ = AuthService.instance.follwingMeta[cell.userInfo.id] {
-      cell.isSetFollowButton = false
+      cell.isFollowingUser = true
       return cell
     }
-    cell.isSetFollowButton = true
+    cell.isFollowingUser = false
     return cell
   }
 
@@ -72,7 +72,7 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
     view.bottomBorderLine.isHidden = false
 
     let label = UILabel()
-    label.text = LS("discover_all_suggesions")
+    label.text = LS("discover_people_all_suggesions")
     view.addSubview(label)
     label.font = UIFont.boldSystemFont(ofSize: 12)
     label.textColor = UIColor.lightGray
@@ -110,19 +110,44 @@ extension DiscoverPeopleViewController: UITableViewDelegate {
 }
 
 extension DiscoverPeopleViewController: PeoplesTableViewCellDelegate {
+  func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {
+    requestChangeFollowStatus(userInfo, sender)
+  }
 
   func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
-    UserService.instance.follow(id: userInfo.id) { response in
-      switch response.result {
-      case .success(let resultUser):
-        if let cell = sender.superview as? PeoplesTableViewCell {
-          cell.isSetFollowButton = !cell.isSetFollowButton
-        }
-        AuthService.instance.currentUser = resultUser
-      case .failure:
-        print("failure")
-      }
+
+    let alertController = UIAlertController(title: "\n\n\n\n", message: "", preferredStyle: .actionSheet)
+    let contentView = UIView(frame: CGRect(x: 8.0, y: 8.0, width: alertController.view.bounds.size.width - 8.0 * 4.5, height: 120.0))
+    alertController.view.addSubview(contentView)
+
+    let photoImageView = CircleImageView()
+    let guideLabel = UILabel().then {
+      $0.textAlignment = .center
     }
+    contentView.addSubview(photoImageView)
+    contentView.addSubview(guideLabel)
+    photoImageView.snp.makeConstraints { (make) in
+      make.centerX.equalTo(contentView)
+      make.top.equalTo(10)
+      make.width.height.equalTo(50)
+    }
+    guideLabel.snp.makeConstraints { (make) in
+      make.left.right.bottom.equalTo(contentView)
+      make.top.equalTo(photoImageView.snp.bottom)
+    }
+
+    photoImageView.setImage(with: userInfo.profilePhotoId, placeholder: UIImage(named: "default_user"), size: .medium)
+    guideLabel.text = String(format: LS("actionsheet_unfollow_check"), userInfo.profileName!)
+
+    let cancelAction = UIAlertAction(title: LS("cancel"), style: .cancel)
+    alertController.addAction(cancelAction)
+
+    let unfollowAction = UIAlertAction(title: LS("actionsheet_unfollow"), style: .destructive) { _ in
+      self.requestChangeFollowStatus(userInfo, sender)
+    }
+    alertController.addAction(unfollowAction)
+
+    self.present(alertController, animated: true, completion: nil)
   }
 
   func hideButtonDidTap(_ userInfo: User, _ sender: UIButton) {
@@ -131,6 +156,20 @@ extension DiscoverPeopleViewController: PeoplesTableViewCellDelegate {
       let newUsers = self.allUsers.filter({$0.email != self.allUsers[(indexPath?.row)!].email})
       self.allUsers = newUsers
       contentTableView.reloadData()
+    }
+  }
+
+  func requestChangeFollowStatus(_ userInfo: User, _ sender: UIButton) {
+    UserService.instance.follow(id: userInfo.id) { response in
+      switch response.result {
+      case .success(let resultUser):
+        if let cell = sender.superview as? PeoplesTableViewCell {
+          cell.isFollowingUser = !cell.isFollowingUser
+        }
+        AuthService.instance.currentUser = resultUser
+      case .failure:
+        print("failure")
+      }
     }
   }
 }

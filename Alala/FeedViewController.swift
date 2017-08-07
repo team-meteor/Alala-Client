@@ -9,6 +9,7 @@ import UIKit
 import IGListKit
 import Alamofire
 import AVFoundation
+import ActiveLabel
 
 class FeedViewController: PostViewController {
 
@@ -26,10 +27,8 @@ class FeedViewController: PostViewController {
     action: nil
   )
 
-  fileprivate var nextPage: String?
-  fileprivate var isLoading: Bool = false
-
   fileprivate let refreshControl = UIRefreshControl()
+  fileprivate var isLoading: Bool = false
 
   override init(_ posts: [Post] = []) {
     super.init(posts)
@@ -50,10 +49,8 @@ class FeedViewController: PostViewController {
     super.viewDidLoad()
     NotificationCenter.default.addObserver(self, selector: #selector(preparePosting), name: .preparePosting, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(postDidCreate), name: .postDidCreate, object: nil)
-    self.refreshControl.addTarget(self, action: #selector(self.refreshControlDidChangeValue), for: .valueChanged)
+    self.refreshControl.addTarget(self, action: #selector(refreshControlDidChangeValue), for: .valueChanged)
     self.collectionView.addSubview(self.refreshControl)
-    //self.fetchFeed(paging: .refresh)
-//    self.adapter.reloadData(completion: nil)
   }
 
   override func setupNavigation() {
@@ -68,43 +65,32 @@ class FeedViewController: PostViewController {
     super.viewWillAppear(animated)
     self.navigationController?.isNavigationBarHidden = false
     self.tabBarController?.tabBar.isHidden = false
-    self.fetchFeed(paging: .refresh)
+    self.fetchFeed(needRefresh: true)
   }
 
-  fileprivate func fetchFeed(paging: Paging) {
-    print("fetchfeed")
+  fileprivate func fetchFeed(needRefresh: Bool) {
+    if needRefresh {
+      collection.refreshCollection()
+    }
     guard !self.isLoading else { return }
     self.isLoading = true
 
-    FeedService.feed(paging: paging) { [weak self] response in
-      guard let `self` = self else { return }
-      self.refreshControl.endRefreshing()
-      self.isLoading = false
-
-      switch response.result {
-      case .success(let feed):
-        let newPosts = feed.posts ?? []
-        switch paging {
-        case .refresh:
-          self.posts = newPosts
-        case .next:
-          self.posts.append(contentsOf: newPosts)
-        }
-        self.nextPage = feed.nextPage
-        self.adapter.performUpdates(animated: true, completion: nil)
-      case .failure(let error):
-        print(error)
-      }
+    collection.loadFromCloud { [weak self] isSuccess in
+      guard let strongSelf = self else { return }
+      guard isSuccess == true else { return }
+      strongSelf.adapter.performUpdates(animated: true, completion: nil)
+      strongSelf.refreshControl.endRefreshing()
+      strongSelf.isLoading = false
     }
   }
 
   func refreshControlDidChangeValue() {
-    self.fetchFeed(paging: .refresh)
+    fetchFeed(needRefresh: true)
   }
 
   func postDidCreate(_ notification: Notification) {
     guard let post = notification.userInfo?["post"] as? Post else { return }
-    self.posts.insert(post, at: 0)
+    self.collection.insertPost(post)
     self.adapter.reloadObjects([post])
     self.adapter.performUpdates(animated: true) { _ in
       self.adapter.reloadObjects([post])
@@ -195,8 +181,32 @@ extension FeedViewController: UICollectionViewDelegateFlowLayout {
     let contentOffsetBottom = scrollView.contentOffset.y + scrollView.frame.height
     let didReachBottom = scrollView.contentSize.height > 0
       && contentOffsetBottom >= scrollView.contentSize.height - 300
-    if let nextPage = self.nextPage, didReachBottom {
-      self.fetchFeed(paging: .next(nextPage))
+    if didReachBottom {
+      self.fetchFeed(needRefresh: false)
+    }
+  }
+}
+
+extension FeedViewController: ActiveLabelDelegate {
+  func didSelect(_ text: String, type: ActiveType) {
+    switch type {
+    case .mention:
+      pushToPersonalViewController(userID: text)
+    case .hashtag:
+      print(text)
+    case .url:
+      print(text)
+    case .custom(pattern: "^([\\w]+)"):
+      pushToPersonalViewController(userID: text)
+    default: break
+    }
+  }
+  func pushToPersonalViewController(userID: String) {
+    UserService.instance.getUser(id: userID) { response in
+      if case .success(let user) = response.result {
+        let personalVC = PersonalViewController(user: user)
+        self.navigationController?.pushViewController(personalVC, animated: true)
+      }
     }
   }
 }

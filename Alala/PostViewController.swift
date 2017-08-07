@@ -28,9 +28,9 @@ class PostViewController: UIViewController {
     return ListAdapter(updater: ListAdapterUpdater(), viewController: self)
   }()
 
-  var posts: [Post] = []
+//  var posts: [Post] = []
   fileprivate var nextPage: String?
-  fileprivate var isLoading: Bool = false
+  internal var collection: PostCollection!
 
   let collectionView: UICollectionView = {
     let flowLayout = UICollectionViewFlowLayout()
@@ -44,7 +44,7 @@ class PostViewController: UIViewController {
   }
 
   init(_ posts: [Post] = []) {
-    self.posts = posts
+    self.collection = PostCollection(posts)
 
     super.init(nibName: nil, bundle: nil)
   }
@@ -67,7 +67,6 @@ class PostViewController: UIViewController {
       make.bottom.equalTo(self.view)
     }
 
-//    self.adapter.reloadData(completion: nil)
     self.adapter.performUpdates(animated: true)
   }
   override func viewWillAppear(_ animated: Bool) {
@@ -89,7 +88,7 @@ class PostViewController: UIViewController {
   }
 
   func updateNewPost(_ posts: [Post]) {
-    self.posts = posts
+    self.collection = PostCollection(posts)
     self.adapter.performUpdates(animated: true) { (result) in
       if result == true {
         self.delegate?.postUpdateFinished()
@@ -100,7 +99,7 @@ class PostViewController: UIViewController {
 
 extension PostViewController: ListAdapterDataSource {
   func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
-    let items: [ListDiffable] = self.posts
+    let items: [ListDiffable] = self.collection.getPosts()
     return items
   }
   func listAdapter(_ listAdapter: ListAdapter, sectionControllerFor object: Any) -> ListSectionController {
@@ -118,7 +117,7 @@ extension PostViewController: ListAdapterDataSource {
 extension PostViewController: UICollectionViewDelegate {
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     if indexPath.row == 0 {
-      let selectedPost = self.posts[indexPath.section]
+      let selectedPost = self.collection[indexPath.section]
       let profileVC = PersonalViewController(user:selectedPost.createdBy)
       self.navigationController?.pushViewController(profileVC, animated: true)
     }

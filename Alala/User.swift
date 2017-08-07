@@ -66,12 +66,12 @@ class User: NSObject, Mappable, NSCoding {
     profilePhotoId = aDecoder.decodeObject(forKey: "profilePhotoId") as? String
     following = aDecoder.decodeObject(forKey: "following") as! [User]?
     followers = aDecoder.decodeObject(forKey: "followers") as! [User]?
-    bookMarks = aDecoder.decodeObject(forKey: "bookMarks") as! [Post]?
     displayName = aDecoder.decodeObject(forKey: "displayName") as? String
     website = aDecoder.decodeObject(forKey: "website") as? String
     bio = aDecoder.decodeObject(forKey: "bio") as? String
     Phone = aDecoder.decodeObject(forKey: "Phone") as? String
     gender = aDecoder.decodeObject(forKey: "gender") as? String
+    bookMarks = aDecoder.decodeObject(forKey: "bookMarks") as! [Post]?
   }
 
   public static func isEqual(l: User, r: User) -> Bool {
