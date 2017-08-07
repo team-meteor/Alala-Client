@@ -243,6 +243,29 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		48373A1C1F32F6230030F516 /* Cases */ = {
+			isa = PBXGroup;
+			children = (
+				6FFC06C11EE3D49000E542BC /* AlalaTests.swift */,
+			);
+			name = Cases;
+			sourceTree = "<group>";
+		};
+		48373A1D1F32F62C0030F516 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Data;
+			sourceTree = "<group>";
+		};
+		48373A1E1F32F6360030F516 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				6FFC06C31EE3D49000E542BC /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		6F01C29E1EF799CF00552782 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -441,8 +464,9 @@
 		6FFC06C01EE3D49000E542BC /* AlalaTests */ = {
 			isa = PBXGroup;
 			children = (
-				6FFC06C11EE3D49000E542BC /* AlalaTests.swift */,
-				6FFC06C31EE3D49000E542BC /* Info.plist */,
+				48373A1C1F32F6230030F516 /* Cases */,
+				48373A1D1F32F62C0030F516 /* Data */,
+				48373A1E1F32F6360030F516 /* Supporting Files */,
 			);
 			path = AlalaTests;
 			sourceTree = "<group>";
