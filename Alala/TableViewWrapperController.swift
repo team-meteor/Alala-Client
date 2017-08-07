@@ -107,16 +107,15 @@ extension TableViewWrapperController: UITableViewDataSource {
 
     switch Section(rawValue: indexPath.section)! {
     case .allPhotos:
-      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.allPhotos.rawValue, for: indexPath)
+      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.allPhotos.rawValue, for: indexPath) as! GridViewCell
 
       if allPhotos.count != 0 {
-        cell.textLabel!.text = NSLocalizedString("All Photos", comment: "")
         let asset = allPhotos.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: { image, _ in
-          cell.imageView?.image = image
 
+          cell.configure(image: image!, title: NSLocalizedString("All Photos", comment: ""), count: self.allPhotos.count)
         })
         return cell
       } else {
@@ -128,15 +127,14 @@ extension TableViewWrapperController: UITableViewDataSource {
       let collection = smartAlbumsArr[indexPath.row]
       self.smartAlbumsFetchResult = PHAsset.fetchAssets(in: collection, options: AllOptions)
 
-      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath)
-      cell.textLabel!.text = collection.localizedTitle
+      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath) as! GridViewCell
 
       if smartAlbumsFetchResult.count != 0 {
         let asset = smartAlbumsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
-          cell.imageView?.image = image
+          cell.configure(image: image!, title: collection.localizedTitle!, count: self.smartAlbumsFetchResult.count)
 
         })
         return cell
@@ -149,15 +147,14 @@ extension TableViewWrapperController: UITableViewDataSource {
       let assetCollection = collection
       self.userCollectionsFetchResult = PHAsset.fetchAssets(in: assetCollection, options: AllOptions)
 
-      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath)
-      cell.textLabel!.text = collection.localizedTitle
+      let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.collection.rawValue, for: indexPath) as! GridViewCell
 
       if userCollectionsFetchResult.count != 0 {
         let asset = userCollectionsFetchResult.object(at: 0)
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 100 * scale, height: 100 * scale)
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: initialRequestOptions, resultHandler: { image, _ in
-          cell.imageView?.image = image
+          cell.configure(image: image!, title: collection.localizedTitle!, count: self.userCollectionsFetchResult.count)
 
         })
         return cell

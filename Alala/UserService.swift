@@ -64,7 +64,7 @@ class UserService {
       .responseJSON { response in
         if let user = Mapper<User>().map(JSONObject: response.result.value) {
           let response = DataResponse(request: response.request, response: response.response, data: response.data, result: Result.success(user))
-          AuthService.instance.currentUser = user
+          //AuthService.instance.currentUser = user
           completion(response)
         }
     }
