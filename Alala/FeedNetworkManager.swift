@@ -1,5 +1,5 @@
 //
-//  FeedService.swift
+//  FeedNetworkManager.swift
 //  Alala
 //
 //  Created by hoemoon on 24/06/2017.
@@ -14,9 +14,10 @@ enum Paging {
   case next(String)
 }
 
-struct FeedService {
+struct FeedNetworkManager: FeedNetworkService {
+  let userDataManager = UserDataManager.shared
   func feed(isMine: Bool? = nil, paging: Paging, completion: @escaping (DataResponse<Feed>) -> Void) {
-    guard let token = AuthService.instance.authToken else { return }
+    guard let token = userDataManager.authToken else { return }
     let headers = ["Authorization": "Bearer " + token]
     let body: [String: Any]
     var url = "post/feed"

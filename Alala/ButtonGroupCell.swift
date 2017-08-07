@@ -23,6 +23,7 @@ extension InteractiveButtonGroupCellDelegate {
 class ButtonGroupCell: UICollectionViewCell {
   weak var delegate: InteractiveButtonGroupCellDelegate?
   var post: Post!
+  let userDataManager = UserDataManager.shared
   let likeButton: UIButton = {
     let button = UIButton()
     let unlikeImage = UIImage(named: "heart")?.resizeImage(scaledToFit: 30)
@@ -86,7 +87,8 @@ class ButtonGroupCell: UICollectionViewCell {
 
   func configure(post: Post) {
     self.likeButton.isSelected = post.isLiked
-    self.saveButton.isSelected = AuthService.instance.currentUser?.bookMarks?.filter({$0.id == post.id}).count != 0
+    print(userDataManager.isBookmarked(with: post.id))
+    self.saveButton.isSelected = userDataManager.isBookmarked(with: post.id)
     self.post = post
     self.setNeedsLayout()
   }

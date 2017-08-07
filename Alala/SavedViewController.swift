@@ -19,6 +19,7 @@ class SavedViewController: UIScrollTapMenuViewController {
 
   var noContentsViewForAll: NoContentsView!
   var noContentsViewForCollection: NoContentsView!
+  let userDataManager = UserDataManager.shared
   fileprivate var posts: [Post] = []
   let postGridCollectionView: UICollectionView = {
     let columnLayout = ColumnFlowLayout(
@@ -51,7 +52,7 @@ class SavedViewController: UIScrollTapMenuViewController {
     self.firstButton.setTitle(LS("all"), for: .normal)
     self.secondButton.setTitle(LS("collection"), for: .normal)
 
-    self.posts = (AuthService.instance.currentUser?.bookMarks)!
+    self.posts = (userDataManager.currentUser?.bookMarks)!
     if posts.count != 0 {
       setupPostGrid()
     } else {
@@ -78,7 +79,7 @@ class SavedViewController: UIScrollTapMenuViewController {
 
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    self.posts = (AuthService.instance.currentUser?.bookMarks)!
+    self.posts = (userDataManager.currentUser?.bookMarks)!
     postGridCollectionView.reloadData()
   }
 

@@ -17,6 +17,7 @@ enum RequestType {
 class LoginViewController: UIViewController {
   var height: Constraint?
   var requestType = RequestType.Login
+  let userDataManager = UserDataManager.shared
 
   fileprivate let titleBackground = UIView().then {
     $0.isUserInteractionEnabled = false
@@ -148,9 +149,9 @@ class LoginViewController: UIViewController {
     self.authRequestButton.alpha = 0.4
 
     if self.requestType == .Login {
-      AuthService.instance.login(email: email, password: password, completion: { (success) in
+      userDataManager.loginWithCloud(email: email, password: password, completion: { (success) in
         if success {
-          AuthService.instance.me(completion: { (user) in
+          self.userDataManager.getMeWithCloud(completion: { (user) in
             if user != nil {
               DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .presentMainTabBar, object: nil)
@@ -168,18 +169,16 @@ class LoginViewController: UIViewController {
         }
       })
     } else {
-      AuthService.instance.register(email: email, password: password) { (success, message) in
-        if success {
-          print(message)
-          AuthService.instance.login(email: email, password: password, completion: { (success) in
-            if success {
+      userDataManager.registerWithCloud(email: email, password: password) { isSuccess in
+        if isSuccess {
+          self.userDataManager.loginWithCloud(email: email, password: password, completion: { isSuccess in
+            if isSuccess {
               DispatchQueue.main.async {
                 let afterRegisterVC = AfterRegisterViewController()
                 self.navigationController?.pushViewController(afterRegisterVC, animated: true)
               }
 
             } else {
-              print(message)
               DispatchQueue.main.async {
                 self.emailTextField.isEnabled = true
                 self.passwordTextField.isEnabled = true
@@ -189,7 +188,6 @@ class LoginViewController: UIViewController {
             }
           })
         } else {
-          print(message)
           DispatchQueue.main.async {
             self.emailTextField.isEnabled = true
             self.passwordTextField.isEnabled = true

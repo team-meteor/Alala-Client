@@ -15,7 +15,9 @@ import UIKit
  */
 class EditProfileViewController: UIViewController {
 
-  let me = AuthService.instance.currentUser
+//  let me = AuthNetworkManager.instance.currentUser
+  let userdataManager = UserDataManager.shared
+//  let me = userdataManager.
   var tempMe: User?
 
   let contentView = UIView()
@@ -131,10 +133,11 @@ class EditProfileViewController: UIViewController {
   }
 
   func setupMyUserData() {
-    let encodedData = NSKeyedArchiver.archivedData(withRootObject: me!)
+    guard let me = userdataManager.currentUser else { return }
+    let encodedData = NSKeyedArchiver.archivedData(withRootObject: me)
     tempMe = NSKeyedUnarchiver.unarchiveObject(with: encodedData) as? User
 
-    currentProfileImageView.setImage(with: me?.profilePhotoId, size: .small)
+    currentProfileImageView.setImage(with: me.profilePhotoId, size: .small)
   }
 
   override func viewWillAppear(_ animated: Bool) {
@@ -155,7 +158,7 @@ class EditProfileViewController: UIViewController {
    * 수정 완료 버튼 선택 시 프로필 정보 업데이트
    */
   func doneNaviButtonTap() {
-
+    guard let me = userdataManager.currentUser else { return }
     updateCurrentInfoToTempMe()
 
     if (tempMe?.profileName?.characters.count)! <= 0 {
@@ -165,7 +168,7 @@ class EditProfileViewController: UIViewController {
       return
     }
 
-    if User.isEqual(l:me!, r:tempMe!) {
+    if User.isEqual(l:me, r:tempMe!) {
       //--- 변경사항 없음
       self.backNaviButtonTap()
     } else {
@@ -185,9 +188,9 @@ class EditProfileViewController: UIViewController {
   }
 
   func requestProfileUpdate() {
-    AuthService.instance.updateProfile(userInfo: self.tempMe!, completion: { (success) in
+    userdataManager.updateProfileWithCloud(profileName: nil, imageID: nil, userInfo: self.tempMe!, completion: { (success) in
       if success {
-        AuthService.instance.me(completion: { (user) in
+        self.userdataManager.getMeWithCloud(completion: { (user) in
           if user != nil {
             DispatchQueue.main.async {
               NotificationCenter.default.post(
