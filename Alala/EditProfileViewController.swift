@@ -176,7 +176,7 @@ class EditProfileViewController: UIViewController {
       if self.tempMe?.profilePhotoId?.characters.count == 0 {
         var imageArray = [UIImage]()
         imageArray.append(currentProfileImageView.image!)
-        MultipartService.uploadMultipart(multiPartDataArray: imageArray, progressCompletion: nil) { (imageId) in
+        MultipartNetworkManager.uploadMultipart(multiPartDataArray: imageArray, progressCompletion: nil) { (imageId) in
           self.tempMe?.profilePhotoId = imageId[0]
           self.requestProfileUpdate()
         }

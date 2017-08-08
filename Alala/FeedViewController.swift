@@ -168,7 +168,7 @@ class FeedViewController: PostViewController {
       completion(multipartIdArray)
     }
 
-    MultipartService.uploadMultipart(
+    MultipartNetworkManager.uploadMultipart(
       multiPartDataArray: multipartArray,
       progressCompletion: progressCompletion,
       uploadCompletion: uploadCompletion

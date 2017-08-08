@@ -13,7 +13,7 @@
 		485ABFAB1EF3735500949456 /* PostEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485ABFAA1EF3735500949456 /* PostEditorViewController.swift */; };
 		485ABFAD1EF37F5A00949456 /* PostEditingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485ABFAC1EF37F5A00949456 /* PostEditingCell.swift */; };
 		487394021EFE467300B3E1D0 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487394011EFE467300B3E1D0 /* CameraViewController.swift */; };
-		4873940A1F03798B00B3E1D0 /* MultipartService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487394091F03798B00B3E1D0 /* MultipartService.swift */; };
+		4873940A1F03798B00B3E1D0 /* MultipartNetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487394091F03798B00B3E1D0 /* MultipartNetworkManager.swift */; };
 		48D41E291F1F409000868F58 /* FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D41E281F1F409000868F58 /* FileManager.swift */; };
 		48D41E2B1F1F445300868F58 /* Cropper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D41E2A1F1F445300868F58 /* Cropper.swift */; };
 		48D41E2D1F2108FC00868F58 /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D41E2C1F2108FC00868F58 /* VideoPlayerView.swift */; };
@@ -75,6 +75,8 @@
 		6FEDF8FD1F381C5700C67AE2 /* FeedNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FEDF8FC1F381C5700C67AE2 /* FeedNetworkService.swift */; };
 		6FEDF9021F3828F400C67AE2 /* UserDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FEDF9011F3828F400C67AE2 /* UserDataManager.swift */; };
 		6FEDF9041F386F3100C67AE2 /* PostDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FEDF9031F386F3100C67AE2 /* PostDataManager.swift */; };
+		6FEDF9061F39783700C67AE2 /* PostNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FEDF9051F39783700C67AE2 /* PostNetworkService.swift */; };
+		6FEDF9091F397C4700C67AE2 /* MockPostNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FEDF9081F397C4700C67AE2 /* MockPostNetworkService.swift */; };
 		6FFC06AD1EE3D49000E542BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06AC1EE3D49000E542BC /* AppDelegate.swift */; };
 		6FFC06B41EE3D49000E542BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6FFC06B31EE3D49000E542BC /* Assets.xcassets */; };
 		6FFC06B71EE3D49000E542BC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FFC06B51EE3D49000E542BC /* LaunchScreen.storyboard */; };
@@ -143,7 +145,7 @@
 		485ABFAA1EF3735500949456 /* PostEditorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostEditorViewController.swift; sourceTree = "<group>"; };
 		485ABFAC1EF37F5A00949456 /* PostEditingCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostEditingCell.swift; sourceTree = "<group>"; };
 		487394011EFE467300B3E1D0 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
-		487394091F03798B00B3E1D0 /* MultipartService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultipartService.swift; sourceTree = "<group>"; };
+		487394091F03798B00B3E1D0 /* MultipartNetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultipartNetworkManager.swift; sourceTree = "<group>"; };
 		48D41E281F1F409000868F58 /* FileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileManager.swift; sourceTree = "<group>"; };
 		48D41E2A1F1F445300868F58 /* Cropper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cropper.swift; sourceTree = "<group>"; };
 		48D41E2C1F2108FC00868F58 /* VideoPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
@@ -200,6 +202,8 @@
 		6FEDF8FC1F381C5700C67AE2 /* FeedNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedNetworkService.swift; sourceTree = "<group>"; };
 		6FEDF9011F3828F400C67AE2 /* UserDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDataManager.swift; sourceTree = "<group>"; };
 		6FEDF9031F386F3100C67AE2 /* PostDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostDataManager.swift; sourceTree = "<group>"; };
+		6FEDF9051F39783700C67AE2 /* PostNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostNetworkService.swift; sourceTree = "<group>"; };
+		6FEDF9081F397C4700C67AE2 /* MockPostNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockPostNetworkService.swift; sourceTree = "<group>"; };
 		6FFC06A91EE3D49000E542BC /* Alala.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Alala.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6FFC06AC1EE3D49000E542BC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6FFC06B31EE3D49000E542BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -320,16 +324,17 @@
 			name = Extensions;
 			sourceTree = "<group>";
 		};
-		6F09C8CB1EEE6A1E00BCFFEF /* Services */ = {
+		6F09C8CB1EEE6A1E00BCFFEF /* Networking */ = {
 			isa = PBXGroup;
 			children = (
 				6F09C8D91EF013B900BCFFEF /* UserNetworkManager.swift */,
 				48F857951EF8B6C800957B3A /* PostNetworkManager.swift */,
 				6F0068881EFE161D009EDFBF /* FeedNetworkManager.swift */,
-				487394091F03798B00B3E1D0 /* MultipartService.swift */,
+				487394091F03798B00B3E1D0 /* MultipartNetworkManager.swift */,
 				6FEDF8FC1F381C5700C67AE2 /* FeedNetworkService.swift */,
+				6FEDF9051F39783700C67AE2 /* PostNetworkService.swift */,
 			);
-			name = Services;
+			name = Networking;
 			sourceTree = "<group>";
 		};
 		6F5B85421EE52026009285DD /* Resources */ = {
@@ -432,7 +437,7 @@
 				6F09C8AD1EEA862E00BCFFEF /* Extensions */,
 				6F5B85451EE5204B009285DD /* Models */,
 				6FBD85501F04CDE20097B82A /* SectionControllers */,
-				6F09C8CB1EEE6A1E00BCFFEF /* Services */,
+				6F09C8CB1EEE6A1E00BCFFEF /* Networking */,
 				6F5B85431EE52037009285DD /* ViewControllers */,
 				6F5B85441EE52041009285DD /* Views */,
 			);
@@ -460,6 +465,7 @@
 		6F9483081F3580BB00D92E5B /* AlalaIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
+				6FEDF9071F397C2000C67AE2 /* Mocks */,
 				6FEDF8FE1F3824DF00C67AE2 /* Cases */,
 				6F9483091F3580BB00D92E5B /* AlalaIntegrationTests.swift */,
 				6F94830B1F3580BB00D92E5B /* Info.plist */,
@@ -499,6 +505,14 @@
 			children = (
 			);
 			name = Cases;
+			sourceTree = "<group>";
+		};
+		6FEDF9071F397C2000C67AE2 /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				6FEDF9081F397C4700C67AE2 /* MockPostNetworkService.swift */,
+			);
+			name = Mocks;
 			sourceTree = "<group>";
 		};
 		6FFC06A01EE3D49000E542BC = {
@@ -696,8 +710,8 @@
 			targets = (
 				6FFC06A81EE3D49000E542BC /* Alala */,
 				6FFC06BC1EE3D49000E542BC /* AlalaTests */,
-				6FFC06C71EE3D49000E542BC /* AlalaUITests */,
 				6F9483061F3580BB00D92E5B /* AlalaIntegrationTests */,
+				6FFC06C71EE3D49000E542BC /* AlalaUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -794,6 +808,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6FEDF9091F397C4700C67AE2 /* MockPostNetworkService.swift in Sources */,
 				6F94830A1F3580BB00D92E5B /* AlalaIntegrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -853,6 +868,7 @@
 				6F02730A1F359ED10047CA2F /* PostCollection.swift in Sources */,
 				6F0F9F7D1F3763A100845334 /* SwiftSpinner.swift in Sources */,
 				6FB758731F206E25008C976C /* TextSize.swift in Sources */,
+				6FEDF9061F39783700C67AE2 /* PostNetworkService.swift in Sources */,
 				485ABFAD1EF37F5A00949456 /* PostEditingCell.swift in Sources */,
 				6F5B85571EE540EF009285DD /* User.swift in Sources */,
 				99C654F01F0247A10005AD3E /* UIBorderView.swift in Sources */,
@@ -867,7 +883,7 @@
 				9B8534E71F1C8A31006AAFAE /* SearchPersonViewController.swift in Sources */,
 				9B8534DB1F19D906006AAFAE /* DiscoverView.swift in Sources */,
 				485647BF1EEE6B4D00834BBB /* TileCell.swift in Sources */,
-				4873940A1F03798B00B3E1D0 /* MultipartService.swift in Sources */,
+				4873940A1F03798B00B3E1D0 /* MultipartNetworkManager.swift in Sources */,
 				6FFDBF891F21B6DD0019EC64 /* CommentViewController.swift in Sources */,
 				9905A9A51F25C9070063DDB1 /* Localized.swift in Sources */,
 				995E81141F1A76970002668E /* UIPlaceholderTextView.swift in Sources */,

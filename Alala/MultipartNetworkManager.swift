@@ -1,5 +1,5 @@
 //
-//  MultipartService.swift
+//  MultipartNetworkManager.swift
 //  Alala
 //
 //  Created by junwoo on 2017. 6. 28..
@@ -10,7 +10,7 @@ import UIKit
 import Photos
 import Alamofire
 
-struct MultipartService {
+struct MultipartNetworkManager {
   static func uploadMultipart(
     multiPartDataArray: [Any],
     progressCompletion: ((_ percent: Float) -> Void)?,
