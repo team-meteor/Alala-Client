@@ -8,3 +8,7 @@
 
 import XCTest
 @testable import Alala
+
+class PostModelTests: XCTestCase {
+
+}
