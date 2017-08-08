@@ -71,7 +71,7 @@ class AfterRegisterViewController: UIViewController {
     doneButton.isEnabled = false
     self.view.endEditing(true)
     SwiftSpinner.show("in progress...")
-    MultipartService.uploadMultipart(multiPartDataArray: imageArray, progressCompletion: nil) { (multipartIds) in
+    MultipartNetworkManager.uploadMultipart(multiPartDataArray: imageArray, progressCompletion: nil) { (multipartIds) in
       self.userDataManager.updateProfileWithCloud(profileName: username, imageID: multipartIds[0], userInfo: nil, completion: { (success) in
         if success {
           SwiftSpinner.hide({
