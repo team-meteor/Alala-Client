@@ -79,6 +79,7 @@
 		6FEDF9091F397C4700C67AE2 /* MockPostNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FEDF9081F397C4700C67AE2 /* MockPostNetworkService.swift */; };
 		6FEDF90B1F397D6200C67AE2 /* MockFeedNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FEDF90A1F397D6200C67AE2 /* MockFeedNetworkService.swift */; };
 		6FEDF90F1F39902500C67AE2 /* UserNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FEDF90E1F39902500C67AE2 /* UserNetworkService.swift */; };
+		6FEDF9101F39940B00C67AE2 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FFC06DB1EE3D78A00E542BC /* Alamofire.framework */; };
 		6FFC06AD1EE3D49000E542BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06AC1EE3D49000E542BC /* AppDelegate.swift */; };
 		6FFC06B41EE3D49000E542BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6FFC06B31EE3D49000E542BC /* Assets.xcassets */; };
 		6FFC06B71EE3D49000E542BC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FFC06B51EE3D49000E542BC /* LaunchScreen.storyboard */; };
@@ -257,6 +258,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6FEDF9101F39940B00C67AE2 /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -989,6 +991,10 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = UJ82UGU342;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = AlalaIntegrationTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hoemoon.AlalaIntegrationTests;
@@ -1003,6 +1009,10 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = UJ82UGU342;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = AlalaIntegrationTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hoemoon.AlalaIntegrationTests;
