@@ -10,5 +10,8 @@ import UIKit
 import Alamofire
 
 protocol FeedNetworkService {
-  func feed(isMine: Bool?, paging: Paging, completion: @escaping (DataResponse<Feed>) -> Void)
+  func feed(
+    isMine: Bool?,
+    paging: Paging,
+    completion: @escaping (DataResponse<Feed>) -> Void)
 }

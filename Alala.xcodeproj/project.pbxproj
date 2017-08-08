@@ -77,6 +77,8 @@
 		6FEDF9041F386F3100C67AE2 /* PostDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FEDF9031F386F3100C67AE2 /* PostDataManager.swift */; };
 		6FEDF9061F39783700C67AE2 /* PostNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FEDF9051F39783700C67AE2 /* PostNetworkService.swift */; };
 		6FEDF9091F397C4700C67AE2 /* MockPostNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FEDF9081F397C4700C67AE2 /* MockPostNetworkService.swift */; };
+		6FEDF90B1F397D6200C67AE2 /* MockFeedNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FEDF90A1F397D6200C67AE2 /* MockFeedNetworkService.swift */; };
+		6FEDF90F1F39902500C67AE2 /* UserNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FEDF90E1F39902500C67AE2 /* UserNetworkService.swift */; };
 		6FFC06AD1EE3D49000E542BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFC06AC1EE3D49000E542BC /* AppDelegate.swift */; };
 		6FFC06B41EE3D49000E542BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6FFC06B31EE3D49000E542BC /* Assets.xcassets */; };
 		6FFC06B71EE3D49000E542BC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FFC06B51EE3D49000E542BC /* LaunchScreen.storyboard */; };
@@ -204,6 +206,8 @@
 		6FEDF9031F386F3100C67AE2 /* PostDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostDataManager.swift; sourceTree = "<group>"; };
 		6FEDF9051F39783700C67AE2 /* PostNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostNetworkService.swift; sourceTree = "<group>"; };
 		6FEDF9081F397C4700C67AE2 /* MockPostNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockPostNetworkService.swift; sourceTree = "<group>"; };
+		6FEDF90A1F397D6200C67AE2 /* MockFeedNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockFeedNetworkService.swift; sourceTree = "<group>"; };
+		6FEDF90E1F39902500C67AE2 /* UserNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserNetworkService.swift; sourceTree = "<group>"; };
 		6FFC06A91EE3D49000E542BC /* Alala.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Alala.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6FFC06AC1EE3D49000E542BC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6FFC06B31EE3D49000E542BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -331,8 +335,6 @@
 				48F857951EF8B6C800957B3A /* PostNetworkManager.swift */,
 				6F0068881EFE161D009EDFBF /* FeedNetworkManager.swift */,
 				487394091F03798B00B3E1D0 /* MultipartNetworkManager.swift */,
-				6FEDF8FC1F381C5700C67AE2 /* FeedNetworkService.swift */,
-				6FEDF9051F39783700C67AE2 /* PostNetworkService.swift */,
 			);
 			name = Networking;
 			sourceTree = "<group>";
@@ -421,9 +423,6 @@
 				6F5B85581EE540F9009285DD /* Feed.swift */,
 				6F0A205E1EFA5D6700C71417 /* Comment.swift */,
 				4828D27B1F187776001D2C2C /* PhotoAlbum.swift */,
-				6F0273091F359ED10047CA2F /* PostCollection.swift */,
-				6FEDF9011F3828F400C67AE2 /* UserDataManager.swift */,
-				6FEDF9031F386F3100C67AE2 /* PostDataManager.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -431,6 +430,8 @@
 		6F5B85471EE52064009285DD /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				6FEDF90D1F39806A00C67AE2 /* DataManager */,
+				6FEDF90C1F397D7C00C67AE2 /* Service */,
 				6FB7586D1F1F0ED7008C976C /* Utils */,
 				6FBD855B1F04EF810097B82A /* Types */,
 				6F09C8DD1EF101E800BCFFEF /* Constants.swift */,
@@ -511,8 +512,29 @@
 			isa = PBXGroup;
 			children = (
 				6FEDF9081F397C4700C67AE2 /* MockPostNetworkService.swift */,
+				6FEDF90A1F397D6200C67AE2 /* MockFeedNetworkService.swift */,
 			);
 			name = Mocks;
+			sourceTree = "<group>";
+		};
+		6FEDF90C1F397D7C00C67AE2 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				6FEDF8FC1F381C5700C67AE2 /* FeedNetworkService.swift */,
+				6FEDF9051F39783700C67AE2 /* PostNetworkService.swift */,
+				6FEDF90E1F39902500C67AE2 /* UserNetworkService.swift */,
+			);
+			name = Service;
+			sourceTree = "<group>";
+		};
+		6FEDF90D1F39806A00C67AE2 /* DataManager */ = {
+			isa = PBXGroup;
+			children = (
+				6F0273091F359ED10047CA2F /* PostCollection.swift */,
+				6FEDF9011F3828F400C67AE2 /* UserDataManager.swift */,
+				6FEDF9031F386F3100C67AE2 /* PostDataManager.swift */,
+			);
+			name = DataManager;
 			sourceTree = "<group>";
 		};
 		6FFC06A01EE3D49000E542BC = {
@@ -810,6 +832,7 @@
 			files = (
 				6FEDF9091F397C4700C67AE2 /* MockPostNetworkService.swift in Sources */,
 				6F94830A1F3580BB00D92E5B /* AlalaIntegrationTests.swift in Sources */,
+				6FEDF90B1F397D6200C67AE2 /* MockFeedNetworkService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -832,6 +855,7 @@
 				6F01C2991EF7984000552782 /* UIImage.swift in Sources */,
 				9905A9951F20B9960063DDB1 /* UIScrollTapMenuViewController.swift in Sources */,
 				6F01C2971EF797C400552782 /* UIImageView.swift in Sources */,
+				6FEDF90F1F39902500C67AE2 /* UserNetworkService.swift in Sources */,
 				99A4DC161F2F7BA900867659 /* PeoplesTableViewCell.swift in Sources */,
 				6F5B85491EE52101009285DD /* FeedViewController.swift in Sources */,
 				9921706D1F0A374500D03E01 /* SavedViewController.swift in Sources */,
