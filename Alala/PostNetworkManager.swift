@@ -10,7 +10,7 @@ import UIKit
 import Alamofire
 import ObjectMapper
 
-class PostNetworkManager {
+class PostNetworkManager: PostNetworkService {
   private var headers: [String: String] {
     get {
       let userDataManager = UserDataManager.shared
@@ -43,7 +43,10 @@ class PostNetworkManager {
     }
   }
 
-  public func like(post: Post, completion: @escaping (DataResponse<Post>) -> Void) {
+  public func like(
+    post: Post,
+    completion: @escaping (DataResponse<Post>) -> Void) {
+
     let body: [String : Any] = ["id": post.id!]
     var url = ""
     if post.isLiked {
@@ -66,7 +69,11 @@ class PostNetworkManager {
     }
   }
 
-  public func createComment(post: Post, content: String, completion: @escaping (DataResponse<Comment>) -> Void) {
+  public func createComment(
+    post: Post,
+    content: String,
+    completion: @escaping (DataResponse<Comment>) -> Void) {
+
     guard let id = post.id else { return }
     let body: [String : Any] = ["id": id, "content": content]
     Alamofire.request(

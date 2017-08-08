@@ -10,7 +10,7 @@ import Foundation
 import Alamofire
 
 class PostDataManager {
-  static private let _postNetworkManager = PostNetworkManager()
+  static private let _postNetworkManager: PostNetworkService = PostNetworkManager()
 
   static func postWithMultiPartCloud(
     multipartIDArray: [String],

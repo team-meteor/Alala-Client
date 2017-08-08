@@ -9,7 +9,7 @@
 import Alamofire
 import ObjectMapper
 
-class UserNetworkManager {
+class UserNetworkManager: UserNetworkService {
   func register(email: String, password: String, completion: @escaping (_ success: Bool, _ message: String) -> Void) {
     let json = ["email": email, "password": password]
     let sessionConfig = URLSessionConfiguration.default
@@ -104,17 +104,6 @@ class UserNetworkManager {
                 } else {
                   completion(false, nil)
                 }
-//                if let email = result?["user"] as? String {
-//                  if let token = result?["token"] as? String {
-////                    self.email = email
-////                    self.authToken = token
-//                    completion(true, token)
-//                  } else {
-//                    completion(false, nil)
-//                  }
-//                } else {
-//                  completion(false, nil)
-//                }
               } else {
                 completion(false, nil)
               }

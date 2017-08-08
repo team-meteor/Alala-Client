@@ -10,10 +10,18 @@ import Foundation
 import Alamofire
 
 protocol PostNetworkService {
-  func postWithMultipart(multipartIDArray: [String], message: String?, progress: Progress?, completion: (DataResponse<Post>) -> Void)
+  func postWithMultipart(
+    multipartIDArray: [String],
+    message: String?,
+    progress: Progress?,
+    completion: @escaping (DataResponse<Post>) -> Void)
 
-  func like(post: Post, completion: (DataResponse<Post>) -> Void)
+  func like(
+    post: Post,
+    completion: @escaping (DataResponse<Post>) -> Void)
 
-  func createComment(post: Post, content: String, completion: (DataResponse<Comment>) -> Void)
-
+  func createComment(
+    post: Post,
+    content: String,
+    completion: @escaping (DataResponse<Comment>) -> Void)
 }

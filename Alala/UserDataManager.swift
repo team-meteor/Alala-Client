@@ -46,7 +46,7 @@ public class UserDataManager {
   }
   private var _bookmarkMeta = [String: Post]()
   private var _followingMeta = [String: User]()
-  internal var _userNetworkManager = UserNetworkManager() // 이름 바꾸기
+  internal var _userNetworkManager: UserNetworkService = UserNetworkManager() // 이름 바꾸기
 
   public func registerWithCloud(
     email: String,
