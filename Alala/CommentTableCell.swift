@@ -10,7 +10,7 @@ import UIKit
 import ActiveLabel
 
 class CommentTableCell: UITableViewCell {
-  var delegate: ActiveLabelDelegate?
+  weak var delegate: ActiveLabelDelegate?
   let profilePhoto: CircleImageView = {
     let view = CircleImageView()
     view.layer.borderWidth = 1
@@ -22,6 +22,13 @@ class CommentTableCell: UITableViewCell {
   }()
 
   let commentLabel = CommentLabel()
+
+  override func prepareForReuse() {
+    super.prepareForReuse()
+    for view in self.subviews {
+      view.removeFromSuperview()
+    }
+  }
 
   func configure(comment: Comment) {
     guard let profileName = comment.createdBy.profileName else { return }

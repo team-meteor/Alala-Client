@@ -23,6 +23,10 @@ class Post: NSObject, Mappable, NSCoding {
   required init?(map: Map) {
   }
 
+  override init() {
+    super.init()
+  }
+
   func mapping(map: Map) {
     id <- map["_id"]
     multipartIds <- map["multiparts"]

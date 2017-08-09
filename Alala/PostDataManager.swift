@@ -10,7 +10,7 @@ import Foundation
 import Alamofire
 
 class PostDataManager {
-  static private let _postNetworkManager: PostNetworkService = PostNetworkManager()
+  static internal var postNetworkManager: PostNetworkService = PostNetworkManager()
 
   static func postWithMultiPartCloud(
     multipartIDArray: [String],
@@ -18,7 +18,7 @@ class PostDataManager {
     progress: Progress?,
     completion: @escaping (DataResponse<Post>) -> Void) {
 
-    _postNetworkManager.postWithMultipart(
+    postNetworkManager.postWithMultipart(
       multipartIDArray: multipartIDArray,
       message: message,
       progress: progress) {
@@ -31,7 +31,7 @@ class PostDataManager {
     post: Post,
     completion: @escaping (DataResponse<Post>) -> Void) {
 
-    _postNetworkManager.like(post: post) {
+    postNetworkManager.like(post: post) {
       response in
       completion(response)
     }
@@ -42,7 +42,7 @@ class PostDataManager {
     content: String,
     completion: @escaping (DataResponse<Comment>) -> Void) {
 
-    _postNetworkManager.createComment(post: post, content: content) {
+    postNetworkManager.createComment(post: post, content: content) {
       response in
         completion(response)
     }
