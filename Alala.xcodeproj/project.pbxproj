@@ -29,7 +29,7 @@
 		6F01C29D1EF7999000552782 /* PostCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F01C29C1EF7999000552782 /* PostCardCell.swift */; };
 		6F0273021F3590110047CA2F /* ActiveLabel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F0273011F3590110047CA2F /* ActiveLabel.framework */; };
 		6F0273031F3590180047CA2F /* ActiveLabel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F0273011F3590110047CA2F /* ActiveLabel.framework */; };
-		6F0273061F3592690047CA2F /* me.json in Resources */ = {isa = PBXBuildFile; fileRef = 6F0273051F3592690047CA2F /* me.json */; };
+		6F0273061F3592690047CA2F /* someuser.json in Resources */ = {isa = PBXBuildFile; fileRef = 6F0273051F3592690047CA2F /* someuser.json */; };
 		6F0273081F3592B00047CA2F /* UserModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0273071F3592B00047CA2F /* UserModelTests.swift */; };
 		6F02730A1F359ED10047CA2F /* PostCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0273091F359ED10047CA2F /* PostCollection.swift */; };
 		6F09C8D81EF0113600BCFFEF /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F09C8D71EF0113600BCFFEF /* LoginViewController.swift */; };
@@ -164,7 +164,7 @@
 		6F01C29A1EF7996800552782 /* CircleImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleImageView.swift; sourceTree = "<group>"; };
 		6F01C29C1EF7999000552782 /* PostCardCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostCardCell.swift; sourceTree = "<group>"; };
 		6F0273011F3590110047CA2F /* ActiveLabel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActiveLabel.framework; path = Carthage/Build/iOS/ActiveLabel.framework; sourceTree = "<group>"; };
-		6F0273051F3592690047CA2F /* me.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = me.json; sourceTree = "<group>"; };
+		6F0273051F3592690047CA2F /* someuser.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = someuser.json; path = ../AlalaTests/someuser.json; sourceTree = "<group>"; };
 		6F0273071F3592B00047CA2F /* UserModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserModelTests.swift; sourceTree = "<group>"; };
 		6F0273091F359ED10047CA2F /* PostCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostCollection.swift; sourceTree = "<group>"; };
 		6F09C8D71EF0113600BCFFEF /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -313,7 +313,6 @@
 		6F0273041F3591FD0047CA2F /* Data */ = {
 			isa = PBXGroup;
 			children = (
-				6F0273051F3592690047CA2F /* me.json */,
 			);
 			name = Data;
 			sourceTree = "<group>";
@@ -538,6 +537,7 @@
 			children = (
 				6F94830B1F3580BB00D92E5B /* Info.plist */,
 				6FEDF9141F399B8800C67AE2 /* somepost.json */,
+				6F0273051F3592690047CA2F /* someuser.json */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -766,7 +766,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6F0273061F3592690047CA2F /* me.json in Resources */,
+				6F0273061F3592690047CA2F /* someuser.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

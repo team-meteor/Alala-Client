@@ -26,6 +26,18 @@ public class MockPostNetworkService: PostNetworkService {
     return result
   }()
 
+  public lazy var someuser: User = {
+    let result = User()
+    let bundle = Bundle(for: type(of: self))
+    if let path = bundle.path(forResource: "someuser", ofType: "json"),
+      let data = try? Data(contentsOf: URL(fileURLWithPath: path), options: .alwaysMapped),
+      let string = String(data: data, encoding: .utf8),
+      let user = Mapper<User>().map(JSONString: string) {
+      result = post
+    }
+    return result
+  }
+
   public func postWithMultipart(
     multipartIDArray: [String],
     message: String?,

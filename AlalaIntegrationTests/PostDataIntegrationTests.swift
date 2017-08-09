@@ -62,10 +62,14 @@ class PostDataIntegrationTests: XCTestCase {
     // then
     waitForExpectations(timeout: 0.1, handler: nil)
   }
-  
-  func testPostLikeFails() {
-    let mockPostNetworkService = MockPostNetworkService()
-    PostDataManager.postNetworkManager = mockPostNetworkService
-    let expecation = expectation(description: "like post fails")
-  }
+
+//  func testPostLikeFails() {
+//    // given
+//    let mockPostNetworkService = MockPostNetworkService()
+//    PostDataManager.postNetworkManager = mockPostNetworkService
+//    let expecation = expectation(description: "like post fails")
+//    
+//    // when 
+//    PostDataManager.likePostWithCloud(post: <#T##Post#>, completion: <#T##(DataResponse<Post>) -> Void#>)
+//  }
 }
