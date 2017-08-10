@@ -25,4 +25,20 @@ extension UIColor {
       blue: rgb & 0xFF
     )
   }
+
+  convenience init(color: Color) {
+    self.init(rgb: color.rgb)
+  }
+}
+
+enum Color {
+
+  case viewBackground
+
+  var rgb: Int {
+    switch self {
+    case .viewBackground: return 0xefefef
+    }
+  }
+
 }
