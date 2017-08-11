@@ -1,0 +1,64 @@
+{
+  "_id": "597845e579ff578a9937d4d5",
+  "createdBy": {
+    "_id": "595732e31c132c0c45e55c60",
+    "username": "aaa",
+    "__v": 185,
+    "bio": "",
+    "displayName": "Aaa",
+    "gender": "",
+    "profileName": "Aaa",
+    "website": "",
+    "bookMarks": [],
+    "createdAt": "2017-07-01T05:28:03.318Z",
+    "followers": [
+                  "595732e31c132c0c45e55c60",
+                  "597ed62e7f90d20459055f3c",
+                  "595732e51c132c0c45e55c61"
+                  ],
+    "following": [
+                  "595732e51c132c0c45e55c61",
+                  "597ed62e7f90d20459055f3c"
+                  ]
+  },
+  "__v": 0,
+  "comments": [
+               {
+               "_id": "597845e579ff578a9937d4d6",
+               "content": "Aaa",
+               "createdBy": {
+               "_id": "595732e31c132c0c45e55c60",
+               "username": "aaa",
+               "__v": 185,
+               "bio": "",
+               "displayName": "Aaa",
+               "gender": "",
+               "profileName": "Aaa",
+               "website": "",
+               "bookMarks": [],
+               "createdAt": "2017-07-01T05:28:03.318Z",
+               "followers": [
+                             "595732e31c132c0c45e55c60",
+                             "597ed62e7f90d20459055f3c",
+                             "595732e51c132c0c45e55c61"
+                             ],
+               "following": [
+                             "595732e51c132c0c45e55c61",
+                             "597ed62e7f90d20459055f3c"
+                             ]
+               },
+               "__v": 0,
+               "createdAt": "2017-07-26T07:33:57.271Z",
+               "likedUsers": [],
+               "isLiked": false,
+               "id": "597845e579ff578a9937d4d6"
+               }
+               ],
+  "likedUsers": [],
+  "createdAt": "2017-07-26T07:33:57.268Z",
+  "multiparts": [
+                 "0.9433962264150944_14512641501054419346.png"
+                 ],
+  "isLiked": false,
+  "id": "597845e579ff578a9937d4d5"
+}

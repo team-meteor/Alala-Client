@@ -118,4 +118,8 @@ class PostCollection {
   public func getCurrentPage() -> String {
     return self._nextPage
   }
+
+  public func removeAllPosts() {
+    self._posts = []
+  }
 }
