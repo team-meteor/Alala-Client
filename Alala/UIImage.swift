@@ -77,4 +77,19 @@ extension UIImage {
     return UIImage(cgImage: ctx.makeImage()!)
   }
 
+  /**
+   * 여백이 둘러진 이미지를 만들어 반환
+   *
+   * - parameter insets: 상하좌우 여백에 대한 UIEdgeInsets
+   * - returns: 여백이 추가되어 새로 생성된 이미지
+   */
+  func imageWithInset(insets: UIEdgeInsets) -> UIImage {
+    UIGraphicsBeginImageContextWithOptions(
+      CGSize(width: self.size.width + insets.left + insets.right, height: self.size.height + insets.top + insets.bottom), false, self.scale)
+    let origin = CGPoint(x: insets.left, y: insets.top)
+    self.draw(at: origin)
+    let imageWithInsets = UIGraphicsGetImageFromCurrentImageContext()
+    UIGraphicsEndImageContext()
+    return imageWithInsets!
+  }
 }

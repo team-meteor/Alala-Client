@@ -11,6 +11,7 @@ import UIKit
 class CircleImageView: UIImageView {
   override func layoutSubviews() {
     super.layoutSubviews()
+    self.contentMode = .scaleAspectFill
     updateCornerRadius()
   }
 

@@ -348,13 +348,21 @@ class CameraViewController: UIViewController {
   }
 
   func savePhotoToLibrary() {
-    UIImageWriteToSavedPhotosAlbum(self.capturedImageView.image!, nil, nil, nil)
-    //UIImageWriteToSavedPhotosAlbum(self.capturedImageView.image!, self, #selector(updatePhotoAlbum), nil)
-    updatePhotoAlbum()
+    UIImageWriteToSavedPhotosAlbum(self.capturedImageView.image!, self, #selector(didSaveImage(_:didFinishSavingWithError:contextInfo:)), nil)
   }
 
-  func updatePhotoAlbum() {
-    PhotoAlbum.sharedInstance.getAllPhotos()
+  func didSaveImage(_ image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: UnsafeRawPointer) {
+    if let error = error {
+      // we got back an error!
+      let ac = UIAlertController(title: "Save error", message: error.localizedDescription, preferredStyle: .alert)
+      ac.addAction(UIAlertAction(title: "OK", style: .default))
+      present(ac, animated: true)
+    } else {
+      PhotoAlbum.sharedInstance.getAllPhotos()
+      let ac = UIAlertController(title: "Saved!", message: "Your altered image has been saved to your photos.", preferredStyle: .alert)
+      ac.addAction(UIAlertAction(title: "OK", style: .default))
+      present(ac, animated: true)
+    }
   }
 
   func takeVideoButtonDidTap() {
@@ -427,6 +435,7 @@ class CameraViewController: UIViewController {
         let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
         alertController.addAction(defaultAction)
         self.present(alertController, animated: true, completion: nil)
+        PhotoAlbum.sharedInstance.getAllPhotos()
       }
     }
   }

@@ -1,0 +1,24 @@
+{
+  "_id": "59819a0477c9e55a9c018d77",
+  "createdBy": null,
+  "__v": 0,
+  "comments": [
+               {
+               "_id": "59819a0477c9e55a9c018d78",
+               "content": "aaa",
+               "createdBy": null,
+               "__v": 0,
+               "createdAt": "2017-08-02T09:23:16.841Z",
+               "likedUsers": [],
+               "isLiked": false,
+               "id": "59819a0477c9e55a9c018d78"
+               }
+               ],
+  "likedUsers": [],
+  "createdAt": "2017-08-02T09:23:16.841Z",
+  "multiparts": [
+                 "0.2906178489702517_1499323920741.png"
+                 ],
+  "isLiked": false,
+  "id": "59819a0477c9e55a9c018d77"
+}

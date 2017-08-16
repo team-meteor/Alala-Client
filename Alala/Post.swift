@@ -9,7 +9,7 @@
 import ObjectMapper
 import IGListKit
 
-class Post: NSObject, Mappable {
+class Post: NSObject, Mappable, NSCoding {
   var id: String!
   var multipartIds: [String]!
   var createdBy: User!
@@ -23,6 +23,10 @@ class Post: NSObject, Mappable {
   required init?(map: Map) {
   }
 
+  override init() {
+    super.init()
+  }
+
   func mapping(map: Map) {
     id <- map["_id"]
     multipartIds <- map["multiparts"]
@@ -32,6 +36,28 @@ class Post: NSObject, Mappable {
     createdAt <- (map["createdAt"], DateTransform())
     comments <- map["comments"]
     likeCount = likedUsers?.count
+  }
+
+  public func encode(with aCoder: NSCoder) {
+    aCoder.encode(id, forKey: "id")
+    aCoder.encode(multipartIds, forKey: "multipartIds")
+    aCoder.encode(createdBy, forKey: "createdBy")
+    aCoder.encode(likedUsers, forKey: "likedUsers")
+    aCoder.encode(isLiked, forKey: "isLiked")
+    aCoder.encode(likeCount, forKey: "likeCount")
+    aCoder.encode(createdAt, forKey: "createdAt")
+    aCoder.encode(comments, forKey: "comments")
+
+  }
+  public required init?(coder aDecoder: NSCoder) {
+    id = aDecoder.decodeObject(forKey: "id") as! String
+    multipartIds = aDecoder.decodeObject(forKey: "multipartIds") as! [String]
+    createdBy = aDecoder.decodeObject(forKey: "createdBy") as! User
+    likedUsers = aDecoder.decodeObject(forKey: "likedUsers") as! [User]?
+    isLiked = aDecoder.decodeObject(forKey: "isLiked") as! Bool
+    likeCount = aDecoder.decodeObject(forKey: "likeCount") as! Int
+    createdAt = aDecoder.decodeObject(forKey: "createdAt") as! Date
+    comments = aDecoder.decodeObject(forKey: "comments") as! [Comment]?
   }
 }
 

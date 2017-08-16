@@ -1,5 +1,5 @@
 //
-//  AuthService.swift
+//  AuthNetworkManager.swift
 //  Alala
 //
 //  Created by hoemoon on 13/06/2017.
@@ -9,42 +9,7 @@
 import Alamofire
 import ObjectMapper
 
-class AuthService {
-  static let instance = AuthService()
-  var currentUser: User?
-  let defaults = UserDefaults.standard
-  var isRegistered: Bool? {
-    get {
-      return defaults.bool(forKey: Constants.DEFAULTS_REGISTERED) == true
-    }
-    set {
-      defaults.set(newValue, forKey: Constants.DEFAULTS_REGISTERED)
-    }
-  }
-  var isAuthenticated: Bool? {
-    get {
-      return defaults.bool(forKey: Constants.DEFAULTS_AUTHENTICATED) == true
-    }
-    set {
-      defaults.set(newValue, forKey: Constants.DEFAULTS_AUTHENTICATED)
-    }
-  }
-  var email: String? {
-    get {
-      return defaults.value(forKey: Constants.DEFAULTS_EMAIL) as? String
-    }
-    set {
-      defaults.set(newValue, forKey: Constants.DEFAULTS_EMAIL)
-    }
-  }
-  var authToken: String? {
-    get {
-      return defaults.value(forKey: Constants.DEFAULTS_TOKEN) as? String
-    }
-    set {
-      defaults.set(newValue, forKey: Constants.DEFAULTS_TOKEN)
-    }
-  }
+class UserNetworkManager: UserNetworkService {
   func register(email: String, password: String, completion: @escaping (_ success: Bool, _ message: String) -> Void) {
     let json = ["email": email, "password": password]
     let sessionConfig = URLSessionConfiguration.default
@@ -85,36 +50,34 @@ class AuthService {
     }
   }
 
-  func me(completion: @escaping (_ user: User?) -> Void) {
-    let urlString = Constants.BASE_URL + "user/me"
-    guard let token = self.authToken else {
-      completion(nil)
-      return
-    }
-    let headers = [
-      "Authorization": "Bearer " + token
-    ]
-    Alamofire.request(urlString, method: .get, headers: headers)
+  func me(headers: [String: String], completion: @escaping (_ user: User?) -> Void) {
+    Alamofire.request(
+      Constants.BASE_URL + "user/me",
+      method: .get,
+      headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { response in
         if response.result.error == nil {
-          self.currentUser = Mapper<User>().map(JSONObject: response.result.value)
-          print(self.currentUser ?? "")
-          completion(self.currentUser)
+          let currentUser = Mapper<User>().map(JSONObject: response.result.value)
+          print(currentUser ?? "")
+          completion(currentUser)
         } else {
-          print("HTTP Request failed: \(String(describing: response.result.error))")
           completion(nil)
         }
     }
   }
 
-  func login(email: String, password: String, completion: @escaping (_ success: Bool) -> Void) {
+  func login(
+    email: String,
+    password: String,
+    completion: @escaping (_ success: Bool, _ token: String?) -> Void) {
+
     let json = ["email": email, "password": password]
     let sessionConfig = URLSessionConfiguration.default
     let session = URLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
 
     guard let URL = URL(string: Constants.BASE_URL + "user/login") else {
-      completion(false)
+      completion(false, nil)
       return
     }
     var request = URLRequest(url: URL)
@@ -126,38 +89,32 @@ class AuthService {
         if error == nil {
           let statusCode = (response as! HTTPURLResponse).statusCode
           if statusCode != 200 {
-            completion(false)
+            completion(false, nil)
             return
           } else {
             guard let data = data else {
-              completion(false)
+              completion(false, nil)
               return
             }
             do {
               let result = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: AnyObject]
               if result != nil {
-                if let email = result?["user"] as? String {
-                  if let token = result?["token"] as? String {
-                    self.email = email
-                    self.authToken = token
-                    completion(true)
-                  } else {
-                    completion(false)
-                  }
+                if let token = result?["token"] as? String {
+                  completion(true, token)
                 } else {
-                  completion(false)
+                  completion(false, nil)
                 }
               } else {
-                completion(false)
+                completion(false, nil)
               }
             } catch let err {
-              completion(false)
+              completion(false, nil)
               print(err)
             }
           }
         } else {
           print("URL Session Task Failed: \(error!.localizedDescription)")
-          completion(false)
+          completion(false, nil)
           return
         }
       })
@@ -165,24 +122,22 @@ class AuthService {
       session.finishTasksAndInvalidate()
 
     } catch let err {
-      completion(false)
+      completion(false, nil)
       print(err)
     }
   }
 
-  func logout(completion: @escaping (_ success: Bool) -> Void) {
-    guard let token = self.authToken else {
-      completion(false)
-      return
-    }
-    let headers = [
-      "Authorization": "Bearer " + token
-    ]
-    Alamofire.request(Constants.BASE_URL + "user/logout", method: .get, headers: headers)
+  func logout(
+    headers: [String: String],
+    completion: @escaping (_ success: Bool) -> Void) {
+
+    Alamofire.request(
+      Constants.BASE_URL + "user/logout",
+      method: .get,
+      headers: headers)
       .validate(statusCode: 200..<300)
       .response { (dataResponse) in
         if dataResponse.response?.statusCode == 200 {
-          self.authToken = nil
           completion(true)
         } else {
           completion(false)
@@ -190,33 +145,35 @@ class AuthService {
     }
   }
 
-  func checkUsernameUnique(username: String, completion: @escaping (_ isUnique: Bool) -> Void) {
-    let headers = [
-      "Content-Type": "application/json; charset=utf-8"
-    ]
-    let body: [String : Any] = [
-      "name": username
-    ]
-    Alamofire.request(Constants.BASE_URL + "user/profile/checkname", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
+  func checkProfileNameUnique(
+    headers: [String: String],
+    profilename: String,
+    completion: @escaping (_ isUnique: Bool) -> Void) {
+
+    Alamofire.request(
+      Constants.BASE_URL + "user/profile/checkname",
+      method: .post,
+      parameters: ["name": profilename],
+      encoding: JSONEncoding.default,
+      headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { response in
         switch response.result {
         case .success(let json):
           let dict = json as! [String: Any]
           completion(dict["isunique"] as! Bool)
-        case .failure(let error):
-          print(error)
+        case .failure:
           completion(false)
         }
     }
   }
 
-  func updateProfile(profileName: String, profileImageId: String, completion: @escaping (_ success: Bool) -> Void) {
-    guard let token = self.authToken else { return }
-    let headers = [
-      "Authorization": "Bearer " + token,
-      "Content-Type": "application/json; charset=utf-8"
-    ]
+  func updateProfile(
+    headers: [String:String],
+    profileName: String,
+    profileImageId: String,
+    completion: @escaping (_ success: Bool) -> Void) {
+
     let body: [String : Any] = [
       "profileName": profileName,
       "multipartId": profileImageId
@@ -233,12 +190,11 @@ class AuthService {
     }
   }
 
-  func updateProfile(userInfo: User, completion: @escaping (_ success: Bool) -> Void) {
-    guard let token = self.authToken else { return }
-    let headers = [
-      "Authorization": "Bearer " + token,
-      "Content-Type": "application/json; charset=utf-8"
-    ]
+  func updateProfile(
+    headers: [String:String],
+    userInfo: User,
+    completion: @escaping (_ success: Bool) -> Void) {
+
     let body = userInfo.toJSON() as [String : Any]
 
     Alamofire.request(Constants.BASE_URL + "/user/profile/", method: .put, parameters: body, encoding: JSONEncoding.default, headers: headers)
@@ -248,6 +204,87 @@ class AuthService {
           completion(true)
         } else {
           completion(false)
+        }
+    }
+  }
+
+  func getAllRegisterdUsers(
+    headers: [String: String],
+    completion: @escaping (_ users: [User?]?) -> Void) {
+
+    Alamofire.request(Constants.BASE_URL + "/user/all", method: .get, parameters: nil, encoding: JSONEncoding.default, headers: headers)
+      .validate(statusCode: 200..<300)
+      .responseJSON { response in
+        if response.result.error == nil {
+          var allUsers = [User]()
+          if let rawUsers = response.result.value as! [Any]? {
+            for rawUser in rawUsers {
+              let user = Mapper<User>().map(JSONObject: rawUser)
+              allUsers.append(user!)
+              if allUsers.count == rawUsers.count {
+                completion(allUsers)
+              }
+            }
+          }
+        } else {
+          completion(nil)
+        }
+    }
+  }
+
+  func follow(
+    headers: [String: String],
+    id: String,
+    url: String,
+    completion: @escaping (_ response: DataResponse<User>, _ user: User) -> Void) {
+
+    Alamofire.request(
+      Constants.BASE_URL + "user/" + url,
+      method: .post,
+      parameters: ["id": id],
+      encoding: JSONEncoding.default, headers: headers)
+      .validate(statusCode: 200..<300)
+      .responseJSON { response in
+        if let user = Mapper<User>().map(JSONObject: response.result.value) {
+          let response = DataResponse(request: response.request, response: response.response, data: response.data, result: Result.success(user))
+          completion(response, user)
+        }
+    }
+  }
+
+  func getUser(
+    headers: [String: String],
+    id: String,
+    completion: @escaping (DataResponse<User>) -> Void) {
+
+    Alamofire.request(Constants.BASE_URL + "user/model", method: .get, parameters: ["id": id], headers: headers)
+      .validate(statusCode: 200..<300)
+      .responseJSON { response in
+        if let user = Mapper<User>().map(JSONObject: response.result.value) {
+          let response = DataResponse(request: response.request, response: response.response, data: response.data, result: Result.success(user))
+          completion(response)
+        }
+    }
+  }
+
+  func bookmarkPost(
+    headers: [String: String],
+    post: Post,
+    url: String,
+    completion: @escaping (User, DataResponse<User>) -> Void) {
+
+    let body: [String : Any] = ["id": post.id!]
+    Alamofire.request(
+      Constants.BASE_URL + "post/" + url,
+      method: .post,
+      parameters: body,
+      encoding: JSONEncoding.default,
+      headers: headers)
+      .validate(statusCode: 200..<300)
+      .responseJSON { response in
+        if let user = Mapper<User>().map(JSONObject: response.result.value) {
+          let response = DataResponse(request: response.request, response: response.response, data: response.data, result: Result.success(user))
+          completion(user, response)
         }
     }
   }

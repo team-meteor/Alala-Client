@@ -19,27 +19,13 @@ import AVFoundation
 class PersonalViewController: UIViewController {
 
   // MARK: - UI Objects
-  fileprivate var posts: [Post] = []
+  fileprivate var collection: PostCollection = PostCollection()
   fileprivate var nextPage: String?
   fileprivate var isLoading: Bool = false
-
+  let userdataManager = UserDataManager.shared
   fileprivate var profileUser: User?
 
   fileprivate let refreshControl = UIRefreshControl()
-
-  let discoverPeopleButton = UIBarButtonItem(
-    image: UIImage(named: "add_user")?.resizeImage(scaledTolength: 25),
-    style: .plain,
-    target: self,
-    action: #selector(PersonalViewController.discoverPeopleButtonTap)
-  )
-
-  let archiveButton = UIBarButtonItem(
-    image: UIImage(named: "personal")?.resizeImage(scaledTolength: 25),
-    style: .plain,
-    target: nil,
-    action: nil
-  )
 
   let scrollView = UIScrollView().then {
     $0.showsHorizontalScrollIndicator = false
@@ -76,7 +62,7 @@ class PersonalViewController: UIViewController {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
 
     if profileUser == nil {
-      profileUser = AuthService.instance.currentUser
+      profileUser = userdataManager.currentUser
 
       self.tabBarItem.image = UIImage(named: "personal")?.resizeImage(scaledTolength: 25)
       self.tabBarItem.selectedImage = UIImage(named: "personal-selected")?.resizeImage(scaledTolength: 25)
@@ -88,7 +74,10 @@ class PersonalViewController: UIViewController {
                                                               target: self,
                                                               action: #selector(discoverPeopleButtonTap))
 
-      self.navigationItem.rightBarButtonItem = archiveButton
+      self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "archive")?.resizeImage(scaledTolength: 25),
+                                                              style: .plain,
+                                                              target: self,
+                                                              action: #selector(archiveButtonTap))
     } else {
 
     }
@@ -191,7 +180,7 @@ class PersonalViewController: UIViewController {
 
   func setupPostList() {
     if postViewController == nil {
-      postViewController = PostViewController(posts)
+      postViewController = PostViewController(collection.getPosts())
       postListCollectionView = postViewController.collectionView
       self.addChildViewController(postViewController)
       contentsView.addSubview(postViewController.view)
@@ -213,38 +202,25 @@ class PersonalViewController: UIViewController {
   fileprivate func fetchFeedMine(paging: Paging) {
     guard !self.isLoading else { return }
     self.isLoading = true
-    FeedService.feedMine(paging: paging) { [weak self] response in
-      guard let `self` = self else { return }
-      //self.refreshControl.endRefreshing()
-      self.isLoading = false
 
-      switch response.result {
-      case .success(let feed):
-        let newPosts = feed.posts ?? []
-        switch paging {
-        case .refresh:
-          self.posts = newPosts
-        case .next:
-          self.posts.append(contentsOf: newPosts)
-        }
-        self.nextPage = feed.nextPage
-        print("fetchFeed : ", self.posts)
-        DispatchQueue.main.async {
-          self.personalInfoView.postsCount = self.posts.count
-          if self.posts.count == 0 {
-            self.setupNoContents()
+    collection.loadMineFromCloud { [weak self] isSuccess in
+      guard let strongSelf = self else { return }
+      guard isSuccess == true else { return }
+      DispatchQueue.main.async {
+        strongSelf.personalInfoView.postsCount = strongSelf.collection.count()
+        if strongSelf.collection.count() == 0 {
+          strongSelf.setupNoContents()
+        } else {
+          if strongSelf.personalInfoView.isGridMode {
+            strongSelf.setupPostGrid()
+            strongSelf.postGridCollectionView.reloadData()
           } else {
-            if self.personalInfoView.isGridMode {
-              self.setupPostGrid()
-              self.postGridCollectionView.reloadData()
-            } else {
-              self.setupPostList()
-              self.postViewController.updateNewPost(self.posts)
-            }
+            strongSelf.setupPostList()
+            strongSelf.postViewController.updateNewPost(strongSelf.collection.getPosts())
           }
         }
-      case .failure(let error):
-        print(error)
+        strongSelf.refreshControl.endRefreshing()
+        strongSelf.isLoading = false
       }
     }
   }
@@ -253,8 +229,8 @@ class PersonalViewController: UIViewController {
     super.viewWillAppear(animated)
     self.navigationController?.isNavigationBarHidden = false
 
-    if(profileUser?.id == AuthService.instance.currentUser?.id) {
-      profileUser = AuthService.instance.currentUser
+    if(profileUser?.id == userdataManager.currentUser?.id) {
+      profileUser = userdataManager.currentUser
       self.fetchFeedMine(paging: .refresh)
     } else {
       // todo : 해당 유저의 id로 서버에 user정보를 새로 요청해야 함
@@ -276,7 +252,7 @@ class PersonalViewController: UIViewController {
 
   func postDidCreate(_ notification: Notification) {
     guard let post = notification.userInfo?["post"] as? Post else { return }
-    self.posts.insert(post, at: 0)
+    self.collection.insertPost(post)
 
     if noContentsGuideView.superview != nil {
       noContentsGuideView.removeFromSuperview()
@@ -304,8 +280,13 @@ class PersonalViewController: UIViewController {
   }
 
   func discoverPeopleButtonTap() {
-    let sampleVC = DiscoverPeopleViewController()
-    self.navigationController?.pushViewController(sampleVC, animated: true)
+    let discoverVC = DiscoverPeopleViewController()
+    self.navigationController?.pushViewController(discoverVC, animated: true)
+  }
+
+  func archiveButtonTap() {
+    let archiveVC = ArchiveViewController()
+    self.navigationController?.pushViewController(archiveVC, animated: true)
   }
 }
 
@@ -339,7 +320,7 @@ extension PersonalViewController: PersonalInfoViewDelegate {
   }
 
   func gridPostMenuButtonTap(sender: UIButton) {
-    if self.posts.count <= 0 {
+    if collection.count() <= 0 {
       return
     }
     self.setupPostGrid()
@@ -347,11 +328,11 @@ extension PersonalViewController: PersonalInfoViewDelegate {
   }
 
   func listPostMenuButtonTap(sender: UIButton) {
-    if self.posts.count <= 0 {
+    if collection.count() <= 0 {
       return
     }
     self.setupPostList()
-    self.postViewController.updateNewPost(self.posts)
+    self.postViewController.updateNewPost(collection.getPosts())
   }
 
   func photosForYouMenuButtonTap(sender: UIButton) {
@@ -394,12 +375,12 @@ extension PersonalViewController: UICollectionViewDataSource {
     let size = CGSize(width: scrollView.frame.size.width, height: scrollView.bounds.size.height)
     scrollView.contentSize = size
 
-    return posts.count
+    return collection.count()
   }
 
   public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell: PostGridCell = collectionView.dequeueReusableCell(withReuseIdentifier: PostGridCell.cellReuseIdentifier, for: indexPath) as! PostGridCell
-    let post = posts[indexPath.row] as Post
+    let post = collection[indexPath.row] as Post
 
     guard post.multipartIds.count > 0 else { return cell }
 
@@ -429,13 +410,13 @@ extension PersonalViewController: UICollectionViewDataSource {
 
 extension PersonalViewController: UICollectionViewDelegate {
   public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    let postArray = [self.posts[indexPath.row]]
+    let postArray = [collection[indexPath.row]]
     let postVC = PostViewController(postArray)
     self.navigationController?.pushViewController(postVC, animated: true)
   }
 
   public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-    if indexPath.row == posts.count - 1 {
+    if indexPath.row == collection.count() - 1 {
       if self.nextPage != nil {
         self.fetchFeedMine(paging: .next(String(describing: self.nextPage)))
       }

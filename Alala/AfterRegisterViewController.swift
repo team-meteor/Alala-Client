@@ -10,6 +10,7 @@ import UIKit
 
 class AfterRegisterViewController: UIViewController {
   let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: nil)
+  let userDataManager = UserDataManager.shared
 
   let profilePhoto = CircleImageView().then {
     $0.layer.borderWidth = 1
@@ -68,15 +69,19 @@ class AfterRegisterViewController: UIViewController {
     var imageArray = [UIImage]()
     imageArray.append(profileImage)
     doneButton.isEnabled = false
-    MultipartService.uploadMultipart(multiPartDataArray: imageArray, progressCompletion: nil) { (multipartIds) in
-      AuthService.instance.updateProfile(profileName: username, profileImageId: multipartIds[0], completion: { (success) in
+    self.view.endEditing(true)
+    SwiftSpinner.show("in progress...")
+    MultipartNetworkManager.uploadMultipart(multiPartDataArray: imageArray, progressCompletion: nil) { (multipartIds) in
+      self.userDataManager.updateProfileWithCloud(profileName: username, imageID: multipartIds[0], userInfo: nil, completion: { (success) in
         if success {
-          AuthService.instance.me(completion: { (user) in
-            if user != nil {
-              DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .presentMainTabBar, object: nil)
+          SwiftSpinner.hide({
+            self.userDataManager.getMeWithCloud(completion: { (user) in
+              if user != nil {
+                DispatchQueue.main.async {
+                  NotificationCenter.default.post(name: .presentMainTabBar, object: nil)
+                }
               }
-            }
+            })
           })
         } else {
           print("failed update profile")
@@ -86,9 +91,9 @@ class AfterRegisterViewController: UIViewController {
   }
 
   func usernameFieldDidChange(_ textField: UITextField) {
-    let username = textField.text!
-    AuthService.instance.checkUsernameUnique(username: username) { (isUnique) in
-      if isUnique && !username.isEmpty {
+    let profilename = textField.text!
+    userDataManager.checkProfileNameUniqueWithCloud(profilename: profilename) { (isUnique) in
+      if isUnique && !profilename.isEmpty {
         print("unique")
         self.doneButton.isEnabled = true
       } else {

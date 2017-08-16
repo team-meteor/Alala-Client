@@ -10,28 +10,30 @@ import UIKit
 import Alamofire
 import ObjectMapper
 
-struct PostService {
-  static let instance = PostService()
-  static private var token: String {
+class PostNetworkManager: PostNetworkService {
+  private var headers: [String: String] {
     get {
-      if let token = AuthService.instance.authToken {
-        return token
-      } else {
-        return ""
-      }
+      let userDataManager = UserDataManager.shared
+      return userDataManager.headers
     }
   }
-  static private var headers = [
-    "Authorization": "Bearer " + token,
-    "Content-Type": "application/json; charset=utf-8"
-  ]
 
-  static func postWithMultipart(idArr: [String], message: String?, progress: Progress?, completion: @escaping (DataResponse<Post>) -> Void) {
+  public func postWithMultipart(
+    multipartIDArray: [String],
+    message: String?,
+    progress: Progress?,
+    completion: @escaping (DataResponse<Post>) -> Void) {
+
     let body: [String : Any] = [
       "content": message as Any,
-      "multiparts": idArr
+      "multiparts": multipartIDArray
     ]
-    Alamofire.request(Constants.BASE_URL + "post/add", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
+    Alamofire.request(
+      Constants.BASE_URL + "post/add",
+      method: .post,
+      parameters: body,
+      encoding: JSONEncoding.default,
+      headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { (response) in
         if let post = Mapper<Post>().map(JSONObject: response.result.value) {
@@ -41,7 +43,10 @@ struct PostService {
     }
   }
 
-  static func like(post: Post, completion: @escaping (DataResponse<Post>) -> Void) {
+  public func like(
+    post: Post,
+    completion: @escaping (DataResponse<Post>) -> Void) {
+
     let body: [String : Any] = ["id": post.id!]
     var url = ""
     if post.isLiked {
@@ -49,7 +54,12 @@ struct PostService {
     } else {
       url = "unlike"
     }
-    Alamofire.request(Constants.BASE_URL + "post/" + url, method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
+    Alamofire.request(
+      Constants.BASE_URL + "post/" + url,
+      method: .post,
+      parameters: body,
+      encoding: JSONEncoding.default,
+      headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { response in
         if let post = Mapper<Post>().map(JSONObject: response.result.value) {
@@ -59,9 +69,19 @@ struct PostService {
     }
   }
 
-  static func createComment(post: Post, content: String, completion: @escaping (DataResponse<Comment>) -> Void) {
-    let body: [String : Any] = ["id": post.id!, "content": content]
-    Alamofire.request(Constants.BASE_URL + "post/comment/add/", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
+  public func createComment(
+    post: Post,
+    content: String,
+    completion: @escaping (DataResponse<Comment>) -> Void) {
+
+    guard let id = post.id else { return }
+    let body: [String : Any] = ["id": id, "content": content]
+    Alamofire.request(
+      Constants.BASE_URL + "post/comment/add/",
+      method: .post,
+      parameters: body,
+      encoding: JSONEncoding.default,
+      headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { response in
         if let comment = Mapper<Comment>().map(JSONObject: response.result.value) {

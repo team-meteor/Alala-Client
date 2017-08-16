@@ -7,11 +7,12 @@
 //
 
 import UIKit
+import ActiveLabel
 
 class CommentCell: UICollectionViewCell {
   var comments = [Comment]()
   var labelContainer = [CommentLabel]()
-
+  weak var delegate: ActiveLabelDelegate?
   override func prepareForReuse() {
     super.prepareForReuse()
     comments = [Comment]()
@@ -32,12 +33,14 @@ class CommentCell: UICollectionViewCell {
 //        self.contentView.addSubview(label)
 //      }
 //    }
-    let label: CommentLabel = {
-      let comment = self.comments[0]
+    let label: CommentLabel = { [weak self] in
+      guard let strongSelf = self else { return CommentLabel() }
+      let comment = strongSelf.comments[0]
       let view = CommentLabel()
       view.attributedText = NSMutableAttributedString(
         string: comment.createdBy!.profileName! + " " + comment.content
       )
+      view.delegate = strongSelf.delegate
       return view
     }()
     labelContainer.append(label)

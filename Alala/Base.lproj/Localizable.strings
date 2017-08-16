@@ -4,31 +4,53 @@
 
   Copyright © 2017 team-meteor. All rights reserved.
 */
+
+/***********************************************************
+ * General
+ ***********************************************************/
 "cancel" = "Cancel";
 "done" = "Done";
 
+/***********************************************************
+ * Feed
+ ***********************************************************/
+"welcome_title" = "Alala에 오신 것을 환영합니다";
+"welcome_desc" = "다른 사람을 팔로우하면 여기에서 상대방의 사진과 동영상을 볼 수 있습니다.";
+"welcome_button" = "팔로우할 사람 찾기";
+
+/***********************************************************
+ * Personal Profile (프로필 화면 관련)
+ ***********************************************************/
 "posts" = "posts";
 "following" = "following";
 "followers" = "followers";
-
-"button_follow" = "Follow";
-"button_following" = "Following";
-"button_hide" = "Hide";
-
-"Archive" = "Archive";
-"DiscoverPeople" = "DiscoverPeople";
-"private_information" = "PRIVATE INFORMATION";
-"friends_from_facebook" = "Facebook Friends";
-"invite" = "invite";
-"id" = "id";
 
 "share_photos_and_videos" = "Share Photos and Videos";
 "share_photos_and_videos_guide" = "When you share photos and videos, they'll appear on your profile.";
 "share_photos_and_videos_button" = "Share your first photo or video";
 
+/* 사람 찾아보기 */
+"discover_people" = "DiscoverPeople";
+"discover_people_all_suggesions" = "ALL SUGGESTIONS";
+"actionsheet_unfollow_check" ="%@님의 팔로우를 취소하시겠어요?";
+"actionsheet_unfollow" = "Unfollow";
+
+/* 게시물 보관 */
+"archive" = "Archive";
+"archive_no_post" = "보관된 게시물 없음";
+"archive_no_post_guide" = "보관한 게시물은 여기에 표시되며 회원님만 볼 수 있습니다.\n...버튼을 누르거나 프로필 게시물을 길게 눌러 게시물을 보관하세요.";
+
+/* 팔로우/팔로잉 리스트 */
+"button_follow" = "Follow";
+"button_following" = "Following";
+"button_hide" = "Hide";
+"friends_from_facebook" = "Facebook Friends";
+
+/* 내가 나온 사진 */
 "photos_for_you" = "Photos for you";
 "photos_for_you_guide" = "When people tag you in photos, they'll appear here.";
 
+/* 미디어 콘텐츠 저장 */
 "saved" = "Saved";
 "saved_guide" = "Save photos and videos that you want to see again. No one is notified, and only you can see what you've saved.";
 "saved_collection" = "Save Collections";
@@ -36,6 +58,7 @@
 "all" = "All";
 "collection" = "Collection";
 
+/* 프로필 수정 */
 "edit_profile" = "Edit Profile";
 "change_profile_photo" = "Change Profile Photo";
 "name" = "name";
@@ -48,7 +71,11 @@
 "gender_none" = "Not Specified";
 "gender_male" = "Male";
 "gender_female" = "Female";
+"private_information" = "PRIVATE INFORMATION";
 
+/***********************************************************
+ * Activity (내 소식, 내가 팔로우하는 사람 소식)
+ ***********************************************************/
 "activity_from_follow_menu" = "Following";
 "activity_you_menu" = "You";
 "activity_from_follow_title" = "Activity From People You Follow";
@@ -56,5 +83,3 @@
 "activity_from_follow_button" = "Find People to Follow";
 "activity_you_title" = "Activity On Your Posts";
 "activity_you_guide" = "When someone likes or comments on one of your posts, you'll see it here.";
-
-"discover_all_suggesions" = "ALL SUGGESTIONS";

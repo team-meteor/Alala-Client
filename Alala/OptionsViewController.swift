@@ -16,6 +16,7 @@ import UIKit
 class OptionsViewController: UIViewController {
 
   let contentTableView = UITableView()
+  let userDataManager = UserDataManager.shared
 
   var allOptionItemArray: [[String:[OptionItem]]] = []
 
@@ -79,7 +80,7 @@ class OptionsViewController: UIViewController {
   }
 
   func logoutButtonTap() {
-    AuthService.instance.logout { (success) in
+    userDataManager.logoutWithCloud { (success) in
       if success {
         NotificationCenter.default.post(name: .presentLogin, object: nil, userInfo: nil)
       } else {

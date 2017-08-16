@@ -9,7 +9,7 @@
 import UIKit
 
 class DiscoverPeopleViewController: UIViewController {
-
+  let userDataManager = UserDataManager.shared
   var contentTableView = UITableView()
   var allUsers = [User]()
 
@@ -17,12 +17,12 @@ class DiscoverPeopleViewController: UIViewController {
     super.viewDidLoad()
     self.navigationItem.titleView = UILabel().then {
       $0.font = UIFont(name: "HelveticaNeue", size: 20)
-      $0.text = LS("DiscoverPeople")
+      $0.text = LS("discover_people")
       $0.sizeToFit()
     }
-    AuthService.instance.me { _ in}
-    UserService.instance.getAllRegisterdUsers { users in
-      self.allUsers = (users?.filter({$0?.email != AuthService.instance.currentUser?.email}))! as! [User]
+    userDataManager.getMeWithCloud { _ in}
+    userDataManager.getAllUsersWithCloud { users in
+      self.allUsers = (users.filter({$0.email != self.userDataManager.currentUser?.email}))
       self.contentTableView.reloadData()
     }
     setupUI()
@@ -60,11 +60,9 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
 
     cell.userInfo = self.allUsers[indexPath.item]
 
-    if let followingUsers = AuthService.instance.currentUser?.following {
-      if followingUsers.contains(where: { $0.email == cell.userInfo.email }) {
-        cell.isFollowingUser = true
-        return cell
-      }
+    if userDataManager.isFollowing(with: cell.userInfo.id) {
+      cell.isFollowingUser = true
+      return cell
     }
     cell.isFollowingUser = false
     return cell
@@ -75,7 +73,7 @@ extension DiscoverPeopleViewController: UITableViewDataSource {
     view.bottomBorderLine.isHidden = false
 
     let label = UILabel()
-    label.text = LS("discover_all_suggesions")
+    label.text = LS("discover_people_all_suggesions")
     view.addSubview(label)
     label.font = UIFont.boldSystemFont(ofSize: 12)
     label.textColor = UIColor.lightGray
@@ -114,23 +112,43 @@ extension DiscoverPeopleViewController: UITableViewDelegate {
 
 extension DiscoverPeopleViewController: PeoplesTableViewCellDelegate {
   func followButtonDidTap(_ userInfo: User, _ sender: UIButton) {
-    UserService.instance.followUser(id: userInfo.id) { bool in
-      if bool {
-        if let cell = sender.superview as? PeoplesTableViewCell {
-          cell.isFollowingUser = true
-        }
-      }
-    }
+    requestChangeFollowStatus(userInfo, sender)
   }
 
   func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
-    UserService.instance.unfollowUser(id: userInfo.id) { bool in
-      if bool {
-        if let cell = sender.superview as? PeoplesTableViewCell {
-          cell.isFollowingUser = false
-        }
-      }
+
+    let alertController = UIAlertController(title: "\n\n\n\n", message: "", preferredStyle: .actionSheet)
+    let contentView = UIView(frame: CGRect(x: 8.0, y: 8.0, width: alertController.view.bounds.size.width - 8.0 * 4.5, height: 120.0))
+    alertController.view.addSubview(contentView)
+
+    let photoImageView = CircleImageView()
+    let guideLabel = UILabel().then {
+      $0.textAlignment = .center
     }
+    contentView.addSubview(photoImageView)
+    contentView.addSubview(guideLabel)
+    photoImageView.snp.makeConstraints { (make) in
+      make.centerX.equalTo(contentView)
+      make.top.equalTo(10)
+      make.width.height.equalTo(50)
+    }
+    guideLabel.snp.makeConstraints { (make) in
+      make.left.right.bottom.equalTo(contentView)
+      make.top.equalTo(photoImageView.snp.bottom)
+    }
+
+    photoImageView.setImage(with: userInfo.profilePhotoId, placeholder: UIImage(named: "default_user"), size: .medium)
+    guideLabel.text = String(format: LS("actionsheet_unfollow_check"), userInfo.profileName!)
+
+    let cancelAction = UIAlertAction(title: LS("cancel"), style: .cancel)
+    alertController.addAction(cancelAction)
+
+    let unfollowAction = UIAlertAction(title: LS("actionsheet_unfollow"), style: .destructive) { _ in
+      self.requestChangeFollowStatus(userInfo, sender)
+    }
+    alertController.addAction(unfollowAction)
+
+    self.present(alertController, animated: true, completion: nil)
   }
 
   func hideButtonDidTap(_ userInfo: User, _ sender: UIButton) {
@@ -139,6 +157,19 @@ extension DiscoverPeopleViewController: PeoplesTableViewCellDelegate {
       let newUsers = self.allUsers.filter({$0.email != self.allUsers[(indexPath?.row)!].email})
       self.allUsers = newUsers
       contentTableView.reloadData()
+    }
+  }
+
+  func requestChangeFollowStatus(_ userInfo: User, _ sender: UIButton) {
+    userDataManager.followWithCloud(id: userInfo.id) { response in
+      switch response.result {
+      case .success:
+        if let cell = sender.superview as? PeoplesTableViewCell {
+          cell.isFollowingUser = !cell.isFollowingUser
+        }
+      case .failure:
+        print("failure")
+      }
     }
   }
 }

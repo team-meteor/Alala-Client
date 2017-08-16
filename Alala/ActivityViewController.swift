@@ -54,9 +54,19 @@ class ActivityViewController: UIScrollTapMenuViewController {
       make.center.equalTo(self.secondTabView)
     }
   }
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    self.navigationController?.isNavigationBarHidden = true
+  }
+
+  override func viewWillDisappear(_ animated: Bool) {
+    self.navigationController?.isNavigationBarHidden = false
+    super.viewWillDisappear(animated)
+  }
 
   func moveToFindPeopleToFollow() {
-    // todo
+    let discoverPeopleVC = DiscoverPeopleViewController()
+    self.navigationController?.pushViewController(discoverPeopleVC, animated: true)
   }
 
   func moveToCreateFirstPost() {

@@ -9,14 +9,14 @@
 import ObjectMapper
 
 class Feed: NSObject, Mappable {
-  var posts: [Post]?
-  var nextPage: String?
+  internal var _posts: [Post]?
+  internal var _nextPage: String?
 
   required init?(map: Map) {
   }
 
   func mapping(map: Map) {
-    self.posts <- map["docs"]
-    self.nextPage <- map["nextPage"]
+    self._posts <- map["docs"]
+    self._nextPage <- map["nextPage"]
   }
 }

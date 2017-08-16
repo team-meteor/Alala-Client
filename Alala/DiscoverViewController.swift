@@ -14,9 +14,14 @@ class DiscoverViewController: UIViewController {
     $0.isScrollEnabled = true
     $0.register(SearchTableViewCell.self, forCellReuseIdentifier: SearchTableViewCell.cellReuseIdentifier)
   }
+//  fileprivate let customScopeBar = UISegmentedControl(items: ["인기", "사람", "태그", "장소"]).then {
+//    $0.selectedSegmentIndex = 0
+//    $0.tintColor = .blue
+//  }
 
   fileprivate let searchController = UISearchController(searchResultsController: nil)
   fileprivate let searchPersonVC = SearchPersonViewController()
+  fileprivate let userDataManager = UserDataManager.shared
   fileprivate var allUsers = [User]()
   fileprivate var filteredUsers = [User]()
 
@@ -35,10 +40,9 @@ class DiscoverViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    AuthService.instance.me { _ in}
-    UserService.instance.getAllRegisterdUsers { users in
-      self.allUsers = (users?.filter({$0?.email != AuthService.instance.currentUser?.email}))! as! [User]
-
+    userDataManager.getMeWithCloud { _ in}
+    userDataManager.getAllUsersWithCloud { users in
+      self.allUsers = (users.filter({$0.email != self.userDataManager.currentUser?.email}))
       self.tableView.reloadData()
     }
 
@@ -63,12 +67,24 @@ class DiscoverViewController: UIViewController {
 
     searchController.searchBar.scopeButtonTitles = ["인기", "사람", "태그", "장소"]
     searchController.searchBar.delegate = self
+
     tableView.dataSource = self
     tableView.delegate = self
 
+    //customScopeBarUI()
     displayContentController(content: searchPersonVC)
     customizingSearchBar()
   }
+
+//  func customScopeBarUI() {
+//    self.customScopeBar.snp.makeConstraints { make in
+//      make.top.equalTo(self.searchController.searchBar.snp.bottom)
+//      make.left.right.equalTo(self.view)
+//      make.height.equalTo(60)
+//    }
+//
+//    self.view.addSubview(customScopeBar)
+//  }
 
   func displayContentController(content: UIViewController) {
 

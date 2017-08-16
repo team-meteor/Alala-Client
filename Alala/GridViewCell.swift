@@ -34,29 +34,30 @@ class GridViewCell: UITableViewCell {
     fatalError("init(coder:) has not been implemented")
   }
 
-  func configure(image: UIImage, title: String, count: String) {
+  func configure(image: UIImage, title: String, count: Int) {
     self.photoView.image = image
     self.titleLabel.text = title
-    self.countLabel.text = count
+    self.countLabel.text = String(count)
   }
 
   override func layoutSubviews() {
     super.layoutSubviews()
 
     self.photoView.snp.makeConstraints { make in
-      make.left.top.bottom.equalTo(self.contentView)
-      make.width.equalTo(self.contentView.snp.height)
+      make.left.top.equalTo(self.contentView).offset(5)
+      make.bottom.equalTo(self.contentView).offset(-5)
       make.height.equalTo(self.photoView.snp.width)
     }
+
     self.titleLabel.snp.makeConstraints { make in
       make.top.right.equalTo(self.contentView)
-      make.left.equalTo(self.photoView.snp.right)
+      make.left.equalTo(self.photoView.snp.right).offset(10)
       make.bottom.equalTo(self.countLabel.snp.top)
       make.height.equalTo(50)
     }
 
     self.countLabel.snp.makeConstraints { make in
-      make.left.equalTo(self.photoView.snp.right)
+      make.left.equalTo(self.photoView.snp.right).offset(10)
       make.bottom.right.equalTo(self.contentView)
     }
   }

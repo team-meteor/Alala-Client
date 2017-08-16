@@ -8,8 +8,10 @@
 
 import UIKit
 import SnapKit
+import ActiveLabel
 
 class CommentViewController: UIViewController {
+  let userDataManager = UserDataManager.shared
   let post: Post!
   var commentInputViewBottomConstraint: Constraint?
   var tableViewBottomConstraint: Constraint?
@@ -69,7 +71,6 @@ class CommentViewController: UIViewController {
   init(post: Post) {
     self.post = post
     super.init(nibName: nil, bundle: nil)
-
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -155,7 +156,7 @@ class CommentViewController: UIViewController {
   func postButtonDidTap() {
     self.postButton.isEnabled = false
     postButton.setTitleColor(UIColor(red:0.71, green:0.86, blue:0.99, alpha:1.00), for: .normal)
-    PostService.createComment(post: self.post, content: self.textInputView.text) { (response) in
+    PostDataManager.createCommentWithCloud(post: self.post, content: self.textInputView.text) { (response) in
       switch response.result {
       case .success(let resultComment):
         self.post.comments?.append(resultComment)
@@ -196,6 +197,7 @@ class CommentViewController: UIViewController {
 extension CommentViewController: UITableViewDataSource {
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = self.tableView.dequeueReusableCell(withIdentifier: "commentCell", for: indexPath) as! CommentTableCell
+    cell.delegate = self
     cell.configure(comment: self.post.comments![indexPath.row])
     return cell
   }
@@ -227,6 +229,30 @@ extension CommentViewController: UITextViewDelegate {
       self.placeholderLabel.isHidden = false
       postButton.isEnabled = false
       postButton.setTitleColor(UIColor(red:0.71, green:0.86, blue:0.99, alpha:1.00), for: .normal)
+    }
+  }
+}
+
+extension CommentViewController: ActiveLabelDelegate {
+  func didSelect(_ text: String, type: ActiveType) {
+    switch type {
+    case .mention:
+      pushToPersonalViewController(userID: text)
+    case .hashtag:
+      print(text)
+    case .url:
+      print(text)
+    case .custom(pattern: "^([\\w]+)"):
+      pushToPersonalViewController(userID: text)
+    default: break
+    }
+  }
+  func pushToPersonalViewController(userID: String) {
+    userDataManager.getUserWithCloud(id: userID) { response in
+      if case .success(let user) = response.result {
+        let personalVC = PersonalViewController(user: user)
+        self.navigationController?.pushViewController(personalVC, animated: true)
+      }
     }
   }
 }

@@ -11,16 +11,19 @@ import UIKit
 protocol InteractiveButtonGroupCellDelegate: class {
   func commentButtondidTap(_ post: Post)
   func likeButtonDidTap(_ post: Post)
+  func saveButtonDidTap(_ post: Post)
 }
 
 extension InteractiveButtonGroupCellDelegate {
   func commentButtondidTap(_ post: Post) {}
   func likeButtonDidTap(_ post: Post) {}
+  func saveButtonDidTap(_ post: Post) {}
 }
 
 class ButtonGroupCell: UICollectionViewCell {
   weak var delegate: InteractiveButtonGroupCellDelegate?
   var post: Post!
+  let userDataManager = UserDataManager.shared
   let likeButton: UIButton = {
     let button = UIButton()
     let unlikeImage = UIImage(named: "heart")?.resizeImage(scaledToFit: 30)
@@ -43,8 +46,10 @@ class ButtonGroupCell: UICollectionViewCell {
   }()
   let saveButton: UIButton = {
     let button = UIButton()
-    let image = UIImage(named: "save")?.resizeImage(scaledToFit: 25)
-    button.setImage(image, for: .normal)
+    let unsavedImage = UIImage(named: "save")?.resizeImage(scaledToFit: 25)
+    let savedImage = UIImage(named: "saved")?.resizeImage(scaledToFit: 25)
+    button.setBackgroundImage(unsavedImage, for: .normal)
+    button.setBackgroundImage(savedImage, for: .selected)
     return button
   }()
   override init(frame: CGRect) {
@@ -55,6 +60,7 @@ class ButtonGroupCell: UICollectionViewCell {
     contentView.addSubview(saveButton)
     self.likeButton.addTarget(self, action: #selector(likeButtonDidTap), for: .touchUpInside)
     self.commentButton.addTarget(self, action: #selector(commentButtonDidTap), for: .touchUpInside)
+    self.saveButton.addTarget(self, action: #selector(saveButtonDidTap), for: .touchUpInside)
   }
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
@@ -81,6 +87,8 @@ class ButtonGroupCell: UICollectionViewCell {
 
   func configure(post: Post) {
     self.likeButton.isSelected = post.isLiked
+    print(userDataManager.isBookmarked(with: post.id))
+    self.saveButton.isSelected = userDataManager.isBookmarked(with: post.id)
     self.post = post
     self.setNeedsLayout()
   }
@@ -98,5 +106,10 @@ class ButtonGroupCell: UICollectionViewCell {
     }
     self.post.isLiked = !post.isLiked
     self.delegate?.likeButtonDidTap(self.post)
+  }
+
+  func saveButtonDidTap() {
+    self.saveButton.isSelected = !saveButton.isSelected
+    self.delegate?.saveButtonDidTap(self.post)
   }
 }

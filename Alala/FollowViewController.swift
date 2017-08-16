@@ -35,6 +35,7 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
   var searchController: UISearchController!
   var searchBar = UISearchBar()
   var contentTableView = UITableView()
+  let userDataManager = UserDataManager.shared
 
   var users: [User] = []
 
@@ -66,7 +67,7 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
     }
 
     //--- TEST CODE
-    //users = [AuthService.instance.currentUser!]
+    //users = [AuthNetworkManager.instance.currentUser!]
 
     setupUI()
    //configureSearchController()
@@ -79,7 +80,7 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
       $0.sizeToFit()
     }
 
-    users = (AuthService.instance.currentUser?.followers)!
+    users = (userDataManager.currentUser?.followers)!
   }
 
   func setupUIForFollowingType() {
@@ -88,7 +89,7 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
       $0.text = LS("following")
       $0.sizeToFit()
     }
-    users = (AuthService.instance.currentUser?.following)!
+    users = (userDataManager.currentUser?.following)!
   }
 
   func setupUI() {
@@ -177,12 +178,7 @@ extension FollowViewController: UITableViewDataSource {
       make.rightMargin.equalTo(view)
       make.height.equalTo(18)
     }
-
-    //if section == 0 {
-    //  label.text = LS("invite").uppercased()
-    //} else {
     label.text = LS("following").uppercased()
-    //}
 
     return view
   }
@@ -211,25 +207,15 @@ extension FollowViewController: UITableViewDelegate {
 }
 
 extension FollowViewController: FollowTableViewCellDelegate {
-  func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
-    print("followingButtonDidTap : \(userInfo)")
-    guard let cell = sender.superview as? FollowTableViewCell else {return}
 
-    if cell.isSetFollowButton == true {
-      UserService.instance.followUser(id: userInfo.id) { bool in
-        if bool {
-          cell.isSetFollowButton = false
-        }
-      }
-    } else {
-      // todo : 팔로우 취소할 것인지 물어야 함
-      UserService.instance.unfollowUser(id: userInfo.id) { bool in
-        if bool {
-          cell.isSetFollowButton = true
-        }
+  func followingButtonDidTap(_ userInfo: User, _ sender: UIButton) {
+    guard let cell = sender.superview as? FollowTableViewCell else {return}
+    cell.isSetFollowButton = !cell.isSetFollowButton
+    userDataManager.followWithCloud(id: userInfo.id) { response in
+      if case .failure = response.result {
+        print("following failure")
       }
     }
-
   }
 
   func deleteButtonDidTap(_ userInfo: User, _ sender: UIButton) {
