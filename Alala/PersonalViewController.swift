@@ -203,7 +203,7 @@ class PersonalViewController: UIViewController {
     guard !self.isLoading else { return }
     self.isLoading = true
 
-    collection.loadMineFromCloud { [weak self] isSuccess in
+    collection.loadFromCloudAsUser(userId: (profileUser?.id)!) { [weak self] isSuccess in
       guard let strongSelf = self else { return }
       guard isSuccess == true else { return }
       DispatchQueue.main.async {
@@ -229,14 +229,16 @@ class PersonalViewController: UIViewController {
     super.viewWillAppear(animated)
     self.navigationController?.isNavigationBarHidden = false
 
+    /*
     if(profileUser?.id == userdataManager.currentUser?.id) {
       profileUser = userdataManager.currentUser
-      self.fetchFeedMine(paging: .refresh)
+
     } else {
       // todo : 해당 유저의 id로 서버에 user정보를 새로 요청해야 함
       // todo : 해당 유저의 post를 받아오는 api가 필요함
     }
-
+     */
+    self.fetchFeedMine(paging: .refresh)
     personalInfoView.setupUserInfo(userInfo: profileUser!)
   }
 

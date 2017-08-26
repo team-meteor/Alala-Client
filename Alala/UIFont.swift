@@ -24,7 +24,6 @@ extension UIFont {
   }
 }
 
-
 enum FontSize {
 
   case navigation

@@ -58,7 +58,7 @@ class PostCollection {
   }
 
   public func loadFromCloud(completion: @escaping ((Bool) -> Void)) {
-    _feedNetworkManager.feed(isMine: nil, paging: self._paging) { [weak self] response in
+    _feedNetworkManager.feed(userId: nil, paging: self._paging) { [weak self] response in
       guard let strongSelf = self else { return }
       switch response.result {
       case .success(let feed):
@@ -80,8 +80,31 @@ class PostCollection {
     }
   }
 
-  public func loadMineFromCloud(completion: @escaping ((Bool) -> Void)) {
-    _feedNetworkManager.feed(isMine: true, paging: self._paging) { [weak self] response in
+//  public func loadMineFromCloud(completion: @escaping ((Bool) -> Void)) {
+//    _feedNetworkManager.feed(userId: (UserDataManager.shared.currentUser?.id)!, paging: self._paging) { [weak self] response in
+//      guard let strongSelf = self else { return }
+//      switch response.result {
+//      case .success(let feed):
+//        let newPosts = feed._posts ?? []
+//        switch strongSelf._paging {
+//        case .refresh:
+//          strongSelf._posts = newPosts
+//        case .next:
+//          strongSelf._posts.append(contentsOf: newPosts)
+//        }
+//        if let page = feed._nextPage {
+//          strongSelf._nextPage = page
+//        }
+//        completion(true)
+//      case .failure(let error):
+//        print(error)
+//        completion(false)
+//      }
+//    }
+//  }
+
+  public func loadFromCloudAsUser(userId: String, completion: @escaping ((Bool) -> Void)) {
+    _feedNetworkManager.feed(userId: userId, paging: self._paging) { [weak self] response in
       guard let strongSelf = self else { return }
       switch response.result {
       case .success(let feed):
