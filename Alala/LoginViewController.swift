@@ -42,7 +42,7 @@ class LoginViewController: UIViewController {
   }
   fileprivate let repeatPasswordTextField = UITextField().then {
     $0.borderStyle = .roundedRect
-    $0.placeholder = "repeat Password"
+    $0.placeholder = "repeat Pas3sword"
     $0.isSecureTextEntry = true
     $0.font = UIFont.systemFont(ofSize: 14)
     $0.isHidden = true

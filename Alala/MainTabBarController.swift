@@ -29,7 +29,7 @@ class MainTabBarController: UITabBarController {
     self.delegate = self
     self.viewControllers = [
       UINavigationController(rootViewController: self.feedViewController),
-      self.discoverViewController,
+      UINavigationController(rootViewController: discoverViewController),
       fakeViewController,
       UINavigationController(rootViewController: self.activityViewController),
       UINavigationController(rootViewController: self.personalViewController)
