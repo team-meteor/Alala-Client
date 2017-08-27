@@ -16,20 +16,26 @@ enum Paging {
 
 struct FeedNetworkManager: FeedNetworkService {
   let userDataManager = UserDataManager.shared
-  func feed(isMine: Bool? = nil, paging: Paging, completion: @escaping (DataResponse<Feed>) -> Void) {
+  func feed(userId: String? = nil, paging: Paging, completion: @escaping (DataResponse<Feed>) -> Void) {
     guard let token = userDataManager.authToken else { return }
     let headers = ["Authorization": "Bearer " + token]
-    let body: [String: Any]
-    var url = "post/feed"
-    if let isMine = isMine, isMine == true {
-      url = "post/mine"
-    }
+    var body: [String: Any]
+    var url = ""
+
     switch paging {
     case .refresh:
       body = ["page": "1"]
     case .next(let nextpage):
       body = ["page": nextpage]
     }
+
+    if userId != nil {
+      url = "post/user"
+      body.updateValue(userId!, forKey: "id")
+    } else {
+      url = "post/feed"
+    }
+
     Alamofire.request(Constants.BASE_URL + url, method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
       .validate(statusCode: 200..<300)
       .responseJSON { (response) in

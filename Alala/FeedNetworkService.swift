@@ -11,7 +11,7 @@ import Alamofire
 
 protocol FeedNetworkService {
   func feed(
-    isMine: Bool?,
+    userId: String?,
     paging: Paging,
     completion: @escaping (DataResponse<Feed>) -> Void)
 }
