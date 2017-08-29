@@ -39,7 +39,7 @@ class SavedViewController: UIScrollTapMenuViewController {
   override func viewDidLoad() {
     self.edgesForExtendedLayout = []
     self.navigationItem.titleView = UILabel().then {
-      $0.font = UIFont(name: "HelveticaNeue", size: 20)
+      $0.font = UIFont(.navigation)
       $0.text = LS("saved")
       $0.sizeToFit()
     }

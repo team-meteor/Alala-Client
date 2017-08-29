@@ -33,7 +33,7 @@ class NoPostFeedView: UIScrollView {
   }
 
   let welcomeTitle = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 14)
+    $0.font = UIFont(.small)
     $0.text = LS("welcome_title")
     $0.textAlignment = .center
     $0.textColor = UIColor.darkGray
@@ -41,7 +41,7 @@ class NoPostFeedView: UIScrollView {
   }
 
   let welcomeDesc = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 12)
+    $0.font = UIFont(.tiny)
     $0.text = LS("welcome_desc")
     $0.textAlignment = .center
     $0.textColor = UIColor.lightGray

@@ -46,20 +46,20 @@ class PersonalInfoView: UIView {
 
   var profileNameHeightConstraint: Constraint?
   let profileNameLabel = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 16)
+    $0.font = UIFont(.medium)
     $0.sizeToFit()
   }
 
   var bioHeightConstraint: Constraint?
   let bioLabel = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 16)
+    $0.font = UIFont(.medium)
     $0.numberOfLines = 0
     $0.sizeToFit()
   }
 
   var websiteHeightConstraint: Constraint?
   let websiteLabel = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 16)
+    $0.font = UIFont(.medium)
     $0.sizeToFit()
   }
 
@@ -95,7 +95,7 @@ class PersonalInfoView: UIView {
   }
 
   fileprivate let postsTextLabel = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 12)
+    $0.font = UIFont(.tiny)
     $0.text = LS("posts")
     $0.textAlignment = .center
     $0.sizeToFit()
@@ -113,7 +113,7 @@ class PersonalInfoView: UIView {
   }
 
   fileprivate let followersTextLabel = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 12)
+    $0.font = UIFont(.tiny)
     $0.text = LS("followers")
     $0.textAlignment = .center
     $0.sizeToFit()
@@ -131,7 +131,7 @@ class PersonalInfoView: UIView {
   }
 
   fileprivate let followingTextLabel = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 12)
+    $0.font = UIFont(.tiny)
     $0.text = LS("following")
     $0.textAlignment = .center
     $0.sizeToFit()

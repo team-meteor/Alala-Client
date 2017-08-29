@@ -22,7 +22,7 @@ class PhotosForYouViewController: UIViewController {
     self.view.backgroundColor = UIColor.white
 
     self.navigationItem.titleView = UILabel().then {
-      $0.font = UIFont(name: "HelveticaNeue", size: 20)
+      $0.font = UIFont(.navigation)
       $0.text = LS("photos_for_you")
       $0.sizeToFit()
     }
