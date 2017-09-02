@@ -26,7 +26,7 @@ class NoContentsView: UIView {
   }
 
   let guideTitleLabel = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 30)
+    $0.font = UIFont(.large)
     $0.text = LS("share_photos_and_videos")
     $0.textAlignment = .center
     $0.numberOfLines = 0
@@ -34,7 +34,7 @@ class NoContentsView: UIView {
   }
 
   let guideDescLabel = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 14)
+    $0.font = UIFont(.small)
     $0.text = LS("share_photos_and_videos_guide")
     $0.textAlignment = .center
     $0.numberOfLines = 0
@@ -45,7 +45,7 @@ class NoContentsView: UIView {
     $0.setTitle(LS("share_photos_and_videos_button"), for: .normal)
     $0.addTarget(self, action: #selector(addContentButtonTap(sender:)), for: .touchUpInside)
     $0.setTitleColor(UIColor.blue, for: .normal)
-    $0.titleLabel?.font = UIFont(name: "HelveticaNeue", size: 14)
+    $0.titleLabel?.font = UIFont(.small)
   }
 
   // MARK: - Initialize

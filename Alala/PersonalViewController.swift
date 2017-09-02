@@ -100,7 +100,7 @@ class PersonalViewController: UIViewController {
     self.scrollView.backgroundColor = UIColor.white
 
     self.navigationItem.titleView = UILabel().then {
-      $0.font = UIFont(name: "HelveticaNeue", size: 20)
+      $0.font = UIFont(.navigation)
       $0.text = profileUser?.profileName
       $0.sizeToFit()
     }

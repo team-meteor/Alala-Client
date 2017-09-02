@@ -64,7 +64,6 @@ class PeoplesTableViewCell: UITableViewCell {
     $0.layer.borderWidth = 1
     $0.layer.masksToBounds = false
     $0.layer.borderColor = UIColor.lightGray.cgColor
-    $0.clipsToBounds = true
     $0.isUserInteractionEnabled = true
   }
 
@@ -75,14 +74,14 @@ class PeoplesTableViewCell: UITableViewCell {
   }
 
   fileprivate let userNameLabel = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 14)
+    $0.font = UIFont(.small)
     $0.text = "Name" // Label 높이 계산을 위한 DummyText
     $0.textColor = UIColor.lightGray
     $0.sizeToFit()
   }
 
   fileprivate let suggestionLabel = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 12)
+    $0.font = UIFont(.tiny)
     $0.text = LS("Instagram 신규가입")
     $0.textColor = UIColor.lightGray
     $0.sizeToFit()

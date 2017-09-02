@@ -16,7 +16,7 @@ class DiscoverPeopleViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     self.navigationItem.titleView = UILabel().then {
-      $0.font = UIFont(name: "HelveticaNeue", size: 20)
+      $0.font = UIFont(.navigation)
       $0.text = LS("discover_people")
       $0.sizeToFit()
     }

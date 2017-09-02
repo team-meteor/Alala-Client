@@ -27,12 +27,12 @@ class EditProfileTableViewCell: UITableViewCell {
   }
 
   let textView = UIPlaceholderTextView().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 16)
+    $0.font = UIFont(.medium)
   }
 
   let textField = UITextField().then {
     $0.clearButtonMode = .whileEditing
-    $0.font = UIFont(name: "HelveticaNeue", size: 16)
+    $0.font = UIFont(.medium)
   }
 
   let rightImageView = UIImageView()

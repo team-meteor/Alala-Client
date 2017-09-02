@@ -75,7 +75,7 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
 
   func setupUIForFollowerType() {
     self.navigationItem.titleView = UILabel().then {
-      $0.font = UIFont(name: "HelveticaNeue", size: 20)
+      $0.font = UIFont(.navigation)
       $0.text = LS("followers")
       $0.sizeToFit()
     }
@@ -85,7 +85,7 @@ class FollowViewController: UIViewController, UISearchBarDelegate {
 
   func setupUIForFollowingType() {
     self.navigationItem.titleView = UILabel().then {
-      $0.font = UIFont(name: "HelveticaNeue", size: 20)
+      $0.font = UIFont(.navigation)
       $0.text = LS("following")
       $0.sizeToFit()
     }

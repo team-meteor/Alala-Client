@@ -16,7 +16,6 @@ class CommentTableCell: UITableViewCell {
     view.layer.borderWidth = 1
     view.layer.masksToBounds = false
     view.layer.borderColor = UIColor.lightGray.cgColor
-    view.clipsToBounds = true
     view.isUserInteractionEnabled = true
     return view
   }()

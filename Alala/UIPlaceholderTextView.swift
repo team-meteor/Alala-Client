@@ -26,7 +26,7 @@ class UIPlaceholderTextView: UITextView {
   }
 
   let placeholderLabel =  UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 16)
+    $0.font = UIFont(.medium)
     $0.textColor = UIColor(rgb: 0xcccccc)
     $0.sizeToFit()
   }

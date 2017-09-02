@@ -27,13 +27,12 @@ class NoPostFeedView: UIScrollView {
     $0.layer.borderWidth = 2
     $0.layer.masksToBounds = false
     $0.layer.borderColor = UIColor.darkGray.cgColor
-    $0.clipsToBounds = true
     $0.image = UIImage(named: "home")?.imageWithInset(insets: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
     $0.contentMode = .center
   }
 
   let welcomeTitle = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 14)
+    $0.font = UIFont(.small)
     $0.text = LS("welcome_title")
     $0.textAlignment = .center
     $0.textColor = UIColor.darkGray
@@ -41,7 +40,7 @@ class NoPostFeedView: UIScrollView {
   }
 
   let welcomeDesc = UILabel().then {
-    $0.font = UIFont(name: "HelveticaNeue", size: 12)
+    $0.font = UIFont(.tiny)
     $0.text = LS("welcome_desc")
     $0.textAlignment = .center
     $0.textColor = UIColor.lightGray
