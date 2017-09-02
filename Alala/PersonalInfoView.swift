@@ -38,7 +38,6 @@ class PersonalInfoView: UIView {
     $0.layer.borderWidth = 1
     $0.layer.masksToBounds = false
     $0.layer.borderColor = UIColor.lightGray.cgColor
-    $0.clipsToBounds = true
     $0.isUserInteractionEnabled = true
     $0.image = UIImage(named: "default_user")
     $0.contentMode = .scaleAspectFill

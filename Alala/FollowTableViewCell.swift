@@ -68,7 +68,6 @@ class FollowTableViewCell: UITableViewCell {
     $0.layer.borderWidth = 1
     $0.layer.masksToBounds = false
     $0.layer.borderColor = UIColor.lightGray.cgColor
-    $0.clipsToBounds = true
     $0.isUserInteractionEnabled = true
   }
 

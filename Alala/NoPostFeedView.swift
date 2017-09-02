@@ -27,7 +27,6 @@ class NoPostFeedView: UIScrollView {
     $0.layer.borderWidth = 2
     $0.layer.masksToBounds = false
     $0.layer.borderColor = UIColor.darkGray.cgColor
-    $0.clipsToBounds = true
     $0.image = UIImage(named: "home")?.imageWithInset(insets: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
     $0.contentMode = .center
   }
